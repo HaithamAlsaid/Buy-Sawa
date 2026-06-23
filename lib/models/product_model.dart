@@ -1,0 +1,215 @@
+class ProductModel {
+  final String id;
+  final String name;
+  final String category;
+  final double price;
+  final double? originalPrice;
+  final double rating;
+  final int reviewCount;
+  final String imageUrl;
+  final List<String>? alternateImages;
+  final String description;
+  final bool hasGroupDeal;
+  final int? groupDealDiscount;
+  final double? shareEarnPercent;
+
+  ProductModel({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.price,
+    this.originalPrice,
+    required this.rating,
+    required this.reviewCount,
+    required this.imageUrl,
+    this.alternateImages,
+    required this.description,
+    this.hasGroupDeal = false,
+    this.groupDealDiscount,
+    this.shareEarnPercent,
+  });
+
+  double get discount {
+    if (originalPrice == null || originalPrice! <= price) return 0;
+    return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
+  }
+}
+
+// ──── Mock Data ────────────────────────────────────────────────
+final List<ProductModel> mockProducts = [
+  ProductModel(
+    id: 'p1',
+    name: 'Sony WH-1000XM5',
+    category: 'Electronics',
+    price: 1299,
+    originalPrice: 1499,
+    rating: 4.8,
+    reviewCount: 1248,
+    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+    alternateImages: const [
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
+      'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400',
+    ],
+    description: 'Industry-leading noise canceling with two processors and eight microphones. 30-hour battery life with quick charge.',
+    hasGroupDeal: true,
+    groupDealDiscount: 15,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p2',
+    name: 'Apple Watch Series 9',
+    category: 'Watches',
+    price: 1899,
+    originalPrice: 2099,
+    rating: 4.9,
+    reviewCount: 892,
+    imageUrl: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400',
+    alternateImages: const [
+      'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400',
+      'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400',
+    ],
+    description: 'The most powerful Apple Watch yet. Features the new S9 chip, Double Tap gesture, and brighter display.',
+    hasGroupDeal: false,
+    shareEarnPercent: 7,
+  ),
+  ProductModel(
+    id: 'p3',
+    name: 'Nike Air Max 270',
+    category: 'Shoes',
+    price: 549,
+    originalPrice: 699,
+    rating: 4.6,
+    reviewCount: 2341,
+    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+    alternateImages: const [
+      'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
+      'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400',
+    ],
+    description: 'The Nike Air Max 270 delivers unparalleled comfort with its large Air unit.',
+    hasGroupDeal: true,
+    groupDealDiscount: 10,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p4',
+    name: 'Samsung Galaxy S24',
+    category: 'Electronics',
+    price: 3299,
+    originalPrice: 3699,
+    rating: 4.7,
+    reviewCount: 567,
+    imageUrl: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400',
+    description: 'The Galaxy S24 features the most advanced AI camera system, a stunning 6.2-inch display, and all-day battery.',
+    hasGroupDeal: true,
+    groupDealDiscount: 12,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p5',
+    name: 'Glow Serum Premium',
+    category: 'Women',
+    price: 189,
+    originalPrice: 249,
+    rating: 4.5,
+    reviewCount: 3120,
+    imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400',
+    description: 'Advanced brightening serum with vitamin C and hyaluronic acid for glowing skin.',
+    hasGroupDeal: false,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p6',
+    name: 'MacBook Air M3',
+    category: 'Laptops',
+    price: 5499,
+    originalPrice: 5999,
+    rating: 4.9,
+    reviewCount: 445,
+    imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+    description: 'Supercharged by M3, MacBook Air is faster and more capable than before.',
+    hasGroupDeal: true,
+    groupDealDiscount: 8,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p7',
+    name: 'Adidas Ultraboost 23',
+    category: 'Shoes',
+    price: 699,
+    originalPrice: 849,
+    rating: 4.7,
+    reviewCount: 1892,
+    imageUrl: 'https://images.unsplash.com/photo-1556906781-9a412961a28c?w=400',
+    description: 'Responsive BOOST cushioning returns energy with every stride.',
+    hasGroupDeal: false,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p8',
+    name: 'Canon EOS R50',
+    category: 'Cameras',
+    price: 3199,
+    originalPrice: 3599,
+    rating: 4.6,
+    reviewCount: 234,
+    imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400',
+    description: 'Compact mirrorless camera with 24.2MP sensor, 4K video, and AI-powered autofocus.',
+    hasGroupDeal: true,
+    groupDealDiscount: 11,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p9',
+    name: 'AirPods Pro 2',
+    category: 'Electronics',
+    price: 949,
+    originalPrice: 1049,
+    rating: 4.8,
+    reviewCount: 4210,
+    imageUrl: 'https://images.unsplash.com/photo-1606220838315-056192d5e927?w=400',
+    description: 'Active Noise Cancellation reduces unwanted background noise. Adaptive Transparency lets outside sounds in while reducing loud environmental noise.',
+    hasGroupDeal: true,
+    groupDealDiscount: 10,
+    shareEarnPercent: 5,
+  ),
+  ProductModel(
+    id: 'p10',
+    name: 'Puma RS-X',
+    category: 'Shoes',
+    price: 450,
+    originalPrice: 550,
+    rating: 4.5,
+    reviewCount: 890,
+    imageUrl: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
+    description: 'The RS-X is back. The future-retro silhouette of this sneaker returns with progressive aesthetic and angular details.',
+    hasGroupDeal: false,
+    shareEarnPercent: 4,
+  ),
+  ProductModel(
+    id: 'p11',
+    name: 'Logitech MX Master 3S',
+    category: 'Electronics',
+    price: 399,
+    originalPrice: 499,
+    rating: 4.9,
+    reviewCount: 1530,
+    imageUrl: 'https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=400',
+    description: 'Performance wireless mouse with an 8K DPI track-on-glass sensor and Quiet Clicks.',
+    hasGroupDeal: true,
+    groupDealDiscount: 15,
+    shareEarnPercent: 6,
+  ),
+  ProductModel(
+    id: 'p12',
+    name: 'Nespresso Vertuo Next',
+    category: 'Electronics',
+    price: 699,
+    originalPrice: 899,
+    rating: 4.7,
+    reviewCount: 320,
+    imageUrl: 'https://images.unsplash.com/photo-1596079827161-5cb14002641e?w=400',
+    description: 'Nespresso Vertuo Next takes the full range of Nespresso coffee styles even further with its innovative Centrifusion technology.',
+    hasGroupDeal: false,
+    shareEarnPercent: 3,
+  ),
+];
