@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

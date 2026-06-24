@@ -132,6 +132,21 @@ class AppLocalizations {
   String get startGroupBuy => _t('startGroupBuy');
   String get off => _t('off');
 
+  // ─── Onboarding ──────────────────────────────────────────────
+  String get skip => _t('skip');
+  String get next => _t('next');
+  String get getStarted => _t('getStarted');
+  String get onboarding1Title => _t('onboarding1Title');
+  String get onboarding1Desc => _t('onboarding1Desc');
+  String get onboarding1Tag => _t('onboarding1Tag');
+  String get onboarding2Title => _t('onboarding2Title');
+  String get onboarding2Desc => _t('onboarding2Desc');
+  String get onboarding2Tag => _t('onboarding2Tag');
+  String get onboarding3Title => _t('onboarding3Title');
+  String get onboarding3Desc => _t('onboarding3Desc');
+  String get onboarding3Tag => _t('onboarding3Tag');
+  String get startShopping => _t('startShopping');
+
   // ════════════════════════════════════════════════════════════
   // TRANSLATIONS MAP
   // ════════════════════════════════════════════════════════════
@@ -197,6 +212,17 @@ class AppLocalizations {
       'reviews': 'reviews', 'description': 'Description',
       'shareAndEarnCashback': 'Share & Earn 5% Cashback',
       'startGroupBuy': 'Start Group Buy', 'off': 'off',
+      'skip': 'Skip', 'next': 'Next', 'getStarted': 'Get Started',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
 
     // ──── ARABIC (EMIRATI) ────
@@ -260,6 +286,17 @@ class AppLocalizations {
       'reviews': 'تقييم', 'description': 'الوصف',
       'shareAndEarnCashback': 'شارك واربح 5% كاش باك',
       'startGroupBuy': 'ابدأ شراء جماعي', 'off': 'خصم',
+      'skip': 'تخطي', 'next': 'التالي', 'getStarted': 'ابدأ التسوق',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
 
     // ──── CHINESE ────
@@ -323,6 +360,17 @@ class AppLocalizations {
       'reviews': '评价', 'description': '商品描述',
       'shareAndEarnCashback': '分享赚5%返现',
       'startGroupBuy': '发起团购', 'off': '折扣',
+      'skip': '跳过', 'next': '下一步', 'getStarted': '开始',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
 
     // ──── FRENCH ────
@@ -386,6 +434,17 @@ class AppLocalizations {
       'reviews': 'avis', 'description': 'Description',
       'shareAndEarnCashback': 'Partagez et gagnez 5% de cashback',
       'startGroupBuy': 'Démarrer un achat groupé', 'off': 'de réduction',
+      'skip': 'Passer', 'next': 'Suivant', 'getStarted': 'Commencer',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
 
     // ──── SPANISH ────
@@ -449,6 +508,17 @@ class AppLocalizations {
       'reviews': 'reseñas', 'description': 'Descripción',
       'shareAndEarnCashback': 'Comparte y gana 5% de cashback',
       'startGroupBuy': 'Iniciar compra grupal', 'off': 'de descuento',
+      'skip': 'Omitir', 'next': 'Siguiente', 'getStarted': 'Empezar',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
 
     // ──── RUSSIAN ────
@@ -512,6 +582,17 @@ class AppLocalizations {
       'reviews': 'отзывов', 'description': 'Описание',
       'shareAndEarnCashback': 'Делись и зарабатывай 5% кэшбэк',
       'startGroupBuy': 'Начать групповую покупку', 'off': 'скидка',
+      'skip': 'Пропустить', 'next': 'Далее', 'getStarted': 'Начать',
+      'onboarding1Tag': 'LET\'S GO',
+      'onboarding1Title': 'Ready to\nBuy SAWA?',
+      'onboarding1Desc': 'Join thousands of smart shoppers already saving together every day.',
+      'onboarding2Tag': 'GROUP BUYING',
+      'onboarding2Title': 'Shop Together,\nSave More',
+      'onboarding2Desc': 'Join forces with friends and family. The more you squad up, the bigger the discount everyone gets.',
+      'onboarding3Tag': 'FAST & SECURE',
+      'onboarding3Title': 'Safe & Quick\nDelivery',
+      'onboarding3Desc': 'Enjoy secure payments and fast delivery straight to your doorstep for every order.',
+      'startShopping': 'Start Shopping',
     },
   };
 }

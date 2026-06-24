@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      Navigator.pop(context);
     }
   }
 

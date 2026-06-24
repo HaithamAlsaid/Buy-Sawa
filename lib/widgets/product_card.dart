@@ -48,22 +48,7 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (product.hasGroupDeal)
-                    Positioned(
-                      top: R.pad(context, 8), left: R.pad(context, 8),
-                      child: _Badge(
-                        label: 'Group Deal -${product.groupDealDiscount}%',
-                        color: AppColors.primary,
-                      ),
-                    )
-                  else if (product.shareEarnPercent != null)
-                    Positioned(
-                      top: R.pad(context, 8), left: R.pad(context, 8),
-                      child: _Badge(
-                        label: 'Share & Earn ${product.shareEarnPercent!.toInt()}%',
-                        color: AppColors.accent,
-                      ),
-                    ),
+
                 ],
               ),
             ),
@@ -124,33 +109,3 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color color;
-  const _Badge({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: R.pad(context, 8),
-        vertical: R.pad(context, 4),
-      ),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(R.r(context, 8)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.people_rounded, color: Colors.white, size: R.icon(context, 10)),
-          SizedBox(width: R.pad(context, 3)),
-          Text(label,
-            style: TextStyle(
-              color: Colors.white, fontSize: R.sp(context, 10),
-              fontWeight: FontWeight.w700)),
-        ],
-      ),
-    );
-  }
-}

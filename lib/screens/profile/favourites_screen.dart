@@ -26,7 +26,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 1299.0,
         'originalPrice': 1499.0,
         'isGroupDeal': true,
-        'dealLabel': 'Group Deal -15%',
+        'dealLabel': 'Group Deal ',
         'imageUrl': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
         'description': 'Industry-leading noise canceling with two processors and eight microphones. 30-hour battery life with quick charge.',
       },
@@ -37,7 +37,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 1899.0,
         'originalPrice': 2099.0,
         'isGroupDeal': false,
-        'dealLabel': 'Share & Earn 5%',
+        'dealLabel': 'Share & Earn ',
         'imageUrl': 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400',
         'description': 'The most powerful Apple Watch yet. Features the new S9 chip, Double Tap gesture, and brighter display.',
       },
@@ -48,7 +48,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 549.0,
         'originalPrice': 699.0,
         'isGroupDeal': true,
-        'dealLabel': 'Group Deal -10%',
+        'dealLabel': 'Group Deal %',
         'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
         'description': 'The Nike Air Max delivers unparalleled comfort with its large Air unit.',
       },
@@ -59,7 +59,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 189.0,
         'originalPrice': 249.0,
         'isGroupDeal': false,
-        'dealLabel': 'Share & Earn 7%',
+        'dealLabel': 'Share & Earn ',
         'imageUrl': 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400',
         'description': 'Advanced brightening serum with vitamin C and hyaluronic acid for glowing skin.',
       },
@@ -70,7 +70,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 899.0,
         'originalPrice': 1099.0,
         'isGroupDeal': true,
-        'dealLabel': 'Group Deal -18%',
+        'dealLabel': 'Group Deal %',
         'imageUrl': 'https://images.unsplash.com/photo-1606220838315-056192d5e927?w=400',
         'description': 'Active Noise Cancellation reduces unwanted background noise. Adaptive Transparency.',
       },
@@ -81,7 +81,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         'price': 2799.0,
         'originalPrice': 3199.0,
         'isGroupDeal': false,
-        'dealLabel': 'Share & Earn 6%',
+        'dealLabel': 'Share & Earn %',
         'imageUrl': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
         'description': 'iPad Air M2 is supercharged by the Apple M2 chip. Features a Liquid Retina display.',
       },
@@ -109,7 +109,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         bottom: false,
         child: Column(
           children: [
-            // ── Teal Header ──────────────────────────────────────────
+            // ── Teal Header 
             Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
@@ -330,31 +330,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                           ),
                                         ),
                                       ),
-                                      // Top Left Tag Badge
-                                      Positioned(
-                                        top: R.pad(context, 10),
-                                        left: R.pad(context, 10),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: R.pad(context, 8),
-                                            vertical: R.pad(context, 4),
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: item['isGroupDeal']
-                                                ? const Color(0xFF00A2B1) // Teal
-                                                : const Color(0xFFF5A623), // Orange
-                                            borderRadius: BorderRadius.circular(R.r(context, 8)),
-                                          ),
-                                          child: Text(
-                                            item['dealLabel'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: R.sp(context, 10),
-                                              fontWeight: FontWeight.w800,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+
                                       // Top Right Heart Badge
                                       Positioned(
                                         top: R.pad(context, 8),

@@ -1,3 +1,4 @@
+import 'package:buysawa/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import '../../providers/locale_provider.dart';
 import '../../widgets/language_picker_sheet.dart';
 import '../../widgets/buysawa_logo.dart';
 import '../main/main_screen.dart';
+import '../onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -37,6 +39,9 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 3000));
     if (!mounted) return;
     final localeProvider = context.read<LocaleProvider>();
+    final isGuest = context.read<AuthProvider>().isGuest;
+    final showOnboarding = localeProvider.isFirstLaunch && isGuest;
+
     if (localeProvider.isFirstLaunch) {
       localeProvider.markLaunched();
       if (!mounted) return;
@@ -44,10 +49,13 @@ class _SplashScreenState extends State<SplashScreen>
       await Future.delayed(const Duration(milliseconds: 500));
     }
     if (!mounted) return;
+
+    final Widget nextScreen = showOnboarding ? const OnboardingScreen() : const MainScreen();
+
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const MainScreen(),
+        pageBuilder: (_, __, ___) => nextScreen,
         transitionsBuilder: (_, anim, __, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 700),

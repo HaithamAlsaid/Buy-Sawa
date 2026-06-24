@@ -66,7 +66,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? _selectedSize;
   bool _specsExpanded = false;
 
-  // Actions 
+  // Actions
 
   void _addToCart() {
     HapticFeedback.lightImpact();
@@ -497,7 +497,7 @@ class _HeroSectionState extends State<_HeroSection> {
   }
 }
 
-// ── Badge + Rating 
+// ── Badge + Rating
 class _BadgeRatingRow extends StatelessWidget {
   final ProductModel product;
   final int discountPct;
