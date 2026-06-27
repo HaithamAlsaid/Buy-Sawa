@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _pulseCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(seconds:2),
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
     _init();
   }
@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _init() async {
-    await Future.delayed(const Duration(milliseconds: 3000));
+    await Future.delayed(const Duration(milliseconds: 2200));
     if (!mounted) return;
     final localeProvider = context.read<LocaleProvider>();
     final isGuest = context.read<AuthProvider>().isGuest;
@@ -45,12 +45,13 @@ class _SplashScreenState extends State<SplashScreen>
     if (localeProvider.isFirstLaunch) {
       localeProvider.markLaunched();
       if (!mounted) return;
-      LanguagePickerSheet.show(context);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await LanguagePickerSheet.show(context);
     }
     if (!mounted) return;
 
-    final Widget nextScreen = showOnboarding ? const OnboardingScreen() : const MainScreen();
+    final Widget nextScreen = showOnboarding
+        ? const OnboardingScreen()
+        : const MainScreen();
 
     Navigator.pushReplacement(
       context,
@@ -69,37 +70,43 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [ Color.fromARGB(255, 39, 120, 149), Color.fromARGB(255, 35, 94, 136), Color.fromARGB(255, 55, 110, 120)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight
-          ),
-        ),
+        decoration: const BoxDecoration(color: Colors.white),
         child: Stack(
           children: [
-            // ── Background Decorative Blobs 
+            // ── Background Decorative Blobs
             Positioned(
               top: -90,
               right: -70,
-              child: _GlowBlob(size: 280, opacity: 0.08),
+              child: _GlowBlob(
+                size: 280,
+                opacity: 0.05,
+                color: const Color(0xFF00A9A5),
+              ),
             ),
             Positioned(
               top: 80,
               right: 30,
-              child: _GlowBlob(size: 110, opacity: 0.05),
+              child: _GlowBlob(
+                size: 110,
+                opacity: 0.05,
+                color: const Color(0xFF00A9A5),
+              ),
             ),
             Positioned(
               bottom: 120,
               left: -90,
-              child: _GlowBlob(size: 320, opacity: 0.07),
+              child: _GlowBlob(
+                size: 320,
+                opacity: 0.04,
+                color: const Color(0xFF00A9A5),
+              ),
             ),
             Positioned(
               bottom: 220,
               right: -50,
               child: _GlowBlob(
                 size: 180,
-                opacity: 0.18,
+                opacity: 0.10,
                 color: const Color(0xFFF5A623),
               ),
             ),
@@ -108,44 +115,55 @@ class _SplashScreenState extends State<SplashScreen>
               left: -50,
               child: _GlowBlob(
                 size: 150,
-                opacity: 0.10,
+                opacity: 0.08,
                 color: const Color(0xFFF5A623),
               ),
             ),
 
-            //Main Content 
+            //Main Content
             Center(
-              child: AnimatedBuilder(
-                animation: _pulseCtrl,
-                builder: (_, child) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFF5A623).withOpacity(
-                          0.3 + _pulseCtrl.value * 0.3,
+              child:
+                  AnimatedBuilder(
+                        animation: _pulseCtrl,
+                        builder: (_, child) => Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFFF5A623,
+                                ).withOpacity(0.3 + _pulseCtrl.value * 0.3),
+                                blurRadius: 40 + _pulseCtrl.value * 25,
+                                spreadRadius: 4 + _pulseCtrl.value * 6,
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: child,
                         ),
-                        blurRadius: 40 + _pulseCtrl.value * 25,
-                        spreadRadius: 4 + _pulseCtrl.value * 6,
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 24,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: child,
-                ),
-                child: AppLogo(size: 130, borderRadius: 32),
-              )
-                  .animate()
-                  .scale(
-                    duration: 800.ms,
-                    curve: Curves.elasticOut,
-                    begin: const Offset(0.1, 0.1),
-                  )
-                  .fade(duration: 500.ms),
+                        child: AppLogo(size: 130, borderRadius: 32),
+                      )
+                       .animate()
+                       // Step 1: Shoot up fast from bottom, overshooting the center
+                       .slideY(
+                         begin: 3.0,
+                         end: -0.18,
+                         duration: 600.ms,
+                         curve: Curves.easeOut,
+                       )
+                       // Step 2: Bounce back down to center
+                       .then()
+                       .slideY(
+                         begin: 0.0,
+                         end: 0.18,
+                         duration: 700.ms,
+                         curve: Curves.elasticOut,
+                       )
+                       .fade(begin: 0.0, end: 1.0, duration: 400.ms),
             ),
           ],
         ),
@@ -168,13 +186,13 @@ class _GlowBlob extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withOpacity(opacity),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: color.withOpacity(opacity),
+    ),
+  );
 }
 
 // ── Fallback Logo (if image not found) ────────────────────────

@@ -10,6 +10,7 @@ import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/group_buy_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
+import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
 
@@ -65,6 +66,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isWishlisted = false;
   String? _selectedSize;
   bool _specsExpanded = false;
+  late List<ProductReview> _localReviews;
+
+  @override
+  void initState() {
+    super.initState();
+    _localReviews = List.from(widget.product.reviews);
+  }
 
   // Actions
 
@@ -231,6 +239,67 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           discountPct: discountPct,
                         ).animate().fadeIn(delay: 140.ms).slideY(begin: 0.15),
 
+                        SizedBox(height: R.pad(context, 16)),
+
+                        // Promotional Subtle Text
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: R.pad(context, 12),
+                            vertical: R.pad(context, 8),
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0FDF4), // Very light green
+                            borderRadius: BorderRadius.circular(
+                              R.r(context, 8),
+                            ),
+                            border: Border.all(color: const Color(0xFFBBF7D0)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    '✨',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(width: R.pad(context, 6)),
+                                  Expanded(
+                                    child: Text(
+                                      'Share this product and get cashback on purchases!',
+                                      style: TextStyle(
+                                        fontSize: R.sp(context, 12),
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF166534),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: R.pad(context, 4)),
+                              Row(
+                                children: [
+                                  const Text(
+                                    '👥',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(width: R.pad(context, 6)),
+                                  Expanded(
+                                    child: Text(
+                                      'Start a Group Buy with friends for a bigger discount.',
+                                      style: TextStyle(
+                                        fontSize: R.sp(context, 12),
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF166534),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ).animate().fadeIn(delay: 160.ms).slideY(begin: 0.15),
+
                         SizedBox(height: R.pad(context, 22)),
 
                         // Size selector
@@ -278,6 +347,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ],
+
+                        SizedBox(height: R.pad(context, 24)),
+
+                        // Reviews & Comments
+                        _ReviewsSection(
+                          product: product,
+                          reviews: _localReviews,
+                          onReviewAdded: (review) {
+                            setState(() {
+                              _localReviews.insert(0, review);
+                            });
+                          },
+                        ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.15),
 
                         SizedBox(height: R.pad(context, 24)),
                       ],
@@ -939,6 +1021,176 @@ class _CircleBtn extends StatelessWidget {
           size: R.icon(context, 19),
         ),
       ),
+    );
+  }
+}
+
+//Reviews Section
+class _ReviewsSection extends StatelessWidget {
+  final ProductModel product;
+  final List<ProductReview> reviews;
+  final Function(ProductReview) onReviewAdded;
+
+  const _ReviewsSection({
+    required this.product,
+    required this.reviews,
+    required this.onReviewAdded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SectionTitle(title: 'Reviews & Comments'),
+            Text(
+              '${product.rating} ~" (${product.reviewCount})',
+              style: TextStyle(
+                fontSize: R.sp(context, 14),
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFF5A623),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: R.pad(context, 16)),
+        if (reviews.isEmpty)
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: R.pad(context, 20)),
+              child: Text(
+                'No reviews yet. Be the first to review!',
+                style: TextStyle(
+                  color: const Color(0xFF94A3B8),
+                  fontSize: R.sp(context, 14),
+                ),
+              ),
+            ),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemCount: reviews.length,
+            separatorBuilder: (_, __) => Padding(
+              padding: EdgeInsets.symmetric(vertical: R.pad(context, 16)),
+              child: const Divider(color: Color(0xFFF1F5F9), height: 1),
+            ),
+            itemBuilder: (context, index) {
+              final r = reviews[index];
+              return _ReviewCard(review: r);
+            },
+          ),
+        SizedBox(height: R.pad(context, 16)),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () async {
+              final newReview = await WriteReviewSheet.show(context);
+              if (newReview != null) {
+                onReviewAdded(newReview);
+              }
+            },
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: R.pad(context, 12)),
+              side: const BorderSide(color: Color(0xFFE2E8F0)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(R.r(context, 12)),
+              ),
+            ),
+            child: Text(
+              'Write a Review',
+              style: TextStyle(
+                color: const Color(0xFF0F172A),
+                fontWeight: FontWeight.w700,
+                fontSize: R.sp(context, 13),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ReviewCard extends StatelessWidget {
+  final ProductReview review;
+
+  const _ReviewCard({required this.review});
+
+  String _timeAgo(DateTime d) {
+    final diff = DateTime.now().difference(d);
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: R.r(context, 16),
+              backgroundImage: NetworkImage(review.userAvatarUrl),
+            ),
+            SizedBox(width: R.pad(context, 10)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    review.userName,
+                    style: TextStyle(
+                      fontSize: R.sp(context, 14),
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      ...List.generate(
+                        5,
+                        (index) => Icon(
+                          index < review.rating.round()
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          color: const Color(0xFFF5A623),
+                          size: R.icon(context, 14),
+                        ),
+                      ),
+                      SizedBox(width: R.pad(context, 8)),
+                      Text(
+                        _timeAgo(review.date),
+                        style: TextStyle(
+                          fontSize: R.sp(context, 11),
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: R.pad(context, 10)),
+        Text(
+          review.comment,
+          style: TextStyle(
+            fontSize: R.sp(context, 13),
+            color: const Color(0xFF475569),
+            height: 1.5,
+          ),
+        ),
+      ],
     );
   }
 }

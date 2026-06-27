@@ -11,8 +11,12 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(context,
-        MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProductDetailScreen(product: product),
+        ),
+      ),
       child: Container(
         width: R.pad(context, 175),
         decoration: BoxDecoration(
@@ -22,7 +26,8 @@ class ProductCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
-              blurRadius: 8, offset: const Offset(0, 2),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -33,7 +38,9 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(R.r(context, 16))),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(R.r(context, 16)),
+                    ),
                     child: Image.network(
                       product.imageUrl,
                       width: double.infinity,
@@ -42,13 +49,15 @@ class ProductCard extends StatelessWidget {
                       errorBuilder: (_, __, ___) => Container(
                         color: AppColors.background,
                         child: Center(
-                          child: Icon(Icons.image_rounded,
-                            color: AppColors.textLight, size: R.icon(context, 40)),
+                          child: Icon(
+                            Icons.image_rounded,
+                            color: AppColors.textLight,
+                            size: R.icon(context, 40),
+                          ),
                         ),
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -57,26 +66,40 @@ class ProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name,
+                  Text(
+                    product.name,
                     style: TextStyle(
                       fontSize: R.sp(context, 14),
                       fontWeight: FontWeight.w600,
                       color: AppColors.textDark,
                     ),
-                    maxLines: 2, overflow: TextOverflow.ellipsis),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   SizedBox(height: R.pad(context, 4)),
                   Row(
                     children: [
-                      Icon(Icons.star_rounded,
-                        color: AppColors.accent, size: R.icon(context, 14)),
+                      Icon(
+                        Icons.star_rounded,
+                        color: AppColors.accent,
+                        size: R.icon(context, 14),
+                      ),
                       SizedBox(width: R.pad(context, 2)),
-                      Text('${product.rating}',
+                      Text(
+                        '${product.rating}',
                         style: TextStyle(
-                          fontSize: R.sp(context, 12), fontWeight: FontWeight.w600,
-                          color: AppColors.textDark)),
-                      Text(' (${product.reviewCount})',
+                          fontSize: R.sp(context, 12),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      Text(
+                        ' (${product.reviewCount})',
                         style: TextStyle(
-                          fontSize: R.sp(context, 11), color: AppColors.textGray)),
+                          fontSize: R.sp(context, 11),
+                          color: AppColors.textGray,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: R.pad(context, 6)),
@@ -85,16 +108,20 @@ class ProductCard extends StatelessWidget {
                       Text(
                         '${product.price.toInt()} AED',
                         style: TextStyle(
-                          fontSize: R.sp(context, 15), fontWeight: FontWeight.w800,
-                          color: AppColors.primary),
+                          fontSize: R.sp(context, 15),
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                        ),
                       ),
                       if (product.originalPrice != null) ...[
                         SizedBox(width: R.pad(context, 6)),
                         Text(
                           '${product.originalPrice!.toInt()}',
                           style: TextStyle(
-                            fontSize: R.sp(context, 12), color: AppColors.textLight,
-                            decoration: TextDecoration.lineThrough),
+                            fontSize: R.sp(context, 12),
+                            color: AppColors.textLight,
+                            decoration: TextDecoration.lineThrough,
+                          ),
                         ),
                       ],
                     ],
@@ -108,4 +135,3 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
-

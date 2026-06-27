@@ -12,6 +12,7 @@ class ProductModel {
   final bool hasGroupDeal;
   final int? groupDealDiscount;
   final double? shareEarnPercent;
+  final List<ProductReview> reviews;
 
   ProductModel({
     required this.id,
@@ -27,12 +28,31 @@ class ProductModel {
     this.hasGroupDeal = false,
     this.groupDealDiscount,
     this.shareEarnPercent,
+    this.reviews = const [],
   });
 
   double get discount {
     if (originalPrice == null || originalPrice! <= price) return 0;
     return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
   }
+}
+
+class ProductReview {
+  final String id;
+  final String userName;
+  final String userAvatarUrl;
+  final double rating;
+  final DateTime date;
+  final String comment;
+
+  ProductReview({
+    required this.id,
+    required this.userName,
+    required this.userAvatarUrl,
+    required this.rating,
+    required this.date,
+    required this.comment,
+  });
 }
 
 // ──── Mock Data ────────────────────────────────────────────────
@@ -54,6 +74,32 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 15,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r1',
+        userName: 'Ahmed K.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 2)),
+        comment: 'صوت خرافي وعزل النويز ملوش حل! أفضل سماعة استخدمتها لحد دلوقتي بصراحة وتستاهل كل قرش.',
+      ),
+      ProductReview(
+        id: 'r2',
+        userName: 'Sarah M.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+        rating: 4.5,
+        date: DateTime.now().subtract(const Duration(days: 5)),
+        comment: 'ممتازة جداً وخفيفة على الراس، بس حسيت المايك في المكالمات كان ممكن يكون أحسن شوية.',
+      ),
+      ProductReview(
+        id: 'r3',
+        userName: 'Omar T.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 12)),
+        comment: 'وصلتني متغلفة كويس جداً والأصلي 100%. الشحن سريع والبطارية بتقعد أيام، تجربة شراء ممتازة من التطبيق.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p2',
@@ -71,6 +117,16 @@ final List<ProductModel> mockProducts = [
     description: 'The most powerful Apple Watch yet. Features the new S9 chip, Double Tap gesture, and brighter display.',
     hasGroupDeal: false,
     shareEarnPercent: 7,
+    reviews: [
+      ProductReview(
+        id: 'r4',
+        userName: 'Mona Y.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=5',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 1)),
+        comment: 'حركة الدبل تاب بتسهل الاستخدام جداً خصوصاً لو إيدك مشغولة. الشاشة سطوعها جبار في الشمس.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p3',
@@ -89,6 +145,24 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 10,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r5',
+        userName: 'Khaled S.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=11',
+        rating: 4.5,
+        date: DateTime.now().subtract(const Duration(days: 3)),
+        comment: 'مريحة جداً في المشي والجري وشكلها شيك، المقاس مضبوط بالملي.',
+      ),
+      ProductReview(
+        id: 'r6',
+        userName: 'Nour A.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=12',
+        rating: 4.0,
+        date: DateTime.now().subtract(const Duration(days: 8)),
+        comment: 'جودة الكوتشي حلوة بس السعر كان ممكن يكون أقل شوية.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p4',
@@ -103,6 +177,16 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 12,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r7',
+        userName: 'Ali M.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=13',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 1)),
+        comment: 'كاميرا الذكاء الاصطناعي خرافية. أفضل موبايل نزل السنة دي من غير منازع.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p5',
@@ -116,6 +200,24 @@ final List<ProductModel> mockProducts = [
     description: 'Advanced brightening serum with vitamin C and hyaluronic acid for glowing skin.',
     hasGroupDeal: false,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r8',
+        userName: 'Dina E.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=16',
+        rating: 4.5,
+        date: DateTime.now().subtract(const Duration(days: 10)),
+        comment: 'النتيجة بانت من أول أسبوعين، بيخلي البشرة نضرة جداً.',
+      ),
+      ProductReview(
+        id: 'r9',
+        userName: 'Yasmin W.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=19',
+        rating: 4.0,
+        date: DateTime.now().subtract(const Duration(days: 14)),
+        comment: 'حلو بس الكمية قليلة شوية مقارنة بالسعر.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p6',
@@ -130,6 +232,16 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 8,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r10',
+        userName: 'Mahmoud O.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=33',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 4)),
+        comment: 'جهاز يعتمد عليه للشغل والدراسة، بطارية بتكمل اليوم مستريح.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p7',
@@ -143,6 +255,16 @@ final List<ProductModel> mockProducts = [
     description: 'Responsive BOOST cushioning returns energy with every stride.',
     hasGroupDeal: false,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r11',
+        userName: 'Tarek G.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=51',
+        rating: 4.5,
+        date: DateTime.now().subtract(const Duration(days: 6)),
+        comment: 'ممتاز للجري، كأنك بتمشي على سحاب.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p8',
@@ -157,6 +279,16 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 11,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r12',
+        userName: 'Yousef B.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=60',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 20)),
+        comment: 'كاميرا مثالية للمبتدئين في التصوير وتصوير الفلوجات.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p9',
@@ -171,6 +303,16 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 10,
     shareEarnPercent: 5,
+    reviews: [
+      ProductReview(
+        id: 'r13',
+        userName: 'Hassan K.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=68',
+        rating: 4.8,
+        date: DateTime.now().subtract(const Duration(days: 2)),
+        comment: 'العزل فيها قوي جداً، وصوت البيس ممتاز.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p10',
@@ -184,6 +326,16 @@ final List<ProductModel> mockProducts = [
     description: 'The RS-X is back. The future-retro silhouette of this sneaker returns with progressive aesthetic and angular details.',
     hasGroupDeal: false,
     shareEarnPercent: 4,
+    reviews: [
+      ProductReview(
+        id: 'r14',
+        userName: 'Ramy W.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=69',
+        rating: 4.0,
+        date: DateTime.now().subtract(const Duration(days: 18)),
+        comment: 'شيك ومختلفة بس محتاجة تتلبس كام مرة عشان تليّن.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p11',
@@ -198,6 +350,16 @@ final List<ProductModel> mockProducts = [
     hasGroupDeal: true,
     groupDealDiscount: 15,
     shareEarnPercent: 6,
+    reviews: [
+      ProductReview(
+        id: 'r15',
+        userName: 'Mostafa H.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=70',
+        rating: 5.0,
+        date: DateTime.now().subtract(const Duration(days: 25)),
+        comment: 'ماوس جبار للمبرمجين والمصممين، مريح جداً للإيد.',
+      ),
+    ],
   ),
   ProductModel(
     id: 'p12',
@@ -211,5 +373,15 @@ final List<ProductModel> mockProducts = [
     description: 'Nespresso Vertuo Next takes the full range of Nespresso coffee styles even further with its innovative Centrifusion technology.',
     hasGroupDeal: false,
     shareEarnPercent: 3,
+    reviews: [
+      ProductReview(
+        id: 'r16',
+        userName: 'Mai O.',
+        userAvatarUrl: 'https://i.pravatar.cc/150?img=43',
+        rating: 4.7,
+        date: DateTime.now().subtract(const Duration(days: 1)),
+        comment: 'قهوة ممتازة وسريعة، والوش بيطلع مظبوط دايماً.',
+      ),
+    ],
   ),
 ];
