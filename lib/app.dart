@@ -20,10 +20,6 @@ class BuySawaApp extends StatelessWidget {
       supportedLocales: const [
         Locale('en'),
         Locale('ar'),
-        Locale('zh'),
-        Locale('fr'),
-        Locale('es'),
-        Locale('ru'),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,

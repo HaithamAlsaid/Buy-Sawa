@@ -5,6 +5,7 @@ import '../../core/constants/app_colors.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
+import '../../core/localization/app_localizations.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -36,25 +37,26 @@ class _CartScreenState extends State<CartScreen> {
     cart.clear();
     setState(() => _checkingOut = false);
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(' Order Placed!',
+        title: Text(l10n.orderPlaced,
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.check_circle_rounded,
               color: AppColors.success, size: 60),
           const SizedBox(height: 12),
-          Text('Your order has been placed successfully!\nTotal: ${total.toInt()} AED',
+          Text('${l10n.orderPlacedSuccessfully}\n${l10n.total}: ${total.toInt()} AED',
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textGray)),
         ]),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
-            child: const Text('Continue Shopping'),
+            child: Text(l10n.continueShopping),
           ),
         ],
       ),
@@ -65,6 +67,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
     final auth = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context);
     final subtotal = cart.subtotal;
     const shipping = 25.0;
     final finalTotal = subtotal + shipping;
@@ -92,11 +95,11 @@ class _CartScreenState extends State<CartScreen> {
                           size: 18, color: Color(0xFF1A1A2E)),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'My Cart',
+                      l10n.myCart,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1A1A2E),
@@ -153,11 +156,11 @@ class _CartScreenState extends State<CartScreen> {
 
                         // Summary Rows
                         _SummaryRow(
-                            label: 'Subtotal',
+                            label: l10n.subtotal,
                             value: '${subtotal.toInt()} AED'),
                         const SizedBox(height: 10),
                         _SummaryRow(
-                            label: 'Shipping',
+                            label: l10n.shipping,
                             value: '${shipping.toInt()} AED'),
 
 
@@ -170,8 +173,8 @@ class _CartScreenState extends State<CartScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Total',
-                                style: TextStyle(
+                            Text(l10n.total,
+                                style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w800,
                                     color: Color(0xFF1A1A2E))),
@@ -221,8 +224,8 @@ class _CartScreenState extends State<CartScreen> {
                                         color: Colors.white, strokeWidth: 2.5))
                                 : Text(
                                     auth.isGuest
-                                        ? 'Sign In to Checkout'
-                                        : 'Proceed to Checkout',
+                                        ? l10n.signInToCheckout
+                                        : l10n.proceedToCheckout,
                                     style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -427,6 +430,7 @@ class _SummaryRow extends StatelessWidget {
 class _EmptyCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -442,8 +446,8 @@ class _EmptyCart extends StatelessWidget {
                 color: AppColors.primary, size: 50),
           ).animate().scale(duration: 400.ms, curve: Curves.elasticOut),
           const SizedBox(height: 20),
-          const Text('Your cart is empty',
-              style: TextStyle(
+          Text(l10n.yourCartIsEmpty,
+              style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1A1A2E))),
@@ -451,7 +455,7 @@ class _EmptyCart extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(minimumSize: const Size(180, 50)),
-            child: const Text('Start Shopping'),
+            child: Text(l10n.startShopping),
           ),
         ],
       ),

@@ -148,19 +148,19 @@ class _SplashScreenState extends State<SplashScreen>
                         child: AppLogo(size: 130, borderRadius: 32),
                       )
                        .animate()
-                       // Step 1: Shoot up fast from bottom, overshooting the center
+                       // Step 1: Start at the bottom, shoot up to the top
                        .slideY(
-                         begin: 3.0,
-                         end: -0.18,
-                         duration: 600.ms,
-                         curve: Curves.easeOut,
+                         begin: 4.0,
+                         end: -2.5,
+                         duration: 800.ms,
+                         curve: Curves.easeOutCirc,
                        )
-                       // Step 2: Bounce back down to center
+                       // Step 2: Bounce back down to the center
                        .then()
                        .slideY(
                          begin: 0.0,
-                         end: 0.18,
-                         duration: 700.ms,
+                         end: 2.5,
+                         duration: 1000.ms,
                          curve: Curves.elasticOut,
                        )
                        .fade(begin: 0.0, end: 1.0, duration: 400.ms),

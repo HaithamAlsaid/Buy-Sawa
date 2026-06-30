@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/localization/app_localizations.dart';
 
 class ProfileDetailsScreen extends StatefulWidget {
   const ProfileDetailsScreen({super.key});
@@ -104,7 +105,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -122,7 +123,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                   borderRadius: BorderRadius.circular(R.r(context, 8)),
                 ),
               ),
-              child: const Text('Confirm'),
+              child: Text(AppLocalizations.of(context).confirm),
             ),
           ],
         );
@@ -154,9 +155,11 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
+    final l10n = AppLocalizations.of(context);
+    
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please login to view profile details.')),
+      return Scaffold(
+        body: Center(child: Text(l10n.loginToViewProfile)),
       );
     }
 
@@ -184,7 +187,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
           ),
         ),
         title: Text(
-          'Profile',
+          l10n.editProfile,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: R.sp(context, 18),
@@ -286,7 +289,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                       icon: Icons.person_outline_rounded,
                       iconColor: const Color(0xFF00A2B1),
                       iconBgColor: const Color(0xFFE8F7F6),
-                      label: 'FULL NAME',
+                      label: l10n.fullName.toUpperCase(),
                       value: _nameCtrl.text,
                       onTap: _editNameDialog,
                       trailingIcon: Icons.edit_rounded,
@@ -298,7 +301,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                       icon: Icons.calendar_today_outlined,
                       iconColor: const Color(0xFF00A2B1),
                       iconBgColor: const Color(0xFFE8F7F6),
-                      label: 'BIRTHDATE',
+                      label: l10n.birthdate.toUpperCase(),
                       value: _birthdate.isEmpty ? 'Not Set' : _birthdate,
                       onTap: _selectBirthdate,
                       trailingIcon: Icons.edit_rounded,
@@ -320,7 +323,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                     bottom: R.pad(context, 12),
                   ),
                   child: Text(
-                    'SECURITY • READ ONLY',
+                    l10n.securityReadOnly,
                     style: TextStyle(
                       color: const Color(0xFF94A3B8),
                       fontSize: R.sp(context, 11),
@@ -354,7 +357,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                       icon: Icons.phone_rounded,
                       iconColor: const Color(0xFF0EA5E9),
                       iconBgColor: const Color(0xFFF0F9FF),
-                      label: 'PHONE NUMBER',
+                      label: l10n.phone.toUpperCase(),
                       value: user.phone,
                       onTap: null, // Read-only
                       trailingIcon: Icons.lock_outline_rounded,
@@ -365,7 +368,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                       icon: Icons.email_outlined,
                       iconColor: const Color(0xFF0EA5E9),
                       iconBgColor: const Color(0xFFF0F9FF),
-                      label: 'EMAIL',
+                      label: l10n.email.toUpperCase(),
                       value: user.email,
                       onTap: null, // Read-only
                       trailingIcon: Icons.lock_outline_rounded,
@@ -400,7 +403,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           ),
                         )
                       : Text(
-                          'Save Changes',
+                          l10n.saveChanges,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: R.sp(context, 16),

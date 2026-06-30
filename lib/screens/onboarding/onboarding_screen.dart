@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
+import '../../core/localization/app_localizations.dart';
 import '../main/main_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -46,17 +47,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Dynamic data for the 2 slides in pure English
+    final l10n = AppLocalizations.of(context);
     final List<Map<String, dynamic>> _slides = [
       {
-        'tag': 'WELCOME',
-        'title': 'Welcome to\nBuy SAWA 👋',
-        'desc': 'Discover a smarter way to shop. Join our community and experience seamless group buying like never before.',
+        'tag': l10n.onboarding1Tag,
+        'title': l10n.onboarding1Title,
+        'desc': l10n.onboarding1Desc,
       },
       {
-        'tag': 'APP FEATURES',
-        'title': 'Shop, Share,\nSave More',
-        'desc': '✨ Group Deals with friends\n🚚 Fast & Secure Delivery\n🛡️ Safe & Easy Payments',
+        'tag': l10n.onboarding2Tag,
+        'title': l10n.onboarding2Title,
+        'desc': l10n.onboarding2Desc,
       },
     ];
 
@@ -82,9 +83,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: Colors.white.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
-                            'Skip',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.skip,
+                            style: const TextStyle(
                               color: Color(0xFF475569),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -231,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _currentIndex == 1 ? 'Start Shopping' : 'Next',
+                                _currentIndex == 1 ? l10n.startShopping : l10n.next,
                                 style: TextStyle(
                                   color: _currentIndex == 1 ? const Color(0xFF0F172A) : Colors.white,
                                   fontSize: 18,
@@ -298,12 +299,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Positioned(
               top: 40,
               right: 30,
-              child: _buildPill('Welcome!', Colors.white, textColor: AppColors.primary),
+              child: _buildPill('Buy SAWA', Colors.white, textColor: AppColors.primary),
             ),
             Positioned(
               bottom: 40,
               left: 20,
-              child: _buildPill('Join Us', AppColors.primary, textColor: Colors.white),
+              child: _buildPill('VIP', AppColors.primary, textColor: Colors.white),
             ),
           ],
         ),

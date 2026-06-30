@@ -13,6 +13,7 @@ import '../../widgets/auth_bottom_sheet.dart';
 import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
+import '../../core/localization/app_localizations.dart';
 
 //Mock specs per product category
 Map<String, String> _specsFor(ProductModel p) {
@@ -154,6 +155,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final product = widget.product;
     final specs = _specsFor(product);
+    final l10n = AppLocalizations.of(context);
     final discountPct = product.originalPrice != null
         ? (((product.originalPrice! - product.price) / product.originalPrice!) *
                   100)
@@ -312,7 +314,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         SizedBox(height: R.pad(context, 22)),
 
                         // Product Details
-                        _SectionTitle(title: 'Product Details'),
+                        _SectionTitle(title: l10n.productDetails),
                         SizedBox(height: R.pad(context, 10)),
                         Text(
                           product.description,
@@ -326,7 +328,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         SizedBox(height: R.pad(context, 24)),
 
                         // Specifications
-                        _SectionTitle(title: 'Specifications'),
+                        _SectionTitle(title: l10n.specifications),
                         SizedBox(height: R.pad(context, 10)),
                         _SpecsTable(
                           specs: specs,
@@ -338,7 +340,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           GestureDetector(
                             onTap: () => setState(() => _specsExpanded = true),
                             child: Text(
-                              'View all technical specifications →',
+                              l10n.viewAllSpecs,
                               style: TextStyle(
                                 fontSize: R.sp(context, 12),
                                 color: _teal,

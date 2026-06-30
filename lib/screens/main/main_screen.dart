@@ -29,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onNavTap(int index) async {
     final auth = context.read<AuthProvider>();
-    // Only Wallet (3) requires login — Profile (4) handles guest state internally
-    if (index == 3 && auth.isGuest) {
+    // Deals (2) and Wallet (3) require login — Profile (4) handles guest state internally
+    if ((index == 2 || index == 3) && auth.isGuest) {
       await AuthBottomSheet.show(context);
       if (!mounted) return;
       if (!context.read<AuthProvider>().isGuest) {

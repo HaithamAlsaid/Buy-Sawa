@@ -164,6 +164,7 @@ class _DealsScreenState extends State<DealsScreen> {
   @override
   Widget build(BuildContext context) {
     final groupProvider = context.watch<GroupBuyProvider>();
+    
     final allGroups = groupProvider.myGroups;
     final activeCount = allGroups.where((g) => g.isActive).length;
     final expiredCount = allGroups.length - activeCount;
