@@ -16,7 +16,7 @@ class AppLocalizations {
       _translations['en']![key] ??
       key;
 
-  // ─── General ────────────────────────────────────────────────
+  //General 
   String get appName => 'BuySawa';
   String get ok => _t('ok');
   String get cancel => _t('cancel');
@@ -171,7 +171,7 @@ class AppLocalizations {
   // TRANSLATIONS MAP
   // ════════════════════════════════════════════════════════════
   static const Map<String, Map<String, String>> _translations = {
-    // ──── ENGLISH ────
+    //ENGLISH 
     'en': {
       'ok': 'OK',
       'cancel': 'Cancel',
