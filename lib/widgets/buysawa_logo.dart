@@ -86,7 +86,7 @@ class _FallbackLogo extends StatelessWidget {
       ),
       child: Icon(
         Icons.swap_calls_rounded,
-        color: const Color(0xFF1BA8A0),
+        color: const Color(0xFF094B43),
         size: size * 0.55,
       ),
     );

@@ -80,8 +80,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     borderRadius: BorderRadius.circular(R.r(context, 20)),
                     gradient: const LinearGradient(
                       colors: [
-                        Color.fromARGB(255, 206, 223, 231),
-                        Color.fromARGB(255, 160, 191, 239),
+                        Color(0xFFD6E8E4),
+                        Color(0xFFADD0C9),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -133,7 +133,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                           decoration: BoxDecoration(
                             color: _isCopied
                                 ? AppColors.success
-                                : const Color(0xFF247D8F),
+                                : AppColors.primary,
                             borderRadius: BorderRadius.circular(R.r(context, 20)),
                           ),
                           child: Row(
@@ -331,12 +331,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(
-                      255,
-                      39,
-                      120,
-                      149,
-                    ), // Teal primary
+                    backgroundColor: AppColors.primary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(R.r(context, 16)),

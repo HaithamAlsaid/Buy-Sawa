@@ -288,7 +288,7 @@ class _DealsScreenState extends State<DealsScreen> {
                         ),
                         child: const Icon(
                           Icons.add,
-                          color: Color.fromARGB(255, 17, 110, 109),
+                          color: Color(0xFF094B43),
                           size: 25,
                         ),
                       ),
@@ -364,7 +364,7 @@ class _DealsScreenState extends State<DealsScreen> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isSelected ? const Color(0xFF00A9A5) : Colors.transparent,
+              color: isSelected ? const Color(0xFF094B43) : Colors.transparent,
               width: 3,
             ),
           ),
@@ -376,7 +376,7 @@ class _DealsScreenState extends State<DealsScreen> {
                 Icons.grid_view_rounded,
                 size: 16,
                 color: isSelected
-                    ? const Color(0xFF00A9A5)
+                    ? const Color(0xFF094B43)
                     : const Color(0xFF64748B),
               ),
               const SizedBox(width: 6),
@@ -397,7 +397,7 @@ class _DealsScreenState extends State<DealsScreen> {
                 fontSize: 15,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF00A9A5)
+                    ? const Color(0xFF094B43)
                     : const Color(0xFF64748B),
               ),
             ),

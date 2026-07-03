@@ -18,7 +18,7 @@ class CategoryModel {
 
 final List<CategoryModel> mockCategories = [
   CategoryModel(id: 'c1', name: 'Electronics', icon: Icons.phone_android_rounded,
-      iconColor: const Color(0xFF1BA8A0), bgColor: const Color(0xFFE8F7F6)),
+      iconColor: const Color(0xFF094B43), bgColor: const Color(0xFFE8F7F6)),
   CategoryModel(id: 'c2', name: 'Shoes', icon: Icons.directions_run_rounded,
       iconColor: const Color(0xFFF5A623), bgColor: const Color(0xFFFFF4E0)),
   CategoryModel(id: 'c3', name: 'Accessories', icon: Icons.shopping_bag_rounded,
@@ -32,7 +32,7 @@ final List<CategoryModel> mockCategories = [
   CategoryModel(id: 'c7', name: 'Women', icon: Icons.auto_awesome_rounded,
       iconColor: const Color(0xFFE91E8C), bgColor: const Color(0xFFFCE4F1)),
   CategoryModel(id: 'c8', name: 'Audio', icon: Icons.headphones_rounded,
-      iconColor: const Color(0xFF1BA8A0), bgColor: const Color(0xFFE8F7F6)),
+      iconColor: const Color(0xFF094B43), bgColor: const Color(0xFFE8F7F6)),
   CategoryModel(id: 'c9', name: 'Laptops', icon: Icons.laptop_rounded,
       iconColor: const Color(0xFF5D6D7E), bgColor: const Color(0xFFEAECEE)),
   CategoryModel(id: 'c10', name: 'Cameras', icon: Icons.camera_alt_rounded,

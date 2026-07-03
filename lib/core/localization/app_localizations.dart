@@ -317,7 +317,7 @@ class AppLocalizations {
       'phone': 'رقم الموبايل',
       'referralCode': 'كود الدعوة (اختياري)',
       'forgotPassword': 'نسيت كلمة السر؟',
-      'continueWithGoogle': 'كمل مع Google',
+      'continueWithGoogle': 'كمل مع جوجل',
       'dontHaveAccount': 'ما عندك حساب؟',
       'createAccount': 'سجل حساب',
       'alreadyHaveAccount': 'عندك حساب؟',

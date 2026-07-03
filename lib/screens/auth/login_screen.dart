@@ -61,8 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color topTeal = Color.fromARGB(255, 50, 158, 208);
-    const Color bottomTeal = Color.fromARGB(255, 42, 126, 185);
+    const Color topTeal = Color(0xFF156E63);
+    const Color bottomTeal = Color(0xFF094B43);
     const Color orangeColor = Color(0xFFF5A623);
 
     final screenH = R.screenH(context);
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: R.pad(context, 220),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color.fromARGB(255, 43, 184, 184).withOpacity(0.35),
+                color: const Color(0xFF094B43).withOpacity(0.35),
               ),
             ),
           ),
@@ -308,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                   fontSize: R.sp(context, 13),
                                   fontWeight: FontWeight.w700,
-                                  color: const Color.fromARGB(255, 57, 149, 210),
+                                  color: const Color(0xFF094B43),
                                 ),
                               ),
                             ),
@@ -322,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ElevatedButton(
                               onPressed: _isFormValid && !_loading ? _login : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 73, 190, 226),
+                                backgroundColor: const Color(0xFF094B43),
                                 disabledBackgroundColor: const Color(0xFFCBD5E1),
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
@@ -469,7 +469,7 @@ class _LoginScreenState extends State<LoginScreen> {
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(R.r(context, 12)),
           borderSide:
-              const BorderSide(color: Color(0xFF00A9A5), width: 1.5)),
+              const BorderSide(color: Color(0xFF094B43), width: 1.5)),
     );
   }
 }

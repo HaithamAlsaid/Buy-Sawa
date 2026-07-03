@@ -23,7 +23,7 @@ class WalletScreen extends StatelessWidget {
             // Teal Background
             Container(
               height: R.pad(context, 220),
-              color: const Color.fromARGB(255, 39, 120, 149),
+              color: const Color(0xFF094B43),
             ),
             SafeArea(
               bottom: false,
@@ -176,7 +176,7 @@ class WalletScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: R.sp(context, 14),
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF00A9A5),
+                            color: const Color(0xFF094B43),
                           ),
                         ),
                       ],

@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 280,
                 opacity: 0.05,
-                color: const Color(0xFF00A9A5),
+                color: const Color(0xFF094B43),
               ),
             ),
             Positioned(
@@ -89,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 110,
                 opacity: 0.05,
-                color: const Color(0xFF00A9A5),
+                color: const Color(0xFF094B43),
               ),
             ),
             Positioned(
@@ -98,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 320,
                 opacity: 0.04,
-                color: const Color(0xFF00A9A5),
+                color: const Color(0xFF094B43),
               ),
             ),
             Positioned(

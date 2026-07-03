@@ -60,7 +60,7 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  static const _teal = Color(0xFF00A9A5);
+  static const _teal = Color(0xFF094B43);
 
   bool _addedToCart = false;
   bool _startingGroup = false;
@@ -567,7 +567,7 @@ class _HeroSectionState extends State<_HeroSection> {
                       : R.pad(context, 6),
                   decoration: BoxDecoration(
                     color: _currentIndex == index
-                        ? const Color(0xFF00A9A5)
+                        ? const Color(0xFF094B43)
                         : const Color(0xFFCBD5E1),
                     borderRadius: BorderRadius.circular(R.r(context, 3)),
                   ),
@@ -605,7 +605,7 @@ class _BadgeRatingRow extends StatelessWidget {
           child: Text(
             'Featured',
             style: TextStyle(
-              color: const Color(0xFF00A9A5),
+              color: const Color(0xFF094B43),
               fontSize: R.sp(context, 11),
               fontWeight: FontWeight.w800,
             ),
@@ -660,7 +660,7 @@ class _PriceRow extends StatelessWidget {
           style: TextStyle(
             fontSize: R.sp(context, 28),
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF00A9A5),
+            color: const Color(0xFF094B43),
           ),
         ),
         Padding(
@@ -743,7 +743,7 @@ class _SizeSelector extends StatelessWidget {
               'Size Guide',
               style: TextStyle(
                 fontSize: R.sp(context, 12),
-                color: const Color(0xFF00A9A5),
+                color: const Color(0xFF094B43),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -763,12 +763,12 @@ class _SizeSelector extends StatelessWidget {
                   height: R.pad(context, 40),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFF00A9A5)
+                        ? const Color(0xFF094B43)
                         : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(R.r(context, 12)),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF00A9A5)
+                          ? const Color(0xFF094B43)
                           : const Color(0xFFE2E8F0),
                       width: 1.5,
                     ),
@@ -836,7 +836,7 @@ class _SpecsTable extends StatelessWidget {
                   right: R.pad(context, 10),
                 ),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF00A9A5),
+                  color: Color(0xFF094B43),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -926,7 +926,7 @@ class _BottomBar extends StatelessWidget {
                 side: BorderSide(
                   color: addedToCart
                       ? AppColors.success
-                      : const Color(0xFF00A9A5),
+                      : const Color(0xFF094B43),
                   width: 1.5,
                 ),
                 shape: RoundedRectangleBorder(
@@ -938,7 +938,7 @@ class _BottomBar extends StatelessWidget {
                 style: TextStyle(
                   color: addedToCart
                       ? AppColors.success
-                      : const Color(0xFF00A9A5),
+                      : const Color(0xFF094B43),
                   fontWeight: FontWeight.w800,
                   fontSize: R.sp(context, 14),
                 ),
@@ -953,7 +953,7 @@ class _BottomBar extends StatelessWidget {
               onPressed: startingGroup ? null : onGroupBuy,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: R.pad(context, 15)),
-                backgroundColor: const Color(0xFF00A9A5),
+                backgroundColor: const Color(0xFF094B43),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(R.r(context, 16)),

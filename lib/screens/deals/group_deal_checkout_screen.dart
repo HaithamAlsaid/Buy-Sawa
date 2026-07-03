@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../widgets/payment_method_sheet.dart';
 
 class GroupDealCheckoutScreen extends StatelessWidget {
   const GroupDealCheckoutScreen({super.key});
@@ -362,7 +363,16 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const PaymentMethodSheet(
+                        totalAmount: 1299,
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF5A623), // Solid Orange
                     elevation: 0,

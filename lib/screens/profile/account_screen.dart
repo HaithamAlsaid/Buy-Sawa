@@ -49,7 +49,7 @@ class _GuestProfileView extends StatelessWidget {
                   R.pad(context, 32),
                 ),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 39, 120, 149),
+                  color: const Color(0xFF094B43),
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(R.r(context, 32)),
                   ),
@@ -375,7 +375,7 @@ class _LoggedInProfileView extends StatelessWidget {
                   R.pad(context, 32),
                 ),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 39, 120, 149),
+                  color: const Color(0xFF094B43),
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(R.r(context, 32)),
                   ),
@@ -493,7 +493,7 @@ class _LoggedInProfileView extends StatelessWidget {
                           children: [
                             _GuestMenuItem(
                               icon: Icons.person_outline_rounded,
-                              iconColor: const Color(0xFF00A2B1),
+                              iconColor: const Color(0xFF094B43),
                               iconBgColor: const Color(0xFFE8F7F6),
                               label: 'Profile',
                               onTap: () {

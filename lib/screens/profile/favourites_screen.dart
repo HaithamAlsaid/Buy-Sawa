@@ -119,7 +119,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                 R.pad(context, 28),
               ),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 39, 120, 149),
+                color: const Color(0xFF094B43),
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(R.r(context, 32)),
                 ),
@@ -405,7 +405,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                               Text(
                                                 priceFormatted,
                                                 style: TextStyle(
-                                                  color: const Color(0xFF00A2B1),
+                                                  color: const Color(0xFF094B43),
                                                   fontSize: R.sp(context, 16),
                                                   fontWeight: FontWeight.w800,
                                                 ),

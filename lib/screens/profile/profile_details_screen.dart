@@ -243,7 +243,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                         width: R.pad(context, 32),
                         height: R.pad(context, 32),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00A2B1), // Teal edit color
+                          color: const Color(0xFF094B43), // Teal edit color
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white,
@@ -287,25 +287,25 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                     // Full Name Row
                     _InfoEditRow(
                       icon: Icons.person_outline_rounded,
-                      iconColor: const Color(0xFF00A2B1),
+                      iconColor: const Color(0xFF094B43),
                       iconBgColor: const Color(0xFFE8F7F6),
                       label: l10n.fullName.toUpperCase(),
                       value: _nameCtrl.text,
                       onTap: _editNameDialog,
                       trailingIcon: Icons.edit_rounded,
-                      trailingColor: const Color(0xFF00A2B1),
+                      trailingColor: const Color(0xFF094B43),
                     ),
                     const Divider(height: 1, color: Color(0xFFF1F5F9)),
                     // Birthdate Row
                     _InfoEditRow(
                       icon: Icons.calendar_today_outlined,
-                      iconColor: const Color(0xFF00A2B1),
+                      iconColor: const Color(0xFF094B43),
                       iconBgColor: const Color(0xFFE8F7F6),
                       label: l10n.birthdate.toUpperCase(),
                       value: _birthdate.isEmpty ? 'Not Set' : _birthdate,
                       onTap: _selectBirthdate,
                       trailingIcon: Icons.edit_rounded,
-                      trailingColor: const Color(0xFF00A2B1),
+                      trailingColor: const Color(0xFF094B43),
                       extraTrailingIcon: Icons.calendar_month_outlined,
                     ),
                   ],
@@ -387,7 +387,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                 child: ElevatedButton(
                   onPressed: _saving ? null : _saveChanges,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00A2B1), // Teal
+                    backgroundColor: const Color(0xFF094B43), // Teal
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(R.r(context, 16)),

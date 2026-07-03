@@ -49,7 +49,7 @@ final _mockNotifs = [
     time: '5h ago',
     icon: Icons.local_shipping_rounded,
     iconBg: const Color(0xFFE8F5E9),
-    iconColor: const Color(0xFF1BA8A0),
+    iconColor: const Color(0xFF094B43),
     isUnread: true,
   ),
   _NotifItem(

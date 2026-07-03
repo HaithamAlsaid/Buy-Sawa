@@ -31,8 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
         tag: l10n.featured,
         title: l10n.groupDeal,
         subtitle: l10n.startGroupSubtitle,
-        color1: const Color.fromARGB(255, 39, 120, 149),
-        color2: const Color.fromARGB(255, 39, 120, 149),
+        color1: const Color(0xFF094B43),
+        color2: const Color(0xFF094B43),
       ),
       _BannerData(
         tag: 'NEW',
