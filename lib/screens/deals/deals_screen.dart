@@ -71,7 +71,7 @@ class _DealsScreenState extends State<DealsScreen> {
     } else {
       messenger.showSnackBar(
         SnackBar(
-          content: Text('Group code "$code" not found or expired.'),
+          content: Text(AppLocalizations.of(context).groupCodeInvalid(code)),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -221,18 +221,20 @@ class _DealsScreenState extends State<DealsScreen> {
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
+                  // ignore: deprecated_member_use
                   border: Border.all(color: Colors.white.withOpacity(0.4)),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add_rounded, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
+                    const Icon(Icons.add_rounded, color: Colors.white, size: 16),
+                    const SizedBox(width: 4),
                     Text(
-                      'Join',
-                      style: TextStyle(
+                      AppLocalizations.of(context).joinBtn,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -293,22 +295,22 @@ class _DealsScreenState extends State<DealsScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Start a new Group Buy',
-                              style: TextStyle(
+                              AppLocalizations.of(context).startGroupBuy,
+                              style: const TextStyle(
                                 color: Color(0xFF00757A), // Darker teal
                                 fontWeight: FontWeight.w800,
                                 fontSize: 16,
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Enjoy discounts with friends',
-                              style: TextStyle(
+                              AppLocalizations.of(context).enjoyDiscounts,
+                              style: const TextStyle(
                                 color: Color(0xFF64748B),
                                 fontSize: 13,
                               ),
@@ -330,11 +332,11 @@ class _DealsScreenState extends State<DealsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _buildTab(0, 'All Groups', null, allGroups.length),
+                _buildTab(0, AppLocalizations.of(context).allGroupsTab, null, allGroups.length),
                 const SizedBox(width: 16),
-                _buildTab(1, 'Active', AppColors.success, activeCount),
+                _buildTab(1, AppLocalizations.of(context).activeTab(activeCount), AppColors.success, activeCount),
                 const SizedBox(width: 16),
-                _buildTab(2, 'Expired', AppColors.error, expiredCount),
+                _buildTab(2, AppLocalizations.of(context).expiredTab(expiredCount), AppColors.error, expiredCount),
               ],
             ),
           ),
@@ -364,7 +366,7 @@ class _DealsScreenState extends State<DealsScreen> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isSelected ? const Color(0xFF094B43) : Colors.transparent,
+              color: isSelected ? AppColors.primary : Colors.transparent,
               width: 3,
             ),
           ),
@@ -376,7 +378,7 @@ class _DealsScreenState extends State<DealsScreen> {
                 Icons.grid_view_rounded,
                 size: 16,
                 color: isSelected
-                    ? const Color(0xFF094B43)
+                    ? AppColors.primary
                     : const Color(0xFF64748B),
               ),
               const SizedBox(width: 6),
@@ -392,12 +394,12 @@ class _DealsScreenState extends State<DealsScreen> {
               const SizedBox(width: 6),
             ],
             Text(
-              index == 0 ? title : '$title ($count)',
+              index == 0 ? title : title,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF094B43)
+                    ? AppColors.primary
                     : const Color(0xFF64748B),
               ),
             ),
@@ -460,7 +462,9 @@ class _DealsScreenState extends State<DealsScreen> {
                             Row(
                               children: [
                                 Text(
-                                  g.ownerName,
+                                  AppLocalizations.of(context).locale.languageCode == 'ar'
+                                      ? g.arabicOwnerName
+                                      : g.ownerName,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 15,
@@ -499,7 +503,7 @@ class _DealsScreenState extends State<DealsScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${g.memberCount} members',
+                                  '${g.memberCount} ${AppLocalizations.of(context).locale.languageCode == 'ar' ? 'أعضاء' : 'members'}',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xFF64748B),
@@ -533,7 +537,9 @@ class _DealsScreenState extends State<DealsScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        g.isActive ? 'ACTIVE' : 'EXPIRED',
+                                        g.isActive 
+                                            ? (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'نشط' : 'ACTIVE') 
+                                            : (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'منتهي' : 'EXPIRED'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w800,

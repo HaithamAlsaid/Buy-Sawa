@@ -45,6 +45,8 @@ class AppLocalizations {
   String get loginSubtitle => _t('loginSubtitle');
   String get browseAsGuest => _t('browseAsGuest');
   String get signInToUnlock => _t('signInToUnlock');
+  String get joinSawa => _t('joinSawa');
+  String get joinSawaSubtitle => _t('joinSawaSubtitle');
 
   // ─── Navigation ──────────────────────────────────────────────
   String get home => _t('home');
@@ -60,6 +62,7 @@ class AppLocalizations {
   String get trendingNow => _t('trendingNow');
   String get groupDeal => _t('groupDeal');
   String get addToCart => _t('addToCart');
+  String get addedToCart => _t('addedToCart');
   String get buyNow => _t('buyNow');
 
   // ─── Categories ──────────────────────────────────────────────
@@ -89,7 +92,7 @@ class AppLocalizations {
   String get today => _t('today');
   String get yesterday => _t('yesterday');
 
-  // ─── Profile / Account ───────────────────────────────────────
+  //Profile / Account
   String get account => _t('account');
   String get editProfile => _t('editProfile');
   String get helpCenter => _t('helpCenter');
@@ -97,18 +100,92 @@ class AppLocalizations {
   String get contactUs => _t('contactUs');
   String get language => _t('language');
   String get deleteAccount => _t('deleteAccount');
+  String get deleteAccountPermanent => _t('deleteAccountPermanent');
+  String get deleteAccountDesc => _t('deleteAccountDesc');
+  String get youWillLose => _t('youWillLose');
+  String walletBalanceLoss(String amount) => _t('walletBalanceLoss').replaceAll('{amount}', amount);
+  String get orderHistoryLoss => _t('orderHistoryLoss');
+  String get savedAddressesLoss => _t('savedAddressesLoss');
+  String get referralBonusLoss => _t('referralBonusLoss');
+  String get typeDeleteToConfirm => _t('typeDeleteToConfirm');
+  String get deleteText => _t('deleteText');
+  String get permanentlyDeleteAccount => _t('permanentlyDeleteAccount');
   String get birthdate => _t('birthdate');
   String get securityReadOnly => _t('securityReadOnly');
   String get saveChanges => _t('saveChanges');
   String get confirm => _t('confirm');
   String get loginToViewProfile => _t('loginToViewProfile');
   String get myFavourites => _t('myFavourites');
+  String get accountTitle => _t('accountTitle');
 
-  // ─── Language ────────────────────────────────────────────────
+  String get welcomeBackTitle => _t('welcomeBackTitle');
+  String get shareProductDesc => _t('shareProductDesc');
+  String get startGroupBuyDesc => _t('startGroupBuyDesc');
+  String get newBadge => _t('newBadge');
+  String get hotBadge => _t('hotBadge');
+  String get flashSale => _t('flashSale');
+  String get flashSaleDesc => _t('flashSaleDesc');
+  String get cashbackBadge => _t('cashbackBadge');
+  String get earnCashback => _t('earnCashback');
+  String get earnCashbackDesc => _t('earnCashbackDesc');
+
+  // ─── Group Buy & Checkout ──────────────────────────────────────────────
+  String get groupName => _t('groupName');
+  String get addProductsBtn => _t('addProductsBtn');
+  String get selectedProducts => _t('selectedProducts');
+  String get createGroupInvite => _t('createGroupInvite');
+  String get addItemsToPool => _t('addItemsToPool');
+  String get searchProductCode => _t('searchProductCode');
+  String get filterNew => _t('filterNew');
+  String get filterTopBrands => _t('filterTopBrands');
+  String get filterPriceLow => _t('filterPriceLow');
+  String get filterPriceHigh => _t('filterPriceHigh');
+  String get addBtn => _t('addBtn');
+  String get inviteCode => _t('inviteCode');
+  String get copy => _t('copy');
+  String get membersJoined => _t('membersJoined');
+  String get productsInGroup => _t('productsInGroup');
+  String get fullPrice => _t('fullPrice');
+  String get joinPayFullPrice => _t('joinPayFullPrice');
+  String get discountRefundNote => _t('discountRefundNote');
+  String get groupDealCheckout => _t('groupDealCheckout');
+  String get locked => _t('locked');
+  String qty(int count) => _t('qty').replaceAll('{qty}', count.toString());
+  String get lockedGroupDeal => _t('lockedGroupDeal');
+  String get groupDealNote => _t('groupDealNote');
+  String get cashbackCreditedAfter => _t('cashbackCreditedAfter');
+  String get totalFullPrice => _t('totalFullPrice');
+  String get secureLock => _t('secureLock');
+  String get payFullAndLock => _t('payFullAndLock');
+  String get choosePaymentMethod => _t('choosePaymentMethod');
+  String totalAmount(String amount) => _t('totalAmount').replaceAll('{amount}', amount);
+  String get popular => _t('popular');
+  String get payIn4Tabby => _t('payIn4Tabby');
+  String get buyNowPayLaterTamara => _t('buyNowPayLaterTamara');
+  String get instant => _t('instant');
+  String get creditDebitCard => _t('creditDebitCard');
+  String get cardsAccepted => _t('cardsAccepted');
+  String get selectPaymentMethod => _t('selectPaymentMethod');
+  String get securedBy => _t('securedBy');
+  String get joinBtn => _t('joinBtn');
+  String get enjoyDiscounts => _t('enjoyDiscounts');
+  String expiredTab(int count) => _t('expiredTab').replaceAll('{count}', count.toString());
+  String activeTab(int count) => _t('activeTab').replaceAll('{count}', count.toString());
+  String get allGroupsTab => _t('allGroupsTab');
+
+  // FAQs
+  String get faq1q => _t('faq1q');
+  String get faq2q => _t('faq2q');
+  String get faq3q => _t('faq3q');
+  String get faq4q => _t('faq4q');
+  String get faq5q => _t('faq5q');
+  String get faq6q => _t('faq6q');
+
+
   String get chooseLanguage => _t('chooseLanguage');
   String get languageSubtitle => _t('languageSubtitle');
 
-  // ─── Contact ─────────────────────────────────────────────────
+  //Contact 
   String get yourMessage => _t('yourMessage');
   String get messagePlaceholder => _t('messagePlaceholder');
   String get sendMessage => _t('sendMessage');
@@ -117,7 +194,7 @@ class AppLocalizations {
   String get emailUs => _t('emailUs');
   String get supportAvailable => _t('supportAvailable');
 
-  // ─── Referral ────────────────────────────────────────────────
+  // Referral 
   String get myReferralCode => _t('myReferralCode');
   String get referralSubtitle => _t('referralSubtitle');
   String get shareCode => _t('shareCode');
@@ -167,6 +244,20 @@ class AppLocalizations {
   String get onboarding3Tag => _t('onboarding3Tag');
   String get startShopping => _t('startShopping');
 
+  // ─── Messages / Snackbars ──────────────────────────────────────
+  String get changesSaved => _t('changesSaved');
+  String removedFromFav(String name) =>
+      _t('removedFromFav').replaceAll('{name}', name);
+  String get accountDeleted => _t('accountDeleted');
+  String get messageSent => _t('messageSent');
+  String groupCodeInvalid(String code) =>
+      _t('groupCodeInvalid').replaceAll('{code}', code);
+  String items(int count) => _t('items').replaceAll('{count}', count.toString());
+  String get noFavouritesYet => _t('noFavouritesYet');
+  String get loginToSend => _t('loginToSend');
+  String get aed => _t('aed');
+  String get colorDefaultSizeStandard => _t('colorDefaultSizeStandard');
+
   // ════════════════════════════════════════════════════════════
   // TRANSLATIONS MAP
   // ════════════════════════════════════════════════════════════
@@ -198,6 +289,8 @@ class AppLocalizations {
       'loginSubtitle': 'Login to unlock cashback, group deals & VIP perks',
       'browseAsGuest': 'Browse as Guest',
       'signInToUnlock': 'Sign in to unlock this feature',
+      'joinSawa': 'Join the SAWA squad 🎉',
+      'joinSawaSubtitle': 'Join Buy SAWA for exclusive group deals & cashback!',
       'home': 'Home',
       'categories': 'Categories',
       'deals': 'Deals',
@@ -209,6 +302,7 @@ class AppLocalizations {
       'trendingNow': 'Trending Now',
       'groupDeal': 'Group Deal',
       'addToCart': 'Add to Cart',
+      'addedToCart': 'added to cart',
       'buyNow': 'Buy Now',
       'categoriesCount': '13 categories',
       'myDeals': 'MY DEALS',
@@ -241,6 +335,16 @@ class AppLocalizations {
       'confirm': 'Confirm',
       'loginToViewProfile': 'Please login to view profile details.',
       'deleteAccount': 'Delete Account',
+      'deleteAccountPermanent': 'This action is permanent',
+      'deleteAccountDesc': 'Deleting your account will remove your profile, orders, wallet balance, and cashback rewards. This cannot be undone.',
+      'youWillLose': 'YOU WILL LOSE',
+      'walletBalanceLoss': '{amount} AED wallet balance',
+      'orderHistoryLoss': 'Order history and tracking',
+      'savedAddressesLoss': 'Saved addresses and payment methods',
+      'referralBonusLoss': 'Referral bonuses and VIP rank progress',
+      'typeDeleteToConfirm': 'TYPE "DELETE" TO CONFIRM',
+      'deleteText': 'DELETE',
+      'permanentlyDeleteAccount': 'Permanently Delete Account',
       'birthdate': 'BIRTHDATE',
       'securityReadOnly': 'SECURITY · READ ONLY',
       'saveChanges': 'Save Changes',
@@ -297,6 +401,75 @@ class AppLocalizations {
       'orderPlacedSuccessfully': 'Your order has been placed successfully!',
       'viewCart': 'View Cart',
       'reviewsAndComments': 'Reviews & Comments',
+      'changesSaved': 'Changes saved successfully!',
+      'removedFromFav': '{name} removed from favourites',
+      'accountDeleted': 'Account deleted successfully.',
+      'messageSent': 'Message sent! We\'ll get back to you soon.',
+      'groupCodeInvalid': 'Group code "{code}" not found or expired.',
+      'items': '{count} items',
+      'noFavouritesYet': 'No favourites yet',
+      'loginToSend': 'Login to send a message',
+      'aed': 'AED',
+      'colorDefaultSizeStandard': 'Color: Default | Size: Standard',
+      'accountTitle': 'ACCOUNT',
+
+      'shareProductDesc': 'Share this product and get cashback on purchases!',
+      'startGroupBuyDesc': 'Start a Group Buy with friends for a bigger discount.',
+      'newBadge': 'NEW',
+      'hotBadge': 'HOT',
+      'flashSale': 'Flash Sale',
+      'flashSaleDesc': 'Up to 40% off on selected items today',
+      'cashbackBadge': 'CASHBACK',
+      'earnCashback': 'Earn Cashback',
+      'earnCashbackDesc': 'Get cashback on every group purchase',
+      'groupName': 'GROUP NAME',
+      'addProductsBtn': 'Add Products +',
+      'selectedProducts': 'SELECTED PRODUCTS',
+      'createGroupInvite': 'Create Group & Get Invite Link',
+      'addItemsToPool': 'Add Items to Pool',
+      'searchProductCode': 'Search by Product Name or Code',
+      'filterNew': 'New',
+      'filterTopBrands': 'Top Brands',
+      'filterPriceLow': '↓ Price',
+      'filterPriceHigh': '↑ Price',
+      'addBtn': 'Add +',
+      'inviteCode': 'INVITE CODE',
+      'copy': 'Copy',
+      'membersJoined': 'MEMBERS JOINED',
+      'productsInGroup': 'PRODUCTS IN GROUP',
+      'fullPrice': 'Full Price',
+      'joinPayFullPrice': 'Join & Pay Full Price',
+      'discountRefundNote': 'Discount difference will be refunded to your Wallet once the member target is reached.',
+      'groupDealCheckout': 'Group Deal Checkout',
+      'locked': 'LOCKED',
+      'qty': 'Qty {qty}',
+      'lockedGroupDeal': 'Locked Group Deal',
+      'groupDealNote': 'Group deals cannot be modified. You will pay the original full price now. Once the group duration expires, your earned cashback discount will be credited to your Wallet.',
+      'cashbackCreditedAfter': 'CASHBACK CREDITED TO WALLET AFTER GROUP CLOSES',
+      'totalFullPrice': 'TOTAL • FULL PRICE',
+      'secureLock': 'SECURE LOCK',
+      'payFullAndLock': 'Pay Full Price & Lock Deal',
+      'choosePaymentMethod': 'Choose Payment Method',
+      'totalAmount': 'Total: {amount} AED',
+      'popular': 'POPULAR',
+      'payIn4Tabby': 'Pay in 4. No interest, no fees',
+      'buyNowPayLaterTamara': 'Buy Now, Pay Later in 3 splits',
+      'instant': 'INSTANT',
+      'creditDebitCard': 'Credit / Debit Card',
+      'cardsAccepted': 'Visa, Mastercard, AMEX accepted',
+      'selectPaymentMethod': 'Select a Payment Method',
+      'securedBy': 'Secured by 256-bit SSL encryption',
+      'joinBtn': 'Join +',
+      'enjoyDiscounts': 'Enjoy discounts with friends',
+      'expiredTab': 'Expired ({count})',
+      'activeTab': 'Active ({count})',
+      'allGroupsTab': 'All Groups',
+      'faq1q': '?What is Buy SAWA',
+      'faq2q': '?How do I join a Group Deal',
+      'faq3q': '?Is my payment information secure',
+      'faq4q': '?How long does delivery take',
+      'faq5q': '?Can I cancel my order',
+      'faq6q': '?What are SAWA Coins',
     },
 
     //ARABIC
@@ -304,125 +477,206 @@ class AppLocalizations {
       'ok': 'موافق',
       'cancel': 'إلغاء',
       'save': 'حفظ',
-      'search': 'دوّر على منتجات...',
+      'search': 'ابحث عن منتجات...',
       'seeAll': 'عرض الكل ›',
       'apply': 'تطبيق',
-      'logout': 'تسجيل خروج',
+      'logout': 'تسجيل الخروج',
       'version': 'باي ساوا · v1.0.0',
-      'login': 'دخول',
-      'register': 'سجل حساب',
-      'email': 'الإيميل',
-      'password': 'كلمة السر',
+      'login': 'تسجيل الدخول',
+      'register': 'إنشاء حساب',
+      'email': 'البريد الإلكتروني',
+      'password': 'كلمة المرور',
       'fullName': 'الاسم الكامل',
-      'phone': 'رقم الموبايل',
-      'referralCode': 'كود الدعوة (اختياري)',
-      'forgotPassword': 'نسيت كلمة السر؟',
-      'continueWithGoogle': 'كمل مع جوجل',
-      'dontHaveAccount': 'ما عندك حساب؟',
-      'createAccount': 'سجل حساب',
-      'alreadyHaveAccount': 'عندك حساب؟',
-      'welcomeBack': 'يا هلا فيك 👋',
-      'signInToContinue': 'سجل دخول عشان تكمل',
-      'loginSubtitle': 'سجل عشان تاخذ كاش باك وخصومات جماعية و VIP',
-      'browseAsGuest': 'تصفح كزائر',
-      'signInToUnlock': 'سجل دخول عشان تفتح هالميزة',
+      'phone': 'رقم الهاتف',
+      'referralCode': 'رمز الإحالة (اختياري)',
+      'forgotPassword': 'نسيت كلمة المرور؟',
+      'continueWithGoogle': 'المتابعة مع جوجل',
+      'dontHaveAccount': 'ليس لديك حساب؟',
+      'createAccount': 'إنشاء حساب',
+      'alreadyHaveAccount': 'هل لديك حساب بالفعل؟',
+      'welcomeBack': 'أهلاً بعودتك 👋',
+      'signInToContinue': 'سجّل دخولك للمتابعة',
+      'loginSubtitle': 'سجّل دخولك للحصول على المكافآت والعروض الجماعية ومزايا VIP',
+      'browseAsGuest': 'تصفح كضيف',
+      'signInToUnlock': 'سجّل دخولك لتفعيل هذه الميزة',
+      'joinSawa': 'انضم إلى عائلة ساوا 🎉',
+      'joinSawaSubtitle': 'انضم إلى باي ساوا للحصول على عروض جماعية حصرية واسترداد نقدي!',
       'home': 'الرئيسية',
       'categories': 'الأقسام',
       'deals': 'العروض',
       'wallet': 'المحفظة',
       'profile': 'حسابي',
-      'featured': 'مميز',
-      'shareAndEarn': 'شارك واربح كاش باك',
-      'shareEarnSubtitle': 'كل مشاركة تربحك لين 5%',
-      'trendingNow': 'الترند الحين',
-      'groupDeal': 'عرض جماعي',
-      'addToCart': 'ضف للسلة',
-      'buyNow': 'اشتر ألحين',
-      'categoriesCount': '13 قسم',
+      'featured': 'مميّز',
+      'shareAndEarn': 'شارك واكسب مكافأة',
+      'shareEarnSubtitle': 'كل مشاركة تُكسبك حتى 5%',
+      'trendingNow': 'الأكثر رواجاً',
+      'groupDeal': 'شراء جماعي',
+      'addToCart': 'أضف للسلة',
+      'addedToCart': 'تم الإضافة للسلة',
+      'buyNow': 'اشترِ الآن',
+      'categoriesCount': '13 قسماً',
       'myDeals': 'عروضي',
-      'activeGroupBuys': 'الشراء الجماعي الشغال',
-      'activeGroupBuysSubtitle': 'تابع كل مجموعة دخلت فيها أو سويتها.',
-      'startNewGroupBuy': 'ابدأ شراء جماعي جديد',
-      'startGroupSubtitle': 'تجمع ويا ربعك لخصم ',
-      'orJoinExisting': 'أو ادخل مجموعة موجودة',
-      'enterGroupCode': 'دخل كود المجموعة (مثل: GB-X7..)',
-      'joinGroup': 'ادخل المجموعة',
+      'activeGroupBuys': 'المشتريات الجماعية النشطة',
+      'activeGroupBuysSubtitle': 'تابع كل مجموعة انضممت إليها أو أنشأتها.',
+      'startNewGroupBuy': 'بدء شراء جماعي جديد',
+      'startGroupSubtitle': 'اجمع أصدقاءك للحصول على خصم ',
+      'orJoinExisting': 'أو انضم إلى مجموعة موجودة',
+      'enterGroupCode': 'أدخل رمز المجموعة (مثال: GB-X7..)',
+      'joinGroup': 'الانضمام إلى المجموعة',
       'members': 'أعضاء',
-      'active': 'شغال',
+      'active': 'نشط',
       'expired': 'منتهي',
       'myWallet': 'المحفظة',
-      'availableBalance': 'الرصيد المتوفر',
-      'transactionHistory': 'سجل العمليات',
-      'cashback': 'كاش باك',
-      'referralBonus': 'مكافأة دعوة',
-      'purchase': 'شراء',
-      'groupReward': 'مكافأة المجموعة',
+      'availableBalance': 'الرصيد المتاح',
+      'transactionHistory': 'سجل المعاملات',
+      'cashback': 'استرداد نقدي',
+      'referralBonus': 'مكافأة الإحالة',
+      'purchase': 'مشتريات',
+      'groupReward': 'مكافأة الشراء الجماعي',
       'today': 'اليوم',
-      'yesterday': 'البارحة',
+      'yesterday': 'أمس',
       'account': 'الحساب',
       'editProfile': 'حسابي',
       'helpCenter': 'مركز المساعدة',
       'faqs': 'الأسئلة الشائعة',
-      'contactUs': 'تواصل ويانا',
+      'contactUs': 'تواصل معنا',
       'language': 'اللغة',
       'myFavourites': 'المفضلة',
       'confirm': 'تأكيد',
       'loginToViewProfile': 'يرجى تسجيل الدخول لعرض تفاصيل الحساب.',
-      'deleteAccount': 'احذف الحساب',
+      'deleteAccount': 'حذف الحساب',
+      'deleteAccountPermanent': 'هذا الإجراء نهائي ولا يمكن التراجع عنه',
+      'deleteAccountDesc': 'سيؤدي حذف حسابك إلى إزالة ملفك الشخصي وطلباتك ورصيد محفظتك ومكافآت الاسترداد النقدي. لا يمكن التراجع عن هذا الإجراء.',
+      'youWillLose': 'سوف تفقد',
+      'walletBalanceLoss': 'رصيد محفظة بقيمة {amount} درهم',
+      'orderHistoryLoss': 'سجل الطلبات والتتبع',
+      'savedAddressesLoss': 'العناوين المحفوظة وطرق الدفع',
+      'referralBonusLoss': 'مكافآت الإحالة وتقدم مستوى VIP',
+      'typeDeleteToConfirm': 'اكتب "DELETE" للتأكيد',
+      'deleteText': 'DELETE',
+      'permanentlyDeleteAccount': 'حذف الحساب نهائياً',
       'birthdate': 'تاريخ الميلاد',
-      'securityReadOnly': 'الأمان · قراءة فقط',
+      'securityReadOnly': 'الأمان · للقراءة فقط',
       'saveChanges': 'حفظ التغييرات',
-      'chooseLanguage': 'اختار اللغة',
-      'languageSubtitle': 'التطبيق بيتغير فورا لاختيارك',
+      'chooseLanguage': 'اختر اللغة',
+      'languageSubtitle': 'سيتغير التطبيق فوراً وفق اختيارك',
       'yourMessage': 'رسالتك',
-      'messagePlaceholder': 'خبرنا كيف نقدر نساعدك اليوم...',
-      'sendMessage': 'طرش الرسالة',
-      'orReachDirectly': 'أو تواصل ويانا مباشرة',
+      'messagePlaceholder': 'أخبرنا كيف يمكننا مساعدتك اليوم...',
+      'sendMessage': 'إرسال الرسالة',
+      'orReachDirectly': 'أو تواصل معنا مباشرةً',
       'callUs': 'اتصل بنا',
-      'emailUs': 'راسلنا',
-      'supportAvailable': 'فريق الدعم متوفر 24/7',
-      'myReferralCode': 'كود الدعوة مالي',
-      'referralSubtitle': 'شارك كودك واربح 5% من كل شراء',
-      'shareCode': 'شارك كودي',
-      'totalEarned': 'مجموع الأرباح',
-      'friendsJoined': 'ربعك اللي دخلوا',
-      'signInRequired': 'لازم تسجل دخول',
-      'signInRequiredSubtitle': 'سجل حساب عشان تدخل السلة والمحفظة',
+      'emailUs': 'راسلنا عبر البريد',
+      'supportAvailable': 'فريق الدعم متاح على مدار الساعة',
+      'myReferralCode': 'رمز الإحالة الخاص بي',
+      'referralSubtitle': 'شارك رمزك واكسب 5% من كل عملية شراء',
+      'shareCode': 'مشاركة رمزي',
+      'totalEarned': 'إجمالي الأرباح',
+      'friendsJoined': 'الأصدقاء المنضمون',
+      'signInRequired': 'تسجيل الدخول مطلوب',
+      'signInRequiredSubtitle': 'أنشئ حساباً للوصول إلى السلة والمحفظة والعروض الجماعية',
       'reviews': 'تقييم',
       'description': 'الوصف',
-      'shareAndEarnCashback': 'شارك واربح 5% كاش باك',
-      'startGroupBuy': 'ابدأ شراء جماعي',
+      'shareAndEarnCashback': 'شارك واكسب 5% استرداداً نقدياً',
+      'startGroupBuy': 'بدء شراء جماعي',
       'off': 'خصم',
       'skip': 'تخطي',
       'next': 'التالي',
-      'getStarted': 'ابدأ التسوق',
-      'onboarding1Tag': 'يلّا نبدأ',
-      'onboarding1Title': 'مستعد تشتري\nمع ربعك؟',
+      'getStarted': 'ابدأ الآن',
+      'onboarding1Tag': 'هيّا نبدأ',
+      'onboarding1Title': 'مستعد للتسوق\nمع أصدقائك؟',
       'onboarding1Desc':
-          'انضم لآلاف المتسوقين الذكيين اللي يوفّرون ويتمتعون ويربحون كل يوم.',
+          'انضم إلى آلاف المتسوقين الأذكياء الذين يوفّرون ويستمتعون ويكسبون يومياً.',
       'onboarding2Tag': 'شراء جماعي',
-      'onboarding2Title': 'اتجمعوا واشتروا،\nوفّروا أكثر',
+      'onboarding2Title': 'تجمّعوا واشتروا،\nووفّروا أكثر',
       'onboarding2Desc':
-          'تجمّع ويا ربعك وعيلتك. كل ما زادت المجموعة، كل ما كبر الخصم للكل.',
+          'تجمّع مع أصدقائك وعائلتك. كلما كبرت المجموعة، كلما زاد الخصم للجميع.',
       'onboarding3Tag': 'سريع وآمن',
       'onboarding3Title': 'توصيل آمن\nوسريع',
-      'onboarding3Desc': 'استمتع بدفع آمن وتوصيل سريع لباب بيتك في كل طلب.',
+      'onboarding3Desc': 'استمتع بدفع آمن وتوصيل سريع إلى باب منزلك في كل طلب.',
       'startShopping': 'ابدأ التسوق',
       'productDetails': 'تفاصيل المنتج',
       'specifications': 'المواصفات',
-      'viewAllSpecs': 'عرض كل المواصفات التقنية ←',
-      'myCart': 'سلتي',
+      'viewAllSpecs': 'عرض جميع المواصفات التقنية ←',
+      'myCart': 'سلّتي',
       'subtotal': 'المجموع الفرعي',
       'shipping': 'الشحن',
       'total': 'الإجمالي',
-      'proceedToCheckout': 'متابعة للدفع',
-      'signInToCheckout': 'سجل دخول للدفع',
-      'yourCartIsEmpty': 'سلتك فاضية',
-      'continueShopping': 'كمل تسوق',
-      'orderPlaced': 'تم الطلب!',
+      'proceedToCheckout': 'المتابعة للدفع',
+      'signInToCheckout': 'سجّل دخولك للدفع',
+      'yourCartIsEmpty': 'سلّتك فارغة',
+      'continueShopping': 'مواصلة التسوق',
+      'orderPlaced': 'تم تقديم الطلب!',
       'orderPlacedSuccessfully': 'تم تسجيل طلبك بنجاح!',
       'viewCart': 'عرض السلة',
       'reviewsAndComments': 'التقييمات والتعليقات',
+      'changesSaved': 'تم حفظ التغييرات بنجاح!',
+      'removedFromFav': 'تمت إزالة {name} من المفضلة',
+      'accountDeleted': 'تم حذف الحساب بنجاح.',
+      'messageSent': 'تم إرسال رسالتك! سنرد عليك قريباً.',
+      'groupCodeInvalid': 'رمز المجموعة "{code}" غير موجود أو منتهي الصلاحية.',
+      'items': '{count} منتج',
+      'noFavouritesYet': 'لا توجد مفضلة بعد',
+      'loginToSend': 'سجّل دخولك لإرسال رسالة',
+      'aed': 'درهم',
+      'colorDefaultSizeStandard': 'اللون: افتراضي | المقاس: قياسي',
+      'accountTitle': 'الحساب',
+      'shareProductDesc': 'شارك هذا المنتج واحصل على كاش باك عند الشراء!',
+      'startGroupBuyDesc': 'ابدأ شراء جماعي مع أصدقائك للحصول على خصم أكبر.',
+      'newBadge': 'جديد',
+      'hotBadge': 'رائج',
+      'flashSale': 'تخفيضات سريعة',
+      'flashSaleDesc': 'خصم حتى 40٪ على سلع مختارة اليوم',
+      'cashbackBadge': 'كاش باك',
+      'earnCashback': 'اكسب كاش باك',
+      'earnCashbackDesc': 'احصل على كاش باك على كل عملية شراء جماعية',
+      'groupName': 'اسم المجموعة',
+      'addProductsBtn': 'إضافة منتجات +',
+      'selectedProducts': 'المنتجات المحددة',
+      'createGroupInvite': 'إنشاء المجموعة والحصول على رابط الدعوة',
+      'addItemsToPool': 'إضافة منتجات للمجموعة',
+      'searchProductCode': 'ابحث باسم المنتج أو الرمز',
+      'filterNew': 'جديد',
+      'filterTopBrands': 'أفضل الماركات',
+      'filterPriceLow': 'السعر ↓',
+      'filterPriceHigh': 'السعر ↑',
+      'addBtn': 'إضافة +',
+      'inviteCode': 'رمز الدعوة',
+      'copy': 'نسخ',
+      'membersJoined': 'الأعضاء المنضمون',
+      'productsInGroup': 'المنتجات في المجموعة',
+      'fullPrice': 'السعر الكامل',
+      'joinPayFullPrice': 'انضمام ودفع السعر الكامل',
+      'discountRefundNote': 'سيتم استرداد فرق الخصم إلى محفظتك بمجرد وصول المجموعة للعدد المطلوب.',
+      'groupDealCheckout': 'إتمام شراء المجموعة',
+      'locked': 'مقفل',
+      'qty': 'الكمية {qty}',
+      'lockedGroupDeal': 'عرض مجموعة مقفل',
+      'groupDealNote': 'لا يمكن تعديل عروض المجموعة. ستدفع السعر الأصلي الكامل الآن. بمجرد انتهاء مدة المجموعة، سيتم إضافة خصم الكاش باك إلى محفظتك.',
+      'cashbackCreditedAfter': 'يتم إضافة الكاش باك للمحفظة بعد إغلاق المجموعة',
+      'totalFullPrice': 'الإجمالي • السعر الكامل',
+      'secureLock': 'قفل آمن',
+      'payFullAndLock': 'دفع السعر الكامل وقفل العرض',
+      'choosePaymentMethod': 'اختر طريقة الدفع',
+      'totalAmount': 'الإجمالي: {amount} درهم',
+      'popular': 'شائع',
+      'payIn4Tabby': 'قسمها على 4. بدون فوائد أو رسوم',
+      'buyNowPayLaterTamara': 'اشتر الآن وادفع لاحقاً على 3 دفعات',
+      'instant': 'فوري',
+      'creditDebitCard': 'بطاقة ائتمان / مدى',
+      'cardsAccepted': 'نقبل فيزا، ماستركارد، وأمريكان إكسبريس',
+      'selectPaymentMethod': 'حدد طريقة الدفع',
+      'securedBy': 'مؤمن بتشفير SSL 256-bit',
+      'joinBtn': 'انضمام +',
+      'enjoyDiscounts': 'استمتع بخصومات مع أصدقائك',
+      'expiredTab': 'منتهية ({count})',
+      'activeTab': 'نشطة ({count})',
+      'allGroupsTab': 'كل المجموعات',
+      'faq1q': 'ما هو تطبيق باي ساوا؟',
+      'faq2q': 'كيف يمكنني الانضمام لعرض جماعي؟',
+      'faq3q': 'هل معلومات الدفع الخاصة بي آمنة؟',
+      'faq4q': 'كم يستغرق التوصيل؟',
+      'faq5q': 'هل يمكنني إلغاء طلبي؟',
+      'faq6q': 'ما هي عملات ساوا؟',
     },
   };
 }

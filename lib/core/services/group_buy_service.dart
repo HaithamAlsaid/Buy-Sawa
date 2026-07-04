@@ -79,7 +79,7 @@ class GroupBuyService {
       productId: productId,
       productName: productName,
       discountPercent: 15,
-      expiresAt: DateTime.now().add(const Duration(hours: 48)),
+      expiresAt: DateTime.now().add(const Duration(hours: 48)), arabicOwnerName: '', arabicProductName: '',
     );
   }
 }

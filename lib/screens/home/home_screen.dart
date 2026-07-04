@@ -31,22 +31,29 @@ class _HomeScreenState extends State<HomeScreen> {
         tag: l10n.featured,
         title: l10n.groupDeal,
         subtitle: l10n.startGroupSubtitle,
-        color1: const Color(0xFF094B43),
-        color2: const Color(0xFF094B43),
+        color1: AppColors.primary,
+        color2: AppColors.primaryDark,
       ),
       _BannerData(
-        tag: 'NEW',
+        tag: l10n.newBadge,
         title: l10n.shareAndEarn,
         subtitle: l10n.shareEarnSubtitle,
-        color1: const Color.fromARGB(255, 152, 224, 80),
-        color2: const Color.fromARGB(255, 86, 206, 156),
+        color1: AppColors.primary,
+        color2: AppColors.primaryDark,
       ),
       _BannerData(
-        tag: 'HOT',
-        title: 'Flash Sale',
-        subtitle: 'Up to 40% off on selected items today',
-        color1: const Color.fromARGB(255, 229, 200, 70),
-        color2: const Color.fromARGB(255, 221, 156, 241),
+        tag: l10n.hotBadge,
+        title: l10n.flashSale,
+        subtitle: l10n.flashSaleDesc,
+        color1: AppColors.primary,
+        color2: AppColors.primaryDark,
+      ),
+      _BannerData(
+        tag: l10n.cashbackBadge,
+        title: l10n.earnCashback,
+        subtitle: l10n.earnCashbackDesc,
+        color1: AppColors.primary,
+        color2: AppColors.primaryDark,
       ),
     ];
   }
@@ -514,36 +521,53 @@ class _CategoryChip extends StatelessWidget {
         );
       },
       child: Container(
-        width: 72,
+        width: 80,
         margin: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 62,
-              height: 62,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.07),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: Center(
-                child: Icon(
-                  category.icon,
-                  color: category.iconColor,
-                  size: 30,
-                ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: category.imagePath != null
+                    ? Image.asset(
+                        category.imagePath!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            category.icon,
+                            color: category.iconColor,
+                            size: 28,
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          category.icon,
+                          color: category.iconColor,
+                          size: 28,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              category.name,
+              AppLocalizations.of(context).locale.languageCode == 'ar' 
+                  ? category.arabicName 
+                  : category.name,
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,

@@ -17,7 +17,7 @@ class GroupBuyProvider extends ChangeNotifier {
         memberCount: g.memberCount + 1, maxMembers: g.maxMembers,
         isActive: g.isActive, productId: g.productId,
         productName: g.productName, discountPercent: g.discountPercent,
-        expiresAt: g.expiresAt,
+        expiresAt: g.expiresAt, arabicOwnerName: '', arabicProductName: '',
       );
       notifyListeners();
     }
@@ -33,7 +33,7 @@ class GroupBuyProvider extends ChangeNotifier {
         memberCount: g.memberCount + 1, maxMembers: g.maxMembers,
         isActive: g.isActive, productId: g.productId,
         productName: g.productName, discountPercent: g.discountPercent,
-        expiresAt: g.expiresAt,
+        expiresAt: g.expiresAt, arabicOwnerName: '', arabicProductName: '',
       );
       notifyListeners();
       return true;
@@ -53,6 +53,8 @@ class GroupBuyProvider extends ChangeNotifier {
       productName: productName,
       discountPercent: 15,
       expiresAt: DateTime.now().add(const Duration(hours: 48)),
+      arabicOwnerName: 'فريق الشراء',
+      arabicProductName: productName,
     );
     _groups.insert(0, newGroup);
     notifyListeners();

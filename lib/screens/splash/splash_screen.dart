@@ -1,3 +1,4 @@
+import 'package:buysawa/core/constants/app_colors.dart';
 import 'package:buysawa/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -80,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 280,
                 opacity: 0.05,
-                color: const Color(0xFF094B43),
+                color: AppColors.primary,
               ),
             ),
             Positioned(
@@ -89,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 110,
                 opacity: 0.05,
-                color: const Color(0xFF094B43),
+                color: AppColors.primary,
               ),
             ),
             Positioned(
@@ -98,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: _GlowBlob(
                 size: 320,
                 opacity: 0.04,
-                color: const Color(0xFF094B43),
+                color: AppColors.primary,
               ),
             ),
             Positioned(

@@ -49,7 +49,7 @@ class _CartScreenState extends State<CartScreen> {
           const Icon(Icons.check_circle_rounded,
               color: AppColors.success, size: 60),
           const SizedBox(height: 12),
-          Text('${l10n.orderPlacedSuccessfully}\n${l10n.total}: ${total.toInt()} AED',
+          Text('${l10n.orderPlacedSuccessfully}\n${l10n.total}: ${total.toInt()} ${l10n.aed}',
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textGray)),
         ]),
@@ -157,11 +157,11 @@ class _CartScreenState extends State<CartScreen> {
                         // Summary Rows
                         _SummaryRow(
                             label: l10n.subtotal,
-                            value: '${subtotal.toInt()} AED'),
+                            value: '${subtotal.toInt()} ${l10n.aed}'),
                         const SizedBox(height: 10),
                         _SummaryRow(
                             label: l10n.shipping,
-                            value: '${shipping.toInt()} AED'),
+                            value: '${shipping.toInt()} ${l10n.aed}'),
 
 
 
@@ -191,8 +191,8 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                const Text('AED',
-                                    style: TextStyle(
+                                Text(l10n.aed,
+                                    style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.primary)),
@@ -300,7 +300,9 @@ class _CartItemCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.product.name,
+                        AppLocalizations.of(context).locale.languageCode == 'ar'
+                            ? item.product.arabicName
+                            : item.product.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -328,7 +330,7 @@ class _CartItemCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Color: Default | Size: Standard',
+                  AppLocalizations.of(context).colorDefaultSizeStandard,
                   style: const TextStyle(
                       fontSize: 12, color: Color(0xFF9E9E9E)),
                 ),
@@ -344,9 +346,9 @@ class _CartItemCard extends StatelessWidget {
                         fontSize: 16,
                       ),
                     ),
-                    const Text(
-                      '  AED',
-                      style: TextStyle(
+                    Text(
+                      '  ${AppLocalizations.of(context).aed}',
+                      style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.primary,
                           fontWeight: FontWeight.w500),

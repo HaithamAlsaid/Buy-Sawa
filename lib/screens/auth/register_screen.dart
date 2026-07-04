@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import 'login_screen.dart';
@@ -56,9 +57,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (ok) {
       Navigator.pop(context);
     } else {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration failed. Please try again.'),
+        SnackBar(
+          content: Text(l10n.locale.languageCode == 'ar'
+              ? 'فشل التسجيل. يرجى المحاولة مرة أخرى.'
+              : 'Registration failed. Please try again.'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -105,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   Expanded(
                     child: Text(
-                      'Create Account',
+                      AppLocalizations.of(context).createAccount,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: R.sp(context, 16),
@@ -133,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     // Title and Subtitle
                     Text(
-                      'Join the SAWA squad 🎉',
+                      AppLocalizations.of(context).joinSawa,
                       style: TextStyle(
                         fontSize: R.sp(context, 24),
                         fontWeight: FontWeight.w900,
@@ -142,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: R.pad(context, 8)),
                     Text(
-                      'Join Buy SAWA for exclusive group deals & cashback!',
+                      AppLocalizations.of(context).joinSawaSubtitle,
                       style: TextStyle(
                         fontSize: R.sp(context, 13),
                         color: const Color(0xFF64748B),
@@ -178,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           children: [
                             // Full Name
                             Text(
-                              'FULL NAME',
+                              AppLocalizations.of(context).fullName.toUpperCase(),
                               style: _labelStyle(context).copyWith(
                                 fontSize: R.sp(context, 11),
                                 letterSpacing: 0.5,
@@ -198,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             SizedBox(height: R.pad(context, 16)),
 
                             // Email
-                            Text('Email Address', style: _labelStyle(context)),
+                            Text(AppLocalizations.of(context).email, style: _labelStyle(context)),
                             SizedBox(height: R.pad(context, 8)),
                             TextFormField(
                               controller: _emailCtrl,
@@ -213,7 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             SizedBox(height: R.pad(context, 16)),
 
                             // Phone
-                            Text('Mobile Number', style: _labelStyle(context)),
+                            Text(AppLocalizations.of(context).phone, style: _labelStyle(context)),
                             SizedBox(height: R.pad(context, 8)),
                             TextFormField(
                               controller: _phoneCtrl,
@@ -228,7 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             SizedBox(height: R.pad(context, 16)),
 
                             // Password
-                            Text('Password', style: _labelStyle(context)),
+                            Text(AppLocalizations.of(context).password, style: _labelStyle(context)),
                             SizedBox(height: R.pad(context, 8)),
                             TextFormField(
                               controller: _passCtrl,
@@ -288,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         ),
                                       )
                                     : Text(
-                                        'Sign Up',
+                                        AppLocalizations.of(context).register,
                                         style: TextStyle(
                                           fontSize: R.sp(context, 16),
                                           fontWeight: FontWeight.w800,
@@ -308,7 +312,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Already have an account? ',
+                          AppLocalizations.of(context).alreadyHaveAccount + ' ',
                           style: TextStyle(
                             color: const Color(0xFF64748B),
                             fontSize: R.sp(context, 13),
@@ -322,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           child: Text(
-                            'Login',
+                            AppLocalizations.of(context).login,
                             style: TextStyle(
                               color: orangeColor,
                               fontSize: R.sp(context, 13),
@@ -382,7 +386,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(R.r(context, 12)),
-        borderSide: const BorderSide(color: Color(0xFF094B43), width: 1.5),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
   }

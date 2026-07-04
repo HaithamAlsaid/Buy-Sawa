@@ -23,7 +23,7 @@ class WalletScreen extends StatelessWidget {
             // Teal Background
             Container(
               height: R.pad(context, 220),
-              color: const Color(0xFF094B43),
+              color: AppColors.primary,
             ),
             SafeArea(
               bottom: false,
@@ -131,7 +131,7 @@ class WalletScreen extends StatelessWidget {
                                               ),
                                             ),
                                             TextSpan(
-                                              text: ' AED',
+                                              text: ' ${AppLocalizations.of(context).aed}',
                                               style: TextStyle(
                                                 color: const Color(0xFF94A3B8),
                                                 fontSize: R.sp(context, 14),
@@ -176,7 +176,7 @@ class WalletScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: R.sp(context, 14),
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF094B43),
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -260,7 +260,9 @@ class _TransactionTile extends StatelessWidget {
     final timeStr = DateFormat('HH:mm').format(tx.date);
     final typeName = tx.type.toString().split('.').last;
     final formattedType = typeName[0].toUpperCase() + typeName.substring(1);
-    final subtitle = '$dayStr · $timeStr · $formattedType';
+    final subtitle = AppLocalizations.of(context).locale.languageCode == 'ar'
+        ? tx.arabicSubtitle
+        : '$dayStr · $timeStr · $formattedType';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -287,7 +289,9 @@ class _TransactionTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tx.title,
+                  AppLocalizations.of(context).locale.languageCode == 'ar'
+                      ? tx.arabicTitle
+                      : tx.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -318,9 +322,9 @@ class _TransactionTile extends StatelessWidget {
                     color: tx.isCredit ? AppColors.success : AppColors.textDark,
                   ),
                 ),
-                const TextSpan(
-                  text: 'AED',
-                  style: TextStyle(
+                TextSpan(
+                  text: AppLocalizations.of(context).aed,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 10,
                     color: Color(0xFF94A3B8),

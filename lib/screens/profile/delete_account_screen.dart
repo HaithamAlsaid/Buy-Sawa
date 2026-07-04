@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/wallet_provider.dart';
+import '../../core/localization/app_localizations.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -60,8 +61,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     Navigator.of(context).popUntil((route) => route.isFirst);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Account deleted successfully.'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context).accountDeleted),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
       ),
@@ -97,7 +98,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           ),
         ),
         title: Text(
-          'Delete Account',
+          AppLocalizations.of(context).deleteAccount,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: R.sp(context, 18),
@@ -148,7 +149,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'This action is permanent',
+                            AppLocalizations.of(context).deleteAccountPermanent,
                             style: TextStyle(
                               color: const Color(0xFF991B1B), // Dark red
                               fontSize: R.sp(context, 15),
@@ -157,7 +158,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                           ),
                           SizedBox(height: R.pad(context, 6)),
                           Text(
-                            'Deleting your account will remove your profile, orders, wallet balance, and cashback rewards. This cannot be undone.',
+                            AppLocalizations.of(context).deleteAccountDesc,
                             style: TextStyle(
                               color: const Color(0xFFB91C1C),
                               fontSize: R.sp(context, 13),
@@ -180,7 +181,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   bottom: R.pad(context, 12),
                 ),
                 child: Text(
-                  'YOU WILL LOSE',
+                  AppLocalizations.of(context).youWillLose,
                   style: TextStyle(
                     color: const Color(0xFF94A3B8),
                     fontSize: R.sp(context, 11),
@@ -211,13 +212,13 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 ),
                 child: Column(
                   children: [
-                    _LossItem(text: '$balanceFormatted AED wallet balance'),
+                    _LossItem(text: AppLocalizations.of(context).walletBalanceLoss(balanceFormatted)),
                     SizedBox(height: R.pad(context, 16)),
-                    const _LossItem(text: 'Order history and tracking'),
+                    _LossItem(text: AppLocalizations.of(context).orderHistoryLoss),
                     SizedBox(height: R.pad(context, 16)),
-                    const _LossItem(text: 'Saved addresses and payment methods'),
+                    _LossItem(text: AppLocalizations.of(context).savedAddressesLoss),
                     SizedBox(height: R.pad(context, 16)),
-                    const _LossItem(text: 'Referral bonuses and VIP rank progress'),
+                    _LossItem(text: AppLocalizations.of(context).referralBonusLoss),
                   ],
                 ),
               ),
@@ -231,7 +232,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   bottom: R.pad(context, 12),
                 ),
                 child: Text(
-                  'TYPE "DELETE" TO CONFIRM',
+                  AppLocalizations.of(context).typeDeleteToConfirm,
                   style: TextStyle(
                     color: const Color(0xFF94A3B8),
                     fontSize: R.sp(context, 11),
@@ -260,7 +261,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     color: const Color(0xFF0F172A),
                   ),
                   decoration: InputDecoration(
-                    hintText: 'DELETE',
+                    hintText: AppLocalizations.of(context).deleteText,
                     hintStyle: TextStyle(
                       color: const Color(0xFFCBD5E1),
                       fontSize: R.sp(context, 14),
@@ -292,7 +293,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     size: R.icon(context, 20),
                   ),
                   label: Text(
-                    'Permanently Delete Account',
+                    AppLocalizations.of(context).permanentlyDeleteAccount,
                     style: TextStyle(
                       color: _isDeleteEnabled ? const Color(0xFFEF4444) : const Color(0xFFFDA4AF),
                       fontSize: R.sp(context, 15),
@@ -309,7 +310,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Cancel',
+                    AppLocalizations.of(context).cancel,
                     style: TextStyle(
                       color: const Color(0xFF64748B),
                       fontSize: R.sp(context, 15),

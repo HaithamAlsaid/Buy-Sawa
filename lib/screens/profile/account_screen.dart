@@ -49,7 +49,7 @@ class _GuestProfileView extends StatelessWidget {
                   R.pad(context, 32),
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094B43),
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(R.r(context, 32)),
                   ),
@@ -180,7 +180,7 @@ class _GuestProfileView extends StatelessWidget {
                           bottom: R.pad(context, 12),
                         ),
                         child: Text(
-                          'ACCOUNT',
+                          AppLocalizations.of(context).accountTitle,
                           style: TextStyle(
                             color: const Color(0xFF94A3B8),
                             fontSize: R.sp(context, 12),
@@ -211,7 +211,7 @@ class _GuestProfileView extends StatelessWidget {
                               icon: Icons.help_outline_rounded,
                               iconColor: const Color(0xFF7C4DFF),
                               iconBgColor: const Color(0xFFF1EEFF),
-                              label: 'FAQs',
+                              label: AppLocalizations.of(context).faqs,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -226,7 +226,7 @@ class _GuestProfileView extends StatelessWidget {
                               icon: Icons.headset_mic_outlined,
                               iconColor: const Color(0xFFF97316),
                               iconBgColor: const Color(0xFFFFF7ED),
-                              label: 'Contact Us',
+                              label: AppLocalizations.of(context).contactUs,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -241,7 +241,7 @@ class _GuestProfileView extends StatelessWidget {
                               icon: Icons.favorite_border_rounded,
                               iconColor: const Color(0xFFF43F5E),
                               iconBgColor: const Color(0xFFFFF1F2),
-                              label: 'My Favourites',
+                              label: AppLocalizations.of(context).myFavourites,
                               onTap: () {
                                 AuthBottomSheet.show(context);
                               },
@@ -251,7 +251,7 @@ class _GuestProfileView extends StatelessWidget {
                               icon: Icons.language_rounded,
                               iconColor: const Color(0xFF0EA5E9),
                               iconBgColor: const Color(0xFFF0F9FF),
-                              label: 'Language',
+                              label: AppLocalizations.of(context).language,
                               onTap: () => LanguagePickerSheet.show(context),
                             ),
                           ],
@@ -375,7 +375,7 @@ class _LoggedInProfileView extends StatelessWidget {
                   R.pad(context, 32),
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF094B43),
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(R.r(context, 32)),
                   ),
@@ -493,9 +493,9 @@ class _LoggedInProfileView extends StatelessWidget {
                           children: [
                             _GuestMenuItem(
                               icon: Icons.person_outline_rounded,
-                              iconColor: const Color(0xFF094B43),
+                              iconColor: AppColors.primary,
                               iconBgColor: const Color(0xFFE8F7F6),
-                              label: 'Profile',
+                              label: AppLocalizations.of(context).profile,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -510,7 +510,7 @@ class _LoggedInProfileView extends StatelessWidget {
                               icon: Icons.help_outline_rounded,
                               iconColor: const Color(0xFF7C4DFF),
                               iconBgColor: const Color(0xFFF1EEFF),
-                              label: 'FAQs',
+                              label: AppLocalizations.of(context).faqs,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -525,7 +525,7 @@ class _LoggedInProfileView extends StatelessWidget {
                               icon: Icons.headset_mic_outlined,
                               iconColor: const Color(0xFFF97316),
                               iconBgColor: const Color(0xFFFFF7ED),
-                              label: 'Contact Us',
+                              label: AppLocalizations.of(context).contactUs,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -540,7 +540,7 @@ class _LoggedInProfileView extends StatelessWidget {
                               icon: Icons.favorite_border_rounded,
                               iconColor: const Color(0xFFF43F5E),
                               iconBgColor: const Color(0xFFFFF1F2),
-                              label: 'My Favourites',
+                              label: AppLocalizations.of(context).myFavourites,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -555,7 +555,7 @@ class _LoggedInProfileView extends StatelessWidget {
                               icon: Icons.language_rounded,
                               iconColor: const Color(0xFF0EA5E9),
                               iconBgColor: const Color(0xFFF0F9FF),
-                              label: 'Language',
+                              label: AppLocalizations.of(context).language,
                               onTap: () => LanguagePickerSheet.show(context),
                             ),
                             const Divider(height: 1, color: Color(0xFFF1F5F9)),
@@ -563,7 +563,7 @@ class _LoggedInProfileView extends StatelessWidget {
                               icon: Icons.delete_outline_rounded,
                               iconColor: const Color(0xFFEF4444),
                               iconBgColor: const Color(0xFFFFEEEF),
-                              label: 'Delete Account',
+                              label: AppLocalizations.of(context).deleteAccount,
                               onTap: () {
                                 Navigator.push(
                                   context,
@@ -600,7 +600,7 @@ class _LoggedInProfileView extends StatelessWidget {
                             size: R.icon(context, 18),
                           ),
                           label: Text(
-                            'Logout',
+                            AppLocalizations.of(context).logout,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: R.sp(context, 15),

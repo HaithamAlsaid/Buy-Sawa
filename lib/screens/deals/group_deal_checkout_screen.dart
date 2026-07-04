@@ -1,3 +1,4 @@
+import 'package:buysawa/core/localization/app_localizations.dart' show AppLocalizations;
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../widgets/payment_method_sheet.dart';
@@ -29,9 +30,9 @@ class GroupDealCheckoutScreen extends StatelessWidget {
             ),
           ),
         ),
-        title: const Text(
-          'Group Deal Checkout',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context).groupDealCheckout,
+          style: const TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -112,14 +113,14 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                                 color: const Color(0xFFFFF3E0),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 10),
-                                  SizedBox(width: 4),
+                                  const Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 10),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'LOCKED',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context).locked,
+                                    style: const TextStyle(
                                       color: Color(0xFFF5A623),
                                       fontWeight: FontWeight.w800,
                                       fontSize: 10,
@@ -145,7 +146,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 children: [
                                   TextSpan(
                                     text: '1,299 ',
@@ -156,7 +157,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'AED',
+                                    text: AppLocalizations.of(context).aed,
                                     style: TextStyle(
                                       color: Color(0xFF94A3B8),
                                       fontWeight: FontWeight.w600,
@@ -172,9 +173,9 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Text(
-                                'Qty 1',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context).qty(1),
+                                style: const TextStyle(
                                   color: Color(0xFF64748B),
                                   fontWeight: FontWeight.w700,
                                   fontSize: 11,
@@ -227,9 +228,9 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Locked Group Deal',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context).lockedGroupDeal,
+                          style: const TextStyle(
                             color: AppColors.textDark,
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
@@ -238,28 +239,28 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Group deals cannot be modified. You will pay the original full price now. Once the group duration expires, your earned cashback discount will be credited to your Wallet.',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context).groupDealNote,
+                      style: const TextStyle(
                         color: Color(0xFF64748B), // Slate 500
                         fontSize: 13,
                         height: 1.5,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Row(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.account_balance_wallet_outlined,
                           color: Color(0xFFF5A623),
                           size: 16,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'CASHBACK CREDITED TO WALLET AFTER GROUP CLOSES',
-                            style: TextStyle(
+                            AppLocalizations.of(context).cashbackCreditedAfter,
+                            style: const TextStyle(
                               color: Color(0xFFF5A623),
                               fontWeight: FontWeight.w800,
                               fontSize: 11,
@@ -300,9 +301,9 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'TOTAL • FULL PRICE',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).totalFullPrice,
+                        style: const TextStyle(
                           color: Color(0xFF94A3B8),
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -311,7 +312,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
                               text: '1,299 ',
@@ -322,7 +323,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: 'AED',
+                              text: AppLocalizations.of(context).aed,
                               style: TextStyle(
                                 color: Color(0xFF94A3B8),
                                 fontWeight: FontWeight.w600,
@@ -340,14 +341,14 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                       color: const Color(0xFFFFF3E0),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 12),
-                        SizedBox(width: 4),
+                        const Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 12),
+                        const SizedBox(width: 4),
                         Text(
-                          'SECURE LOCK',
-                          style: TextStyle(
+                          AppLocalizations.of(context).secureLock,
+                          style: const TextStyle(
                             color: Color(0xFFF5A623),
                             fontWeight: FontWeight.w900,
                             fontSize: 11,
@@ -380,9 +381,9 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Pay Full Price & Lock Deal',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context).payFullAndLock,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,

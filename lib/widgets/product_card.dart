@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
+import '../core/localization/app_localizations.dart';
 import '../core/utils/responsive.dart';
 import '../models/product_model.dart';
 import '../screens/products/product_detail_screen.dart';
@@ -67,7 +68,9 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
+                    AppLocalizations.of(context).locale.languageCode == 'ar'
+                        ? product.arabicName
+                        : product.name,
                     style: TextStyle(
                       fontSize: R.sp(context, 14),
                       fontWeight: FontWeight.w600,

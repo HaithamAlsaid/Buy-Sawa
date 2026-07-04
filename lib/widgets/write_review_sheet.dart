@@ -1,3 +1,4 @@
+import 'package:buysawa/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:buysawa/core/utils/responsive.dart';
 import 'package:buysawa/models/product_model.dart';
@@ -139,7 +140,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(R.r(context, 12)),
-                borderSide: const BorderSide(color: Color(0xFF094B43), width: 1.5),
+                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
               ),
             ),
           ),
@@ -149,7 +150,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
             child: ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF094B43),
+                backgroundColor: AppColors.primary,
                 padding: EdgeInsets.symmetric(vertical: R.pad(context, 16)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(R.r(context, 16)),

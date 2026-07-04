@@ -128,18 +128,35 @@ class _CategoryGridItem extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Center(
-                child: Icon(
-                  category.icon,
-                  color: category.iconColor,
-                  size: R.icon(context, 30),
-                ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(R.r(context, 18)),
+                child: category.imagePath != null
+                    ? Image.asset(
+                        category.imagePath!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            category.icon,
+                            color: category.iconColor,
+                            size: R.icon(context, 30),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          category.icon,
+                          color: category.iconColor,
+                          size: R.icon(context, 30),
+                        ),
+                      ),
               ),
             ),
           ),
           SizedBox(height: R.pad(context, 10)),
           Text(
-            category.name,
+            AppLocalizations.of(context).locale.languageCode == 'ar' 
+                ? category.arabicName 
+                : category.name,
             style: TextStyle(
               fontSize: R.sp(context, 12),
               fontWeight: FontWeight.w700,

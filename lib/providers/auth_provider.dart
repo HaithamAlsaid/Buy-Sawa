@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
       id: 'u1',
       fullName: 'هيثم الصيد',
       email: 'haitham@buysawa.app',
-      phone: '+971 50 123 4567',
+      phone: '01063286843',
       birthdate: '04 / 15 / 1992',
       referralCode: 'HAITHAM25',
       walletBalance: 150.00,

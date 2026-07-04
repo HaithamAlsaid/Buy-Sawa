@@ -60,7 +60,7 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  static const _teal = Color(0xFF094B43);
+  static const _teal = AppColors.primary;
 
   bool _addedToCart = false;
   bool _startingGroup = false;
@@ -89,7 +89,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                '${widget.product.name} added to cart',
+                '${AppLocalizations.of(context).locale.languageCode == 'ar' ? widget.product.arabicName : widget.product.name} ${AppLocalizations.of(context).addedToCart}',
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
@@ -224,7 +224,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         // Product name
                         Text(
-                          product.name,
+                          AppLocalizations.of(context).locale.languageCode == 'ar'
+                              ? product.arabicName
+                              : product.name,
                           style: TextStyle(
                             fontSize: R.sp(context, 22),
                             fontWeight: FontWeight.w900,
@@ -268,7 +270,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   SizedBox(width: R.pad(context, 6)),
                                   Expanded(
                                     child: Text(
-                                      'Share this product and get cashback on purchases!',
+                                      AppLocalizations.of(context).shareProductDesc,
                                       style: TextStyle(
                                         fontSize: R.sp(context, 12),
                                         fontWeight: FontWeight.w700,
@@ -288,7 +290,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   SizedBox(width: R.pad(context, 6)),
                                   Expanded(
                                     child: Text(
-                                      'Start a Group Buy with friends for a bigger discount.',
+                                      AppLocalizations.of(context).startGroupBuyDesc,
                                       style: TextStyle(
                                         fontSize: R.sp(context, 12),
                                         fontWeight: FontWeight.w700,
@@ -317,7 +319,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         _SectionTitle(title: l10n.productDetails),
                         SizedBox(height: R.pad(context, 10)),
                         Text(
-                          product.description,
+                          AppLocalizations.of(context).locale.languageCode == 'ar'
+                              ? product.arabicDescription
+                              : product.description,
                           style: TextStyle(
                             fontSize: R.sp(context, 13),
                             height: 1.65,
@@ -567,7 +571,7 @@ class _HeroSectionState extends State<_HeroSection> {
                       : R.pad(context, 6),
                   decoration: BoxDecoration(
                     color: _currentIndex == index
-                        ? const Color(0xFF094B43)
+                        ? AppColors.primary
                         : const Color(0xFFCBD5E1),
                     borderRadius: BorderRadius.circular(R.r(context, 3)),
                   ),
@@ -605,7 +609,7 @@ class _BadgeRatingRow extends StatelessWidget {
           child: Text(
             'Featured',
             style: TextStyle(
-              color: const Color(0xFF094B43),
+              color: AppColors.primary,
               fontSize: R.sp(context, 11),
               fontWeight: FontWeight.w800,
             ),
@@ -660,7 +664,7 @@ class _PriceRow extends StatelessWidget {
           style: TextStyle(
             fontSize: R.sp(context, 28),
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF094B43),
+            color: AppColors.primary,
           ),
         ),
         Padding(
@@ -743,7 +747,7 @@ class _SizeSelector extends StatelessWidget {
               'Size Guide',
               style: TextStyle(
                 fontSize: R.sp(context, 12),
-                color: const Color(0xFF094B43),
+                color: AppColors.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -763,12 +767,12 @@ class _SizeSelector extends StatelessWidget {
                   height: R.pad(context, 40),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFF094B43)
+                        ? AppColors.primary
                         : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(R.r(context, 12)),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF094B43)
+                          ? AppColors.primary
                           : const Color(0xFFE2E8F0),
                       width: 1.5,
                     ),
@@ -836,7 +840,7 @@ class _SpecsTable extends StatelessWidget {
                   right: R.pad(context, 10),
                 ),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF094B43),
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -926,7 +930,7 @@ class _BottomBar extends StatelessWidget {
                 side: BorderSide(
                   color: addedToCart
                       ? AppColors.success
-                      : const Color(0xFF094B43),
+                      : AppColors.primary,
                   width: 1.5,
                 ),
                 shape: RoundedRectangleBorder(
@@ -938,7 +942,7 @@ class _BottomBar extends StatelessWidget {
                 style: TextStyle(
                   color: addedToCart
                       ? AppColors.success
-                      : const Color(0xFF094B43),
+                      : AppColors.primary,
                   fontWeight: FontWeight.w800,
                   fontSize: R.sp(context, 14),
                 ),
@@ -953,7 +957,7 @@ class _BottomBar extends StatelessWidget {
               onPressed: startingGroup ? null : onGroupBuy,
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: R.pad(context, 15)),
-                backgroundColor: const Color(0xFF094B43),
+                backgroundColor: AppColors.primary,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(R.r(context, 16)),

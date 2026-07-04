@@ -1,6 +1,7 @@
+import 'package:buysawa/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import 'register_screen.dart';
@@ -39,9 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (ok) {
       Navigator.pop(context);
     } else {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid email or password'),
+        SnackBar(
+          content: Text(l10n.locale.languageCode == 'ar'
+              ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
+              : 'Invalid email or password'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -61,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color topTeal = Color(0xFF156E63);
-    const Color bottomTeal = Color(0xFF094B43);
+    const Color topTeal = Color.fromARGB(255, 50, 158, 208);
+    const Color bottomTeal = Color.fromARGB(255, 42, 126, 185);
     const Color orangeColor = Color(0xFFF5A623);
 
     final screenH = R.screenH(context);
@@ -104,12 +108,13 @@ class _LoginScreenState extends State<LoginScreen> {
               height: R.pad(context, 220),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF094B43).withOpacity(0.35),
+                // ignore: deprecated_member_use
+                color: const Color.fromARGB(255, 43, 184, 184).withOpacity(0.35),
               ),
             ),
           ),
 
-          // ── 3. Close button ───────────────────────────────
+          //3 Close button 
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -126,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: R.pad(context, 36),
                     height: R.pad(context, 36),
                     decoration: BoxDecoration(
+                      // ignore: deprecated_member_use
                       color: Colors.white.withOpacity(0.22),
                       shape: BoxShape.circle,
                     ),
@@ -137,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // ── 4. Header text ────────────────────────────────
+          //4. Header text 
           Positioned(
             top: 0,
             left: 0,
@@ -174,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: EdgeInsets.symmetric(
                           horizontal: R.pad(context, 48)),
                       child: Text(
-                        'Login to unlock cashback, group deals & VIP perks',
+                        AppLocalizations.of(context).loginSubtitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -190,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // ── 5. White card ─────────────────────────────────
+          //5. White card 
           Positioned(
             top: headerH - R.pad(context, 70),
             left: 0,
@@ -235,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Welcome back ',
+                                  text: '${AppLocalizations.of(context).welcomeBackTitle} ',
                                   style: TextStyle(
                                     fontSize: R.sp(context, 24),
                                     fontWeight: FontWeight.w900,
@@ -251,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           SizedBox(height: R.pad(context, 4)),
                           Text(
-                            'Sign in to continue',
+                            AppLocalizations.of(context).signInToContinue,
                             style: TextStyle(
                               fontSize: R.sp(context, 13),
                               color: const Color(0xFF64748B),
@@ -260,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: R.pad(context, 24)),
 
                           // Email
-                          Text('Email Address', style: _labelStyle(context)),
+                          Text(AppLocalizations.of(context).email, style: _labelStyle(context)),
                           SizedBox(height: R.pad(context, 8)),
                           TextFormField(
                             controller: _emailCtrl,
@@ -273,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: R.pad(context, 16)),
 
                           // Password
-                          Text('Password', style: _labelStyle(context)),
+                          Text(AppLocalizations.of(context).password, style: _labelStyle(context)),
                           SizedBox(height: R.pad(context, 8)),
                           TextFormField(
                             controller: _passCtrl,
@@ -304,11 +310,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: GestureDetector(
                               onTap: () {},
                               child: Text(
-                                'Forgot Password?',
+                                AppLocalizations.of(context).forgotPassword,
                                 style: TextStyle(
                                   fontSize: R.sp(context, 13),
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF094B43),
+                                  color: const Color.fromARGB(255, 57, 149, 210),
                                 ),
                               ),
                             ),
@@ -322,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ElevatedButton(
                               onPressed: _isFormValid && !_loading ? _login : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF094B43),
+                                backgroundColor: const Color.fromARGB(255, 73, 190, 226),
                                 disabledBackgroundColor: const Color(0xFFCBD5E1),
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
@@ -335,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: R.icon(context, 22),
                                       child: const CircularProgressIndicator(
                                           color: Colors.white, strokeWidth: 2.5))
-                                  : Text('Login',
+                                  : Text(AppLocalizations.of(context).login,
                                       style: TextStyle(
                                           fontSize: R.sp(context, 16),
                                           fontWeight: FontWeight.w800,
@@ -352,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Padding(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: R.pad(context, 14)),
-                                child: Text('OR',
+                                child: Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? 'أو' : 'OR',
                                     style: TextStyle(
                                         color: const Color(0xFF94A3B8),
                                         fontSize: R.sp(context, 11),
@@ -392,7 +398,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         size: R.icon(context, 28)),
                                   ),
                                   SizedBox(width: R.pad(context, 10)),
-                                  Text('Continue with Google',
+                                  Text(AppLocalizations.of(context).continueWithGoogle,
                                       style: TextStyle(
                                           fontSize: R.sp(context, 14),
                                           fontWeight: FontWeight.w700,
@@ -411,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an account? ",
+                      Text(AppLocalizations.of(context).dontHaveAccount + ' ',
                           style: TextStyle(
                               color: const Color(0xFF64748B),
                           fontSize: R.sp(context, 13))),
@@ -420,7 +426,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (_) => const RegisterScreen())),
-                        child: Text('Create Account',
+                        child: Text(AppLocalizations.of(context).createAccount,
                             style: TextStyle(
                                 color: orangeColor,
                                 fontSize: R.sp(context, 13),
@@ -469,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(R.r(context, 12)),
           borderSide:
-              const BorderSide(color: Color(0xFF094B43), width: 1.5)),
+              const BorderSide(color: AppColors.primary, width: 1.5)),
     );
   }
 }

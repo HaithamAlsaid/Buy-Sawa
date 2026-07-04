@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/localization/app_localizations.dart';
 
 class AddProductsBottomSheet extends StatefulWidget {
   const AddProductsBottomSheet({super.key});
@@ -56,9 +57,9 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Add Items to Pool',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).addItemsToPool,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: AppColors.textDark,
@@ -88,13 +89,13 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
                 color: const Color(0xFFF8FAFC), // Slate 50
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const TextField(
+              child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Search by Product Name or Code',
-                  hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 14), // Slate 400
-                  prefixIcon: Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 20),
+                  hintText: AppLocalizations.of(context).searchProductCode,
+                  hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14), // Slate 400
+                  prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 20),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),
@@ -106,13 +107,13 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                _buildFilterChip(0, 'Price ↑'),
+                _buildFilterChip(0, AppLocalizations.of(context).filterPriceHigh),
                 const SizedBox(width: 8),
-                _buildFilterChip(1, 'Price ↓'),
+                _buildFilterChip(1, AppLocalizations.of(context).filterPriceLow),
                 const SizedBox(width: 8),
-                _buildFilterChip(2, 'Top Brands'),
+                _buildFilterChip(2, AppLocalizations.of(context).filterTopBrands),
                 const SizedBox(width: 8),
-                _buildFilterChip(3, 'New'),
+                _buildFilterChip(3, AppLocalizations.of(context).filterNew),
               ],
             ),
           ),
@@ -168,7 +169,7 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
                             Row(
                               children: [
                                 Text(
-                                  '${product['price']} AED',
+                                  '${product['price']} ${AppLocalizations.of(context).aed}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w900,
                                     fontSize: 12,
@@ -215,7 +216,7 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
                               Icon((product['isAdded'] as bool) ? Icons.check_rounded : Icons.add_rounded, color: Colors.white, size: 14),
                               const SizedBox(width: 4),
                               Text(
-                                (product['isAdded'] as bool) ? 'Added' : 'Add',
+                                (product['isAdded'] as bool) ? AppLocalizations.of(context).addedToCart : AppLocalizations.of(context).addBtn,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,

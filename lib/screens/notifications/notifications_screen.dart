@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 
 // ── Notification Model 
 class _NotifItem {
   final String title;
+  final String arabicTitle;
   final String subtitle;
+  final String arabicSubtitle;
   final String time;
+  final String arabicTime;
   final IconData icon;
   final Color iconBg;
   final Color iconColor;
@@ -14,8 +18,11 @@ class _NotifItem {
 
   const _NotifItem({
     required this.title,
+    required this.arabicTitle,
     required this.subtitle,
+    required this.arabicSubtitle,
     required this.time,
+    required this.arabicTime,
     required this.icon,
     required this.iconBg,
     required this.iconColor,
@@ -27,8 +34,11 @@ class _NotifItem {
 final _mockNotifs = [
   _NotifItem(
     title: 'Ahmed joined your Group Cart',
+    arabicTitle: 'انضم أحمد لمجموعة الشراء الخاصة بك',
     subtitle: "You're 1 member away from a 15% group discount.",
+    arabicSubtitle: 'أنت على بعد عضو واحد من خصم 15٪.',
     time: 'Just now',
+    arabicTime: 'الآن',
     icon: Icons.group_rounded,
     iconBg: const Color(0xFFE8F5E9),
     iconColor: const Color(0xFF43A047),
@@ -36,8 +46,11 @@ final _mockNotifs = [
   ),
   _NotifItem(
     title: 'Cashback credited · 65 AED',
+    arabicTitle: 'تم إضافة كاش باك · 65 درهم',
     subtitle: 'Your Sony WH-1000XM5 cashback is now in your wallet.',
+    arabicSubtitle: 'الكاش باك الخاص بسماعات سوني أصبح في محفظتك.',
     time: '2h ago',
+    arabicTime: 'منذ ساعتين',
     icon: Icons.card_giftcard_rounded,
     iconBg: const Color(0xFFFFF3E0),
     iconColor: const Color(0xFFF5A623),
@@ -45,33 +58,45 @@ final _mockNotifs = [
   ),
   _NotifItem(
     title: 'Order #SW-29412 is out for delivery',
+    arabicTitle: 'الطلب #SW-29412 في الطريق إليك',
     subtitle: 'Expected today between 4 – 7 PM.',
+    arabicSubtitle: 'متوقع اليوم بين 4 – 7 مساءً.',
     time: '5h ago',
+    arabicTime: 'منذ 5 ساعات',
     icon: Icons.local_shipping_rounded,
     iconBg: const Color(0xFFE8F5E9),
-    iconColor: const Color(0xFF094B43),
+    iconColor: AppColors.primary,
     isUnread: true,
   ),
   _NotifItem(
     title: 'Flash Sale starts in 1 hour',
+    arabicTitle: 'التخفيضات السريعة تبدأ بعد ساعة',
     subtitle: 'Up to 60% off Beauty essentials. Set a reminder.',
+    arabicSubtitle: 'خصم يصل إلى 60% على منتجات التجميل. اضبط منبهك.',
     time: 'Yesterday',
+    arabicTime: 'أمس',
     icon: Icons.local_offer_rounded,
     iconBg: const Color(0xFFFCE4EC),
     iconColor: const Color(0xFFE91E63),
   ),
   _NotifItem(
     title: 'Layla shared a product with you',
+    arabicTitle: 'شاركت ليلى منتجًا معك',
     subtitle: 'Check out Apple Watch Series 9 — Share & Earn 5%.',
+    arabicSubtitle: 'شاهد ساعة آبل الجيل التاسع — شارك واكسب 5%.',
     time: 'Yesterday',
+    arabicTime: 'أمس',
     icon: Icons.notifications_rounded,
     iconBg: const Color(0xFFEDE7F6),
     iconColor: const Color(0xFF7E57C2),
   ),
   _NotifItem(
     title: 'Referral bonus · 25 AED',
+    arabicTitle: 'مكافأة دعوة · 25 درهم',
     subtitle: 'Ahmed completed his first order — bonus added.',
+    arabicSubtitle: 'أكمل أحمد طلبه الأول — تمت إضافة المكافأة.',
     time: 'Yesterday',
+    arabicTime: 'أمس',
     icon: Icons.card_giftcard_rounded,
     iconBg: const Color(0xFFFFF3E0),
     iconColor: const Color(0xFFF5A623),
@@ -122,11 +147,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           size: 18, color: Color(0xFF1A1A2E)),
                     ),
                   ),
-                  const Expanded(
+                   Expanded(
                     child: Text(
-                      'Notifications',
+                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                          ? 'الإشعارات'
+                          : 'Notifications',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1A1A2E),
@@ -140,7 +167,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         Icon(Icons.done_all_rounded,
                             color: AppColors.primary, size: 16),
                         const SizedBox(width: 4),
-                        Text('Read all',
+                        Text(
+                            AppLocalizations.of(context).locale.languageCode == 'ar'
+                                ? 'قراءة الكل'
+                                : 'Read all',
                             style: TextStyle(
                               color: AppColors.primary,
                               fontSize: 13,
@@ -246,7 +276,9 @@ class _NotifCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          item.title,
+                          AppLocalizations.of(context).locale.languageCode == 'ar'
+                              ? item.arabicTitle
+                              : item.title,
                           style: TextStyle(
                             fontWeight:
                                 isRead ? FontWeight.w500 : FontWeight.w700,
@@ -257,7 +289,9 @@ class _NotifCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        item.time,
+                        AppLocalizations.of(context).locale.languageCode == 'ar'
+                            ? item.arabicTime
+                            : item.time,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color(0xFFAAAAAA),
@@ -267,7 +301,9 @@ class _NotifCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    item.subtitle,
+                    AppLocalizations.of(context).locale.languageCode == 'ar'
+                        ? item.arabicSubtitle
+                        : item.subtitle,
                     style: TextStyle(
                       fontSize: 13,
                       color: isRead

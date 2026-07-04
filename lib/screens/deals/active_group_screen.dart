@@ -1,3 +1,4 @@
+import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/group_buy_model.dart';
@@ -136,34 +137,34 @@ class ActiveGroupScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Sony WH-1000XM5 Headphones',
-                                style: TextStyle(
+                                AppLocalizations.of(context).locale.languageCode == 'ar' ? group.arabicProductName : group.productName,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
                                   color: AppColors.textDark,
                                   height: 1.2,
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Row(
                                 children: [
                                   Text(
                                     '1,299',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 18,
                                       color: AppColors.primary, // Teal
                                     ),
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'AED',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context).aed,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12,
                                       color: Color(0xFF94A3B8),
@@ -193,14 +194,14 @@ class ActiveGroupScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.notifications_active_outlined, color: Color(0xFFF5A623), size: 14),
-                          SizedBox(width: 8),
+                          const Icon(Icons.notifications_active_outlined, color: Color(0xFFF5A623), size: 14),
+                          const SizedBox(width: 8),
                           Text(
-                            'Ahmed joined the group!',
-                            style: TextStyle(
+                            AppLocalizations.of(context).locale.languageCode == 'ar' ? 'انضم أحمد للمجموعة!' : 'Ahmed joined the group!',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -99,7 +100,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                                 },
                                 style: TextStyle(fontSize: R.sp(context, 14)),
                                 decoration: InputDecoration(
-                                  hintText: 'Search in ${widget.category.name}...',
+                                  hintText: AppLocalizations.of(context).locale.languageCode == 'ar' 
+                                      ? 'ابحث في ${widget.category.arabicName}...'
+                                      : 'Search in ${widget.category.name}...',
                                   hintStyle: TextStyle(
                                     color: AppColors.textLight,
                                     fontSize: R.sp(context, 14),
@@ -146,7 +149,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          widget.category.name,
+                                          AppLocalizations.of(context).locale.languageCode == 'ar' 
+                                              ? widget.category.arabicName 
+                                              : widget.category.name,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: R.sp(context, 26),
@@ -338,7 +343,9 @@ class _CategoryProductCard extends StatelessWidget {
             SizedBox(height: R.pad(context, 12)),
             // Title
             Text(
-              product.name,
+              AppLocalizations.of(context).locale.languageCode == 'ar'
+                  ? product.arabicName
+                  : product.name,
               style: TextStyle(
                 fontSize: R.sp(context, 15),
                 fontWeight: FontWeight.w800,
@@ -350,7 +357,9 @@ class _CategoryProductCard extends StatelessWidget {
             SizedBox(height: R.pad(context, 4)),
             // Subtitle
             Text(
-              product.description,
+              AppLocalizations.of(context).locale.languageCode == 'ar'
+                  ? product.arabicDescription
+                  : product.description,
               style: TextStyle(
                 fontSize: R.sp(context, 11),
                 color: AppColors.textGray,
@@ -364,7 +373,7 @@ class _CategoryProductCard extends StatelessWidget {
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                '${product.price.toStringAsFixed(2)} AED',
+                '${product.price.toStringAsFixed(2)} ${AppLocalizations.of(context).aed}',
                 style: TextStyle(
                   fontSize: R.sp(context, 16),
                   fontWeight: FontWeight.w900,

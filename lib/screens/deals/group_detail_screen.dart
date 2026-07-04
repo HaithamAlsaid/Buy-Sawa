@@ -1,3 +1,4 @@
+import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../../core/constants/app_colors.dart';
@@ -94,7 +95,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'INVITE CODE',
+                            AppLocalizations.of(context).inviteCode,
                             style: TextStyle(
                               color: const Color(0xFF94A3B8),
                               fontSize: R.sp(context, 10),
@@ -147,8 +148,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                               ),
                               SizedBox(width: R.pad(context, 4)),
                               Text(
-                                _isCopied ? 'Copied' : 'Copy',
-                                style: TextStyle(
+                                  _isCopied ? (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'تم النسخ' : 'Copied') : AppLocalizations.of(context).copy,
+                                  style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,
                                   fontSize: R.sp(context, 13),
@@ -166,7 +167,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   
               // ── Members Joined Section ───────────────────────
               Text(
-                'MEMBERS JOINED',
+                AppLocalizations.of(context).membersJoined,
                 style: TextStyle(
                   color: const Color(0xFF94A3B8),
                   fontSize: R.sp(context, 12),
@@ -216,7 +217,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   
               // ── Products Section ─────────────────────────────
               Text(
-                'PRODUCTS IN GROUP',
+                AppLocalizations.of(context).productsInGroup,
                 style: TextStyle(
                   color: const Color(0xFF94A3B8),
                   fontSize: R.sp(context, 12),
@@ -267,7 +268,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                               ),
                               SizedBox(height: R.pad(context, 4)),
                               Text(
-                                'Full Price',
+                                AppLocalizations.of(context).fullPrice,
                                 style: TextStyle(
                                   color: const Color(0xFF94A3B8),
                                   fontSize: R.sp(context, 11),
@@ -292,7 +293,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: 'AED',
+                                  text: AppLocalizations.of(context).aed,
                                   style: TextStyle(
                                     color: const Color(0xFF94A3B8),
                                     fontWeight: FontWeight.w600,
@@ -338,7 +339,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     ),
                   ),
                   child: Text(
-                    'Join & Pay Full Price',
+                    AppLocalizations.of(context).joinPayFullPrice,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: R.sp(context, 16),
@@ -349,7 +350,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               ),
               SizedBox(height: R.pad(context, 12)),
               Text(
-                'Discount difference will be refunded to your Wallet once the member\ntarget is reached.',
+                AppLocalizations.of(context).discountRefundNote,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: const Color(0xFF94A3B8), // Slate 400

@@ -7,6 +7,7 @@
 //   3. لو الـ asset مش موجود  → يعرض الـ fallback المرسوم بـ CustomPainter
 // ─────────────────────────────────────────────────────────────────────────────
 
+import 'package:buysawa/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_settings_provider.dart';
@@ -86,7 +87,7 @@ class _FallbackLogo extends StatelessWidget {
       ),
       child: Icon(
         Icons.swap_calls_rounded,
-        color: const Color(0xFF094B43),
+        color: AppColors.primary,
         size: size * 0.55,
       ),
     );

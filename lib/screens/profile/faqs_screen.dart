@@ -1,36 +1,38 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
+import '../../core/localization/app_localizations.dart';
 
 class FaqsScreen extends StatelessWidget {
   const FaqsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final List<Map<String, String>> faqs = [
       {
-        'q': 'What is Buy SAWA?',
-        'a': 'A social commerce app where you shop solo or pool with friends in Group Deals to unlock tiered discounts.',
+        'q': loc.faq1q,
+        'a': loc.locale.languageCode == 'ar' ? 'تطبيق تجارة اجتماعية حيث تتسوق بمفردك أو تتشارك مع أصدقائك في العروض الجماعية للحصول على خصومات كبيرة.' : 'A social commerce app where you shop solo or pool with friends in Group Deals to unlock tiered discounts.',
       },
       {
-        'q': 'How do I join a Group Deal?',
-        'a': 'Browse active deals on the Deals tab, select a product, and enter the shared group code to pool with friends.',
+        'q': loc.faq2q,
+        'a': loc.locale.languageCode == 'ar' ? 'تصفح العروض النشطة في قسم العروض، اختر منتجاً، وأدخل رمز المجموعة لمشاركته مع أصدقائك.' : 'Browse active deals on the Deals tab, select a product, and enter the shared group code to pool with friends.',
       },
       {
-        'q': 'Is my payment information secure?',
-        'a': 'Yes, we use industry-standard encryption and secure payment processors to safeguard your transaction details.',
+        'q': loc.faq3q,
+        'a': loc.locale.languageCode == 'ar' ? 'نعم، نحن نستخدم التشفير القياسي في الصناعة ومعالجات دفع آمنة لحماية تفاصيل معاملتك.' : 'Yes, we use industry-standard encryption and secure payment processors to safeguard your transaction details.',
       },
       {
-        'q': 'How long does delivery take?',
-        'a': 'Delivery typically takes 2 to 3 business days within the UAE.',
+        'q': loc.faq4q,
+        'a': loc.locale.languageCode == 'ar' ? 'عادة ما يستغرق التوصيل من 2 إلى 3 أيام عمل داخل الإمارات.' : 'Delivery typically takes 2 to 3 business days within the UAE.',
       },
       {
-        'q': 'Can I cancel my order?',
-        'a': 'You can cancel your order before it gets processed for shipping directly from your order details screen.',
+        'q': loc.faq5q,
+        'a': loc.locale.languageCode == 'ar' ? 'يمكنك إلغاء طلبك قبل أن تتم معالجته للشحن مباشرة من شاشة تفاصيل طلبك.' : 'You can cancel your order before it gets processed for shipping directly from your order details screen.',
       },
       {
-        'q': 'What are SAWA Coins?',
-        'a': 'SAWA Coins are loyalty rewards you earn by participating in group buys and referrals, redeemable for discounts on future shopping.',
+        'q': loc.faq6q,
+        'a': loc.locale.languageCode == 'ar' ? 'عملات ساوا هي مكافآت ولاء تكسبها من خلال المشاركة في عمليات الشراء الجماعية والإحالات، ويمكن استبدالها بخصومات.' : 'SAWA Coins are loyalty rewards you earn by participating in group buys and referrals, redeemable for discounts on future shopping.',
       },
     ];
 
@@ -58,7 +60,7 @@ class FaqsScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'FAQs',
+          loc.faqs,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: R.sp(context, 18),

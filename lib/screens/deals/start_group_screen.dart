@@ -1,3 +1,4 @@
+import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import 'widgets/add_products_bottom_sheet.dart';
@@ -52,9 +53,9 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
             ),
           ),
         ),
-        title: const Text(
-          'Start a Group Buy',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context).startGroupBuy,
+          style: const TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -67,9 +68,9 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            const Text(
-              'GROUP NAME',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).groupName,
+              style: const TextStyle(
                 color: Color(0xFF94A3B8), // Slate 400
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -123,14 +124,14 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add, color: AppColors.primary, size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.add, color: AppColors.primary, size: 20),
+                    const SizedBox(width: 8),
                     Text(
-                      'Add Products',
-                      style: TextStyle(
+                      AppLocalizations.of(context).addProductsBtn,
+                      style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -142,9 +143,9 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
             ),
             if (_selectedProducts.isNotEmpty) ...[
               const SizedBox(height: 32),
-              const Text(
-                'SELECTED PRODUCTS',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).selectedProducts,
+                style: const TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -203,9 +204,9 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
                                       fontSize: 15,
                                     ),
                                   ),
-                                  const TextSpan(
-                                    text: 'AED',
-                                    style: TextStyle(
+                                  TextSpan(
+                                    text: AppLocalizations.of(context).aed,
+                                    style: const TextStyle(
                                       color: Color(0xFF94A3B8),
                                       fontWeight: FontWeight.w600,
                                       fontSize: 11,
@@ -273,9 +274,9 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text(
-                'Create Group & Get Invite Link',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).createGroupInvite,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w800,

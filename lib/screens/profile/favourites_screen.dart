@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../models/product_model.dart';
 import '../products/product_detail_screen.dart';
@@ -94,7 +95,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$name removed from favourites'),
+        content: Text(AppLocalizations.of(context).removedFromFav(name)),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
       ),
@@ -119,7 +120,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                 R.pad(context, 28),
               ),
               decoration: BoxDecoration(
-                color: const Color(0xFF094B43),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(R.r(context, 32)),
                 ),
@@ -178,7 +179,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '${_favourites.length} items',
+                            AppLocalizations.of(context).items(_favourites.length),
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.8),
                               fontSize: R.sp(context, 12),
@@ -187,7 +188,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           ),
                           SizedBox(height: R.pad(context, 2)),
                           Text(
-                            'My Favourites',
+                            AppLocalizations.of(context).myFavourites,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: R.sp(context, 22),
@@ -230,7 +231,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           ),
                           SizedBox(height: R.pad(context, 16)),
                           Text(
-                            'No favourites yet',
+                            AppLocalizations.of(context).noFavouritesYet,
                             style: TextStyle(
                               fontSize: R.sp(context, 16),
                               color: const Color(0xFF64748B),
@@ -272,17 +273,19 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           return GestureDetector(
                             onTap: () {
                               // Wrap in a ProductModel to push to ProductDetailScreen
-                              final product = ProductModel(
-                                id: item['id'],
-                                name: item['name'],
-                                category: item['isGroupDeal'] ? 'Group Deal' : 'Share & Earn',
-                                price: item['price'],
-                                originalPrice: item['originalPrice'],
-                                rating: item['rating'],
-                                reviewCount: 150,
-                                imageUrl: item['imageUrl'],
-                                description: item['description'],
-                                hasGroupDeal: item['isGroupDeal'],
+                                final product = ProductModel(
+                                  id: item['id'],
+                                  name: item['name'],
+                                  arabicName: item['name'],
+                                  category: item['isGroupDeal'] ? 'Group Deal' : 'Share & Earn',
+                                  price: item['price'],
+                                  originalPrice: item['originalPrice'],
+                                  rating: item['rating'],
+                                  reviewCount: 150,
+                                  imageUrl: item['imageUrl'],
+                                  description: item['description'],
+                                  arabicDescription: item['description'],
+                                  hasGroupDeal: item['isGroupDeal'],
                               );
                               Navigator.push(
                                 context,
@@ -405,7 +408,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                               Text(
                                                 priceFormatted,
                                                 style: TextStyle(
-                                                  color: const Color(0xFF094B43),
+                                                  color: AppColors.primary,
                                                   fontSize: R.sp(context, 16),
                                                   fontWeight: FontWeight.w800,
                                                 ),

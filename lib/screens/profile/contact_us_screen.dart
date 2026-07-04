@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
@@ -36,8 +37,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Message sent! We\'ll get back to you soon.'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context).messageSent),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
       ),
@@ -73,7 +74,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           ),
         ),
         title: Text(
-          'Contact Us',
+          AppLocalizations.of(context).contactUs,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: R.sp(context, 18),
@@ -97,7 +98,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   bottom: R.pad(context, 12),
                 ),
                 child: Text(
-                  'YOUR MESSAGE',
+                  AppLocalizations.of(context).yourMessage.toUpperCase(),
                   style: TextStyle(
                     color: const Color(0xFF94A3B8), // Slate 400
                     fontSize: R.sp(context, 12),
@@ -133,7 +134,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Login to send a message',
+                              AppLocalizations.of(context).loginToSend,
                               style: TextStyle(
                                 color: const Color(0xFF94A3B8),
                                 fontSize: R.sp(context, 14),
@@ -159,7 +160,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   size: R.icon(context, 16),
                                 ),
                                 label: Text(
-                                  'Login to Send',
+                                  AppLocalizations.of(context).login,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: R.sp(context, 15),
@@ -181,7 +182,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                 color: const Color(0xFF0F172A),
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Type your message here...',
+                                hintText: AppLocalizations.of(context).messagePlaceholder,
                                 hintStyle: TextStyle(
                                   color: const Color(0xFF94A3B8),
                                   fontSize: R.sp(context, 14),
@@ -216,7 +217,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         size: R.icon(context, 16),
                                       ),
                                 label: Text(
-                                  'Send Message',
+                                  AppLocalizations.of(context).sendMessage,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: R.sp(context, 15),
@@ -239,7 +240,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   bottom: R.pad(context, 12),
                 ),
                 child: Text(
-                  'OR REACH US DIRECTLY',
+                  AppLocalizations.of(context).orReachDirectly.toUpperCase(),
                   style: TextStyle(
                     color: const Color(0xFF94A3B8),
                     fontSize: R.sp(context, 12),
@@ -272,7 +273,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       icon: Icons.phone_rounded,
                       iconColor: const Color(0xFFF97316),
                       iconBgColor: const Color(0xFFFFF7ED),
-                      title: 'CALL US',
+                      title: AppLocalizations.of(context).callUs.toUpperCase(),
                       subtitle: '800-SAWA',
                       onTap: () {
                         // Action to call
@@ -283,7 +284,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       icon: Icons.email_outlined,
                       iconColor: const Color(0xFF0EA5E9),
                       iconBgColor: const Color(0xFFF0F9FF),
-                      title: 'EMAIL US',
+                      title: AppLocalizations.of(context).emailUs.toUpperCase(),
                       subtitle: 'help@buysawa.app',
                       onTap: () {
                         // Action to email
@@ -306,7 +307,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   ),
                   SizedBox(width: R.pad(context, 8)),
                   Text(
-                    'Support team available 24/7',
+                    AppLocalizations.of(context).supportAvailable,
                     style: TextStyle(
                       color: const Color(0xFF94A3B8),
                       fontSize: R.sp(context, 13),

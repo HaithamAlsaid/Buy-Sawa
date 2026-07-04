@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 
 class PaymentMethodSheet extends StatefulWidget {
   final double totalAmount;
@@ -12,36 +13,6 @@ class PaymentMethodSheet extends StatefulWidget {
 
 class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
   int _selectedIndex = -1;
-
-  final List<Map<String, dynamic>> _paymentMethods = [
-    {
-      'name': 'Tabby',
-      'subtitle': 'Pay in 4. No interest, no fees.',
-      'logo': 'assets/images/tabby_logo.png',
-      'color': const Color(0xFF3DBCA1),
-      'icon': Icons.splitscreen_rounded,
-      'url': 'https://tabby.ai',
-      'tag': 'POPULAR',
-    },
-    {
-      'name': 'Tamara',
-      'subtitle': 'Buy Now, Pay Later in 3 splits.',
-      'logo': 'assets/images/tamara_logo.png',
-      'color': const Color(0xFF1D1D1D),
-      'icon': Icons.payment_rounded,
-      'url': 'https://tamara.co',
-      'tag': null,
-    },
-    {
-      'name': 'Credit / Debit Card',
-      'subtitle': 'Visa, Mastercard, AMEX accepted.',
-      'logo': null,
-      'color': AppColors.primary,
-      'icon': Icons.credit_card_rounded,
-      'url': null,
-      'tag': 'INSTANT',
-    },
-  ];
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
@@ -56,6 +27,36 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> paymentMethods = [
+      {
+        'name': 'Tabby',
+        'subtitle': AppLocalizations.of(context).payIn4Tabby,
+        'logo': 'assets/images/tabby_logo.png',
+        'color': const Color(0xFF3DBCA1),
+        'icon': Icons.splitscreen_rounded,
+        'url': 'https://tabby.ai',
+        'tag': AppLocalizations.of(context).popular,
+      },
+      {
+        'name': 'Tamara',
+        'subtitle': AppLocalizations.of(context).buyNowPayLaterTamara,
+        'logo': 'assets/images/tamara_logo.png',
+        'color': const Color(0xFF1D1D1D),
+        'icon': Icons.payment_rounded,
+        'url': 'https://tamara.co',
+        'tag': null,
+      },
+      {
+        'name': AppLocalizations.of(context).creditDebitCard,
+        'subtitle': AppLocalizations.of(context).cardsAccepted,
+        'logo': null,
+        'color': AppColors.primary,
+        'icon': Icons.credit_card_rounded,
+        'url': null,
+        'tag': AppLocalizations.of(context).instant,
+      },
+    ];
+
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -77,13 +78,13 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
           const SizedBox(height: 24),
 
           // Title
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
                 Text(
-                  'Choose Payment Method',
-                  style: TextStyle(
+                  AppLocalizations.of(context).choosePaymentMethod,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF1A1A2E),
@@ -96,7 +97,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              'Total: ${widget.totalAmount.toStringAsFixed(0)} AED',
+              AppLocalizations.of(context).totalAmount(widget.totalAmount.toStringAsFixed(0)),
               style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFF94A3B8),
@@ -111,10 +112,10 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _paymentMethods.length,
+            itemCount: paymentMethods.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final method = _paymentMethods[index];
+              final method = paymentMethods[index];
               final isSelected = _selectedIndex == index;
 
               return GestureDetector(
@@ -238,7 +239,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                 onPressed: _selectedIndex == -1
                     ? null
                     : () {
-                        final method = _paymentMethods[_selectedIndex];
+                        final method = paymentMethods[_selectedIndex];
                         final url = method['url'] as String?;
                         if (url != null) {
                           _launchUrl(url);
@@ -246,8 +247,8 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                           // Credit card - show card form (TODO)
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Card payment coming soon!'),
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? 'دفع البطاقة قريباً!' : 'Card payment coming soon!'),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -256,7 +257,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _selectedIndex == -1
                       ? const Color(0xFFE2E8F0)
-                      : (_paymentMethods[_selectedIndex]['color'] as Color),
+                      : (paymentMethods[_selectedIndex]['color'] as Color),
                   disabledBackgroundColor: const Color(0xFFE2E8F0),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -265,8 +266,8 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                 ),
                 child: Text(
                   _selectedIndex == -1
-                      ? 'Select a Payment Method'
-                      : 'Continue with ${_paymentMethods[_selectedIndex]['name']}',
+                      ? AppLocalizations.of(context).selectPaymentMethod
+                      : (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'المتابعة مع ${paymentMethods[_selectedIndex]['name']}' : 'Continue with ${paymentMethods[_selectedIndex]['name']}'),
                   style: TextStyle(
                     color: _selectedIndex == -1
                         ? const Color(0xFF94A3B8)
@@ -281,14 +282,14 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
 
           // Security note
           const SizedBox(height: 12),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.lock_outline_rounded, size: 13, color: Color(0xFF94A3B8)),
-              SizedBox(width: 5),
+              const Icon(Icons.lock_outline_rounded, size: 13, color: Color(0xFF94A3B8)),
+              const SizedBox(width: 5),
               Text(
-                'Secured by 256-bit SSL encryption',
-                style: TextStyle(
+                AppLocalizations.of(context).securedBy,
+                style: const TextStyle(
                   fontSize: 11,
                   color: Color(0xFF94A3B8),
                   fontWeight: FontWeight.w500,
