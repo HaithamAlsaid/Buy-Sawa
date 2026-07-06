@@ -81,8 +81,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                     borderRadius: BorderRadius.circular(R.r(context, 20)),
                     gradient: const LinearGradient(
                       colors: [
-                        Color(0xFFD6E8E4),
-                        Color(0xFFADD0C9),
+                        AppColors.primaryLight,
+                        AppColors.primaryLight,
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -107,7 +107,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                           Text(
                             'GB-X72A',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: AppColors.primaryDark,
                               fontSize: R.sp(context, 18),
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.5,

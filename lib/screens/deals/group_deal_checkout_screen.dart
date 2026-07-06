@@ -45,12 +45,12 @@ class GroupDealCheckoutScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFFFF3E0), // Light orange
+                  color: AppColors.primaryLight,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.lock_outline_rounded,
-                  color: Color(0xFFF5A623), // Orange
+                  color: AppColors.primary,
                   size: 18,
                 ),
               ),
@@ -110,18 +110,18 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFF3E0),
+                                color: AppColors.primaryLight,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 10),
+                                  const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 10),
                                   const SizedBox(width: 4),
                                   Text(
                                     AppLocalizations.of(context).locked,
                                     style: const TextStyle(
-                                      color: Color(0xFFF5A623),
+                                      color: AppColors.primary,
                                       fontWeight: FontWeight.w800,
                                       fontSize: 10,
                                       letterSpacing: 0.5,
@@ -204,7 +204,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                 decoration: const BoxDecoration(
                   border: Border(
                     left: BorderSide(
-                      color: Color(0xFFF5A623), // Orange left border
+                      color: AppColors.primary,
                       width: 4,
                     ),
                   ),
@@ -218,12 +218,12 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFFFF3E0),
+                            color: AppColors.primaryLight,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.gpp_good_outlined,
-                            color: Color(0xFFF5A623),
+                            color: AppColors.primary,
                             size: 18,
                           ),
                         ),
@@ -253,7 +253,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                       children: [
                         const Icon(
                           Icons.account_balance_wallet_outlined,
-                          color: Color(0xFFF5A623),
+                          color: AppColors.primary,
                           size: 16,
                         ),
                         const SizedBox(width: 8),
@@ -261,7 +261,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                           child: Text(
                             AppLocalizations.of(context).cashbackCreditedAfter,
                             style: const TextStyle(
-                              color: Color(0xFFF5A623),
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w800,
                               fontSize: 11,
                               letterSpacing: 0.5,
@@ -338,18 +338,18 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF3E0),
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.lock_outline_rounded, color: Color(0xFFF5A623), size: 12),
+                        const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 12),
                         const SizedBox(width: 4),
                         Text(
                           AppLocalizations.of(context).secureLock,
                           style: const TextStyle(
-                            color: Color(0xFFF5A623),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w900,
                             fontSize: 11,
                           ),
@@ -375,7 +375,7 @@ class GroupDealCheckoutScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF5A623), // Solid Orange
+                    backgroundColor: AppColors.primary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

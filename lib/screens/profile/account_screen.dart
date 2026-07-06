@@ -13,7 +13,6 @@ import 'favourites_screen.dart';
 import 'delete_account_screen.dart';
 import '../../core/localization/app_localizations.dart';
 
-
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
@@ -35,53 +34,36 @@ class _GuestProfileView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: ResponsiveWrapper(
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Header
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(
-                  R.pad(context, 20),
-                  R.pad(context, 24),
-                  R.pad(context, 20),
-                  R.pad(context, 32),
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(R.r(context, 32)),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(color: AppColors.primary),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    right: -50,
+                    top: -50,
+                    child: Container(
+                      width: R.pad(context, 250),
+                      height: R.pad(context, 250),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.05),
+                      ),
+                    ),
                   ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      left: -40,
-                      top: -20,
-                      child: Container(
-                        width: R.pad(context, 120),
-                        height: R.pad(context, 120),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.06),
-                        ),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      R.pad(context, 20),
+                      R.pad(context, 24) + MediaQuery.of(context).padding.top,
+                      R.pad(context, 20),
+                      R.pad(context, 32),
                     ),
-                    Positioned(
-                      right: -30,
-                      bottom: -10,
-                      child: Container(
-                        width: R.pad(context, 150),
-                        height: R.pad(context, 150),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.06),
-                        ),
-                      ),
-                    ),
-                    Column(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DottedBorder(
@@ -128,8 +110,10 @@ class _GuestProfileView extends StatelessWidget {
                               vertical: R.pad(context, 10),
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF5A623),
-                              borderRadius: BorderRadius.circular(R.r(context, 24)),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(
+                                R.r(context, 24),
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -143,14 +127,14 @@ class _GuestProfileView extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.login_rounded,
-                                  color: Colors.white,
+                                  color: AppColors.primary,
                                   size: R.icon(context, 16),
                                 ),
                                 SizedBox(width: R.pad(context, 6)),
                                 Text(
                                   AppLocalizations.of(context).login,
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.primary,
                                     fontSize: R.sp(context, 14),
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -161,119 +145,119 @@ class _GuestProfileView extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: R.pad(context, 20),
+                  vertical: R.pad(context, 24),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: R.pad(context, 8),
+                        bottom: R.pad(context, 12),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context).accountTitle,
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 12),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(R.r(context, 24)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: const Color(0xFFF1F5F9),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _GuestMenuItem(
+                            icon: Icons.help_outline_rounded,
+                            iconColor: const Color(0xFF7C4DFF),
+                            iconBgColor: const Color(0xFFF1EEFF),
+                            label: AppLocalizations.of(context).faqs,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FaqsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.headset_mic_outlined,
+                            iconColor: const Color(0xFFF97316),
+                            iconBgColor: const Color(0xFFFFF7ED),
+                            label: AppLocalizations.of(context).contactUs,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ContactUsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.favorite_border_rounded,
+                            iconColor: const Color(0xFFF43F5E),
+                            iconBgColor: const Color(0xFFFFF1F2),
+                            label: AppLocalizations.of(context).myFavourites,
+                            onTap: () {
+                              AuthBottomSheet.show(context);
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.language_rounded,
+                            iconColor: const Color(0xFF0EA5E9),
+                            iconBgColor: const Color(0xFFF0F9FF),
+                            label: AppLocalizations.of(context).language,
+                            onTap: () => LanguagePickerSheet.show(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: R.pad(context, 32)),
+                    Center(
+                      child: Text(
+                        'Buy SAWA - v1.0.0',
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 11),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-  
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: R.pad(context, 20),
-                    vertical: R.pad(context, 24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: R.pad(context, 8),
-                          bottom: R.pad(context, 12),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context).accountTitle,
-                          style: TextStyle(
-                            color: const Color(0xFF94A3B8),
-                            fontSize: R.sp(context, 12),
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(R.r(context, 24)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: const Color(0xFFF1F5F9),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            _GuestMenuItem(
-                              icon: Icons.help_outline_rounded,
-                              iconColor: const Color(0xFF7C4DFF),
-                              iconBgColor: const Color(0xFFF1EEFF),
-                              label: AppLocalizations.of(context).faqs,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const FaqsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.headset_mic_outlined,
-                              iconColor: const Color(0xFFF97316),
-                              iconBgColor: const Color(0xFFFFF7ED),
-                              label: AppLocalizations.of(context).contactUs,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ContactUsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.favorite_border_rounded,
-                              iconColor: const Color(0xFFF43F5E),
-                              iconBgColor: const Color(0xFFFFF1F2),
-                              label: AppLocalizations.of(context).myFavourites,
-                              onTap: () {
-                                AuthBottomSheet.show(context);
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.language_rounded,
-                              iconColor: const Color(0xFF0EA5E9),
-                              iconBgColor: const Color(0xFFF0F9FF),
-                              label: AppLocalizations.of(context).language,
-                              onTap: () => LanguagePickerSheet.show(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: R.pad(context, 32)),
-                      Center(
-                        child: Text(
-                          'Buy SAWA - v1.0.0',
-                          style: TextStyle(
-                            color: const Color(0xFF94A3B8),
-                            fontSize: R.sp(context, 11),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -315,11 +299,7 @@ class _GuestMenuItem extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: R.icon(context, 20),
-                ),
+                child: Icon(icon, color: iconColor, size: R.icon(context, 20)),
               ),
             ),
             SizedBox(width: R.pad(context, 14)),
@@ -361,53 +341,36 @@ class _LoggedInProfileView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: ResponsiveWrapper(
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              // Header (Teal background, orange avatar with initials, and username)
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.fromLTRB(
-                  R.pad(context, 20),
-                  R.pad(context, 24),
-                  R.pad(context, 20),
-                  R.pad(context, 32),
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(R.r(context, 32)),
+        child: Column(
+          children: [
+            // Header (Teal background, orange avatar with initials, and username)
+            Container(
+              width: double.infinity,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(color: AppColors.primary),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    right: -50,
+                    top: -50,
+                    child: Container(
+                      width: R.pad(context, 250),
+                      height: R.pad(context, 250),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.05),
+                      ),
+                    ),
                   ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      left: -40,
-                      top: -20,
-                      child: Container(
-                        width: R.pad(context, 120),
-                        height: R.pad(context, 120),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.06),
-                        ),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      R.pad(context, 20),
+                      R.pad(context, 24) + MediaQuery.of(context).padding.top,
+                      R.pad(context, 20),
+                      R.pad(context, 32),
                     ),
-                    Positioned(
-                      right: -30,
-                      bottom: -10,
-                      child: Container(
-                        width: R.pad(context, 150),
-                        height: R.pad(context, 150),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.06),
-                        ),
-                      ),
-                    ),
-                    Column(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // Avatar orange circle
@@ -444,188 +407,190 @@ class _LoggedInProfileView extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Settings Items List
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: R.pad(context, 20),
+                  vertical: R.pad(context, 24),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: R.pad(context, 8),
+                        bottom: R.pad(context, 12),
+                      ),
+                      child: Text(
+                        'ACCOUNT',
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 12),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(R.r(context, 24)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: const Color(0xFFF1F5F9),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _GuestMenuItem(
+                            icon: Icons.person_outline_rounded,
+                            iconColor: AppColors.primary,
+                            iconBgColor: const Color(0xFFE8F7F6),
+                            label: AppLocalizations.of(context).profile,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfileDetailsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.help_outline_rounded,
+                            iconColor: const Color(0xFF7C4DFF),
+                            iconBgColor: const Color(0xFFF1EEFF),
+                            label: AppLocalizations.of(context).faqs,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FaqsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.headset_mic_outlined,
+                            iconColor: const Color(0xFFF97316),
+                            iconBgColor: const Color(0xFFFFF7ED),
+                            label: AppLocalizations.of(context).contactUs,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ContactUsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.favorite_border_rounded,
+                            iconColor: const Color(0xFFF43F5E),
+                            iconBgColor: const Color(0xFFFFF1F2),
+                            label: AppLocalizations.of(context).myFavourites,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FavouritesScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.language_rounded,
+                            iconColor: const Color(0xFF0EA5E9),
+                            iconBgColor: const Color(0xFFF0F9FF),
+                            label: AppLocalizations.of(context).language,
+                            onTap: () => LanguagePickerSheet.show(context),
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
+                            icon: Icons.delete_outline_rounded,
+                            iconColor: const Color(0xFFEF4444),
+                            iconBgColor: const Color(0xFFFFEEEF),
+                            label: AppLocalizations.of(context).deleteAccount,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const DeleteAccountScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: R.pad(context, 32)),
+
+                    // Logout Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: R.pad(context, 50),
+                      child: OutlinedButton.icon(
+                        onPressed: () => _logout(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFEF4444),
+                          side: const BorderSide(
+                            color: Color(0xFFFEE2E2),
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              R.r(context, 16),
+                            ),
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.logout_rounded,
+                          color: const Color(0xFFEF4444),
+                          size: R.icon(context, 18),
+                        ),
+                        label: Text(
+                          AppLocalizations.of(context).logout,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: R.sp(context, 15),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: R.pad(context, 24)),
+                    Center(
+                      child: Text(
+                        'Buy SAWA - v1.0.0',
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 11),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-
-              // Settings Items List
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: R.pad(context, 20),
-                    vertical: R.pad(context, 24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: R.pad(context, 8),
-                          bottom: R.pad(context, 12),
-                        ),
-                        child: Text(
-                          'ACCOUNT',
-                          style: TextStyle(
-                            color: const Color(0xFF94A3B8),
-                            fontSize: R.sp(context, 12),
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(R.r(context, 24)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: const Color(0xFFF1F5F9),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            _GuestMenuItem(
-                              icon: Icons.person_outline_rounded,
-                              iconColor: AppColors.primary,
-                              iconBgColor: const Color(0xFFE8F7F6),
-                              label: AppLocalizations.of(context).profile,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ProfileDetailsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.help_outline_rounded,
-                              iconColor: const Color(0xFF7C4DFF),
-                              iconBgColor: const Color(0xFFF1EEFF),
-                              label: AppLocalizations.of(context).faqs,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const FaqsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.headset_mic_outlined,
-                              iconColor: const Color(0xFFF97316),
-                              iconBgColor: const Color(0xFFFFF7ED),
-                              label: AppLocalizations.of(context).contactUs,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ContactUsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.favorite_border_rounded,
-                              iconColor: const Color(0xFFF43F5E),
-                              iconBgColor: const Color(0xFFFFF1F2),
-                              label: AppLocalizations.of(context).myFavourites,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const FavouritesScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.language_rounded,
-                              iconColor: const Color(0xFF0EA5E9),
-                              iconBgColor: const Color(0xFFF0F9FF),
-                              label: AppLocalizations.of(context).language,
-                              onTap: () => LanguagePickerSheet.show(context),
-                            ),
-                            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                            _GuestMenuItem(
-                              icon: Icons.delete_outline_rounded,
-                              iconColor: const Color(0xFFEF4444),
-                              iconBgColor: const Color(0xFFFFEEEF),
-                              label: AppLocalizations.of(context).deleteAccount,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const DeleteAccountScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: R.pad(context, 32)),
-
-                      // Logout Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: R.pad(context, 50),
-                        child: OutlinedButton.icon(
-                          onPressed: () => _logout(context),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFEF4444),
-                            side: const BorderSide(
-                              color: Color(0xFFFEE2E2),
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(R.r(context, 16)),
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.logout_rounded,
-                            color: const Color(0xFFEF4444),
-                            size: R.icon(context, 18),
-                          ),
-                          label: Text(
-                            AppLocalizations.of(context).logout,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: R.sp(context, 15),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(height: R.pad(context, 24)),
-                      Center(
-                        child: Text(
-                          'Buy SAWA - v1.0.0',
-                          style: TextStyle(
-                            color: const Color(0xFF94A3B8),
-                            fontSize: R.sp(context, 11),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

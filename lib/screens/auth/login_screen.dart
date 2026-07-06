@@ -65,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const Color topTeal = Color.fromARGB(255, 50, 158, 208);
-    const Color bottomTeal = Color.fromARGB(255, 42, 126, 185);
+    const Color topTeal = AppColors.primary;
+    const Color bottomTeal = AppColors.primaryDark;
     const Color orangeColor = Color(0xFFF5A623);
 
     final screenH = R.screenH(context);
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 // ignore: deprecated_member_use
-                color: const Color.fromARGB(255, 43, 184, 184).withOpacity(0.35),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
             ),
           ),
@@ -314,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                   fontSize: R.sp(context, 13),
                                   fontWeight: FontWeight.w700,
-                                  color: const Color.fromARGB(255, 57, 149, 210),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ),
@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ElevatedButton(
                               onPressed: _isFormValid && !_loading ? _login : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 73, 190, 226),
+                                  backgroundColor: AppColors.primary,
                                 disabledBackgroundColor: const Color(0xFFCBD5E1),
                                 shape: RoundedRectangleBorder(
                                     borderRadius:

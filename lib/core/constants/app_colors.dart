@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Elegant Dark Green
-  static const Color primary = Color(0xFF094B43);
-  static const Color primaryDark = Color(0xFF063630);
+  static const Color primary = Color.fromARGB(255, 9, 95, 95);
+  static const Color primaryDark = Color(0xFF042626);
   static const Color primaryLight = Color(0xFFE6F0EF);
 
   // Accent Orange/Amber

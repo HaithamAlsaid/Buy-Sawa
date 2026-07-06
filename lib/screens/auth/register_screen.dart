@@ -266,12 +266,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ? _register
                                     : null,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(
-                                    255,
-                                    73,
-                                    190,
-                                    226,
-                                  ),
+                                  backgroundColor: AppColors.primary,
                                   disabledBackgroundColor: const Color(
                                     0xFFCBD5E1,
                                   ),

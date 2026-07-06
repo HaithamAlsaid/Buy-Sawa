@@ -118,7 +118,10 @@ class _DealsScreenState extends State<DealsScreen> {
               const SizedBox(height: 8),
               Text(
                 AppLocalizations.of(context).enterGroupCode,
-                style: const TextStyle(fontSize: 14, color: AppColors.textLight),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textLight,
+                ),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -150,7 +153,10 @@ class _DealsScreenState extends State<DealsScreen> {
                   ),
                   child: Text(
                     AppLocalizations.of(context).joinGroup,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -164,7 +170,7 @@ class _DealsScreenState extends State<DealsScreen> {
   @override
   Widget build(BuildContext context) {
     final groupProvider = context.watch<GroupBuyProvider>();
-    
+
     final allGroups = groupProvider.myGroups;
     final activeCount = allGroups.where((g) => g.isActive).length;
     final expiredCount = allGroups.length - activeCount;
@@ -230,7 +236,11 @@ class _DealsScreenState extends State<DealsScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.add_rounded, color: Colors.white, size: 16),
+                    const Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       AppLocalizations.of(context).joinBtn,
@@ -274,23 +284,22 @@ class _DealsScreenState extends State<DealsScreen> {
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Row(
                     children: [
                       Container(
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(
-                            255,
-                            205,
-                            246,
-                            243,
-                          ), // Light teal background
+                          color: Colors.white.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: const Icon(
                           Icons.add,
-                          color: Color(0xFF094B43),
+                          color: Colors.white,
                           size: 25,
                         ),
                       ),
@@ -302,7 +311,7 @@ class _DealsScreenState extends State<DealsScreen> {
                             Text(
                               AppLocalizations.of(context).startGroupBuy,
                               style: const TextStyle(
-                                color: Color(0xFF00757A), // Darker teal
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
                                 fontSize: 16,
                               ),
@@ -310,8 +319,8 @@ class _DealsScreenState extends State<DealsScreen> {
                             const SizedBox(height: 4),
                             Text(
                               AppLocalizations.of(context).enjoyDiscounts,
-                              style: const TextStyle(
-                                color: Color(0xFF64748B),
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.85),
                                 fontSize: 13,
                               ),
                             ),
@@ -332,11 +341,26 @@ class _DealsScreenState extends State<DealsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _buildTab(0, AppLocalizations.of(context).allGroupsTab, null, allGroups.length),
+                _buildTab(
+                  0,
+                  AppLocalizations.of(context).allGroupsTab,
+                  null,
+                  allGroups.length,
+                ),
                 const SizedBox(width: 16),
-                _buildTab(1, AppLocalizations.of(context).activeTab(activeCount), AppColors.success, activeCount),
+                _buildTab(
+                  1,
+                  AppLocalizations.of(context).activeTab(activeCount),
+                  AppColors.success,
+                  activeCount,
+                ),
                 const SizedBox(width: 16),
-                _buildTab(2, AppLocalizations.of(context).expiredTab(expiredCount), AppColors.error, expiredCount),
+                _buildTab(
+                  2,
+                  AppLocalizations.of(context).expiredTab(expiredCount),
+                  AppColors.error,
+                  expiredCount,
+                ),
               ],
             ),
           ),
@@ -377,9 +401,7 @@ class _DealsScreenState extends State<DealsScreen> {
               Icon(
                 Icons.grid_view_rounded,
                 size: 16,
-                color: isSelected
-                    ? AppColors.primary
-                    : const Color(0xFF64748B),
+                color: isSelected ? AppColors.primary : const Color(0xFF64748B),
               ),
               const SizedBox(width: 6),
             ] else if (dotColor != null) ...[
@@ -398,9 +420,7 @@ class _DealsScreenState extends State<DealsScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                color: isSelected
-                    ? AppColors.primary
-                    : const Color(0xFF64748B),
+                color: isSelected ? AppColors.primary : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -462,7 +482,10 @@ class _DealsScreenState extends State<DealsScreen> {
                             Row(
                               children: [
                                 Text(
-                                  AppLocalizations.of(context).locale.languageCode == 'ar'
+                                  AppLocalizations.of(
+                                            context,
+                                          ).locale.languageCode ==
+                                          'ar'
                                       ? g.arabicOwnerName
                                       : g.ownerName,
                                   style: const TextStyle(
@@ -537,9 +560,19 @@ class _DealsScreenState extends State<DealsScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        g.isActive 
-                                            ? (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'نشط' : 'ACTIVE') 
-                                            : (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'منتهي' : 'EXPIRED'),
+                                        g.isActive
+                                            ? (AppLocalizations.of(
+                                                        context,
+                                                      ).locale.languageCode ==
+                                                      'ar'
+                                                  ? 'نشط'
+                                                  : 'ACTIVE')
+                                            : (AppLocalizations.of(
+                                                        context,
+                                                      ).locale.languageCode ==
+                                                      'ar'
+                                                  ? 'منتهي'
+                                                  : 'EXPIRED'),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w800,

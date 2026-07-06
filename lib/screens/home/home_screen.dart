@@ -32,29 +32,30 @@ class _HomeScreenState extends State<HomeScreen> {
         title: l10n.groupDeal,
         subtitle: l10n.startGroupSubtitle,
         color1: AppColors.primary,
-        color2: AppColors.primaryDark,
+        color2: AppColors.primary,
       ),
       _BannerData(
         tag: l10n.newBadge,
         title: l10n.shareAndEarn,
         subtitle: l10n.shareEarnSubtitle,
         color1: AppColors.primary,
-        color2: AppColors.primaryDark,
+        color2: AppColors.primary,
       ),
       _BannerData(
         tag: l10n.hotBadge,
         title: l10n.flashSale,
         subtitle: l10n.flashSaleDesc,
         color1: AppColors.primary,
-        color2: AppColors.primaryDark,
+        color2: AppColors.primary,
       ),
       _BannerData(
         tag: l10n.cashbackBadge,
         title: l10n.earnCashback,
         subtitle: l10n.earnCashbackDesc,
         color1: AppColors.primary,
-        color2: AppColors.primaryDark,
+        color2: AppColors.primary,
       ),
+      
     ];
   }
 
