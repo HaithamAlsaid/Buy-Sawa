@@ -1,4 +1,5 @@
 import 'package:buysawa/core/constants/app_colors.dart';
+import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:buysawa/core/utils/responsive.dart';
 import 'package:buysawa/models/product_model.dart';
@@ -26,10 +27,11 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
   final _commentCtrl = TextEditingController();
 
   void _submit() {
+    final l10n = AppLocalizations.of(context);
     if (_commentCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please write a comment before submitting.'),
+        SnackBar(
+          content: Text(l10n.writeCommentFirst),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -51,9 +53,10 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
 
     Navigator.pop(context, newReview);
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.only(
         left: R.pad(context, 24),
@@ -75,7 +78,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Write a Review',
+                l10n.writeReview,
                 style: TextStyle(
                   fontSize: R.sp(context, 18),
                   fontWeight: FontWeight.w900,
@@ -92,7 +95,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
           ),
           SizedBox(height: R.pad(context, 24)),
           Text(
-            'How would you rate this product?',
+            l10n.rateProduct,
             style: TextStyle(
               fontSize: R.sp(context, 14),
               fontWeight: FontWeight.w600,
@@ -102,7 +105,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
           SizedBox(height: R.pad(context, 12)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index){
+            children: List.generate(5, (index) {
               return GestureDetector(
                 onTap: () => setState(() => _rating = index + 1),
                 child: Padding(
@@ -118,7 +121,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
           ),
           SizedBox(height: R.pad(context, 24)),
           Text(
-            'Share your experience',
+            l10n.shareExperience,
             style: TextStyle(
               fontSize: R.sp(context, 14),
               fontWeight: FontWeight.w600,
@@ -130,7 +133,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
             controller: _commentCtrl,
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'What did you like or dislike?',
+              hintText: l10n.likeOrDislike,
               hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
               filled: true,
               fillColor: const Color(0xFFF8FAFC),
@@ -158,7 +161,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
                 elevation: 0,
               ),
               child: Text(
-                'Submit Review',
+                l10n.submitReview,
                 style: TextStyle(
                   fontSize: R.sp(context, 14),
                   fontWeight: FontWeight.w800,

@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../models/product_model.dart';
 import '../../providers/cart_provider.dart';
@@ -13,7 +14,6 @@ import '../../widgets/auth_bottom_sheet.dart';
 import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
-import '../../core/localization/app_localizations.dart';
 
 //Mock specs per product category
 Map<String, String> _specsFor(ProductModel p) {
@@ -81,6 +81,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     HapticFeedback.lightImpact();
     context.read<CartProvider>().add(widget.product);
     setState(() => _addedToCart = true);
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -89,7 +90,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                '${AppLocalizations.of(context).locale.languageCode == 'ar' ? widget.product.arabicName : widget.product.name} ${AppLocalizations.of(context).addedToCart}',
+                '${l10n.locale.languageCode == 'ar' ? widget.product.arabicName : widget.product.name} ${l10n.addedToCart}',
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
@@ -99,7 +100,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         action: SnackBarAction(
-          label: 'View Cart',
+          label: l10n.viewCart,
           textColor: Colors.white,
           onPressed: () => Navigator.push(
             context,
@@ -135,9 +136,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     setState(() => _startingGroup = false);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Text(
-          '🎉 Group Deal Created! Share your code from the Deals tab.',
+          AppLocalizations.of(context).locale.languageCode == 'ar'
+              ? '🎉 تم إنشاء الشراء الجماعي! شارك رمزك من تاب العروض.'
+              : '🎉 Group Deal Created! Share your code from the Deals tab.',
         ),
         backgroundColor: AppColors.success,
       ),
@@ -607,7 +610,7 @@ class _BadgeRatingRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(R.r(context, 20)),
           ),
           child: Text(
-            'Featured',
+            AppLocalizations.of(context).locale.languageCode == 'ar' ? 'مميّز' : 'Featured',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: R.sp(context, 11),
@@ -736,7 +739,7 @@ class _SizeSelector extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Size',
+              AppLocalizations.of(context).locale.languageCode == 'ar' ? 'المقاس' : 'Size',
               style: TextStyle(
                 fontSize: R.sp(context, 14),
                 fontWeight: FontWeight.w800,
@@ -744,7 +747,7 @@ class _SizeSelector extends StatelessWidget {
               ),
             ),
             Text(
-              'Size Guide',
+              AppLocalizations.of(context).locale.languageCode == 'ar' ? 'دليل المقاسات' : 'Size Guide',
               style: TextStyle(
                 fontSize: R.sp(context, 12),
                 color: AppColors.primary,
@@ -938,7 +941,9 @@ class _BottomBar extends StatelessWidget {
                 ),
               ),
               child: Text(
-                addedToCart ? '✓ Added' : 'Add to Cart',
+                addedToCart
+                    ? '✓ ${AppLocalizations.of(context).addedToCart}'
+                    : AppLocalizations.of(context).addToCart,
                 style: TextStyle(
                   color: addedToCart
                       ? AppColors.success
@@ -980,7 +985,7 @@ class _BottomBar extends StatelessWidget {
                       ),
                     )
                   : Text(
-                      'Start Group Buy',
+                      AppLocalizations.of(context).startGroupBuy,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
@@ -1051,7 +1056,7 @@ class _ReviewsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _SectionTitle(title: 'Reviews & Comments'),
+            _SectionTitle(title: AppLocalizations.of(context).reviewsAndComments),
             Text(
               '${product.rating} ~" (${product.reviewCount})',
               style: TextStyle(
@@ -1068,7 +1073,9 @@ class _ReviewsSection extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: R.pad(context, 20)),
               child: Text(
-                'No reviews yet. Be the first to review!',
+                AppLocalizations.of(context).locale.languageCode == 'ar'
+                    ? 'لا توجد تقييمات بعد. كن أول من يقيّم!'
+                    : 'No reviews yet. Be the first to review!',
                 style: TextStyle(
                   color: const Color(0xFF94A3B8),
                   fontSize: R.sp(context, 14),
@@ -1109,7 +1116,7 @@ class _ReviewsSection extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Write a Review',
+              AppLocalizations.of(context).writeReview,
               style: TextStyle(
                 color: const Color(0xFF0F172A),
                 fontWeight: FontWeight.w700,

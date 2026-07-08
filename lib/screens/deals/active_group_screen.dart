@@ -34,7 +34,7 @@ class ActiveGroupScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Group: ${group.code}',
+          '${AppLocalizations.of(context).locale.languageCode == 'ar' ? 'المجموعة:' : 'Group:'} ${group.code}',
           style: const TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -93,11 +93,11 @@ class ActiveGroupScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: const Color(0xFFFFE0B2)),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.access_time, color: Color(0xFFE65100), size: 16),
-                  SizedBox(width: 6),
+                  const Icon(Icons.access_time, color: Color(0xFFE65100), size: 16),
+                  const SizedBox(width: 6),
                   Text(
                     'Expires in 47:59:11',
                     style: TextStyle(
@@ -239,9 +239,9 @@ class ActiveGroupScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: const Text(
-                'Checkout',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الدفع' : 'Checkout',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w800,

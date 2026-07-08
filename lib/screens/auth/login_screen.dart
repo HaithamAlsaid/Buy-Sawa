@@ -43,9 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.locale.languageCode == 'ar'
-              ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
-              : 'Invalid email or password'),
+          content: Text(
+            l10n.locale.languageCode == 'ar'
+                ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
+                : 'Invalid email or password',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -114,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          //3 Close button 
+          //3 Close button
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -135,15 +137,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white.withOpacity(0.22),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.close_rounded,
-                        color: Colors.white, size: R.icon(context, 20)),
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: R.icon(context, 20),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
 
-          //4. Header text 
+          //4. Header text
           Positioned(
             top: 0,
             left: 0,
@@ -164,21 +169,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         children: const [
                           TextSpan(
-                              text: 'Buy SA',
-                              style: TextStyle(color: Colors.white)),
+                            text: 'Buy SA',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           TextSpan(
-                              text: 'W',
-                              style: TextStyle(color: orangeColor)),
+                            text: 'W',
+                            style: TextStyle(color: orangeColor),
+                          ),
                           TextSpan(
-                              text: 'A',
-                              style: TextStyle(color: Colors.white)),
+                            text: 'A',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                     ),
                     SizedBox(height: R.pad(context, 12)),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal: R.pad(context, 48)),
+                        horizontal: R.pad(context, 48),
+                      ),
                       child: Text(
                         AppLocalizations.of(context).loginSubtitle,
                         textAlign: TextAlign.center,
@@ -196,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          //5. White card 
+          //5. White card
           Positioned(
             top: headerH - R.pad(context, 70),
             left: 0,
@@ -241,7 +250,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: '${AppLocalizations.of(context).welcomeBackTitle} ',
+                                  text:
+                                      '${AppLocalizations.of(context).welcomeBackTitle} ',
                                   style: TextStyle(
                                     fontSize: R.sp(context, 24),
                                     fontWeight: FontWeight.w900,
@@ -266,20 +276,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: R.pad(context, 24)),
 
                           // Email
-                          Text(AppLocalizations.of(context).email, style: _labelStyle(context)),
+                          Text(
+                            AppLocalizations.of(context).email,
+                            style: _labelStyle(context),
+                          ),
                           SizedBox(height: R.pad(context, 8)),
                           TextFormField(
                             controller: _emailCtrl,
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(fontSize: R.sp(context, 14)),
-                            decoration: _field(context,
-                                hint: 'you@example.com',
-                                icon: Icons.mail_outline_rounded),
+                            decoration: _field(
+                              context,
+                              hint: 'you@example.com',
+                              icon: Icons.mail_outline_rounded,
+                            ),
                           ),
                           SizedBox(height: R.pad(context, 16)),
 
                           // Password
-                          Text(AppLocalizations.of(context).password, style: _labelStyle(context)),
+                          Text(
+                            AppLocalizations.of(context).password,
+                            style: _labelStyle(context),
+                          ),
                           SizedBox(height: R.pad(context, 8)),
                           TextFormField(
                             controller: _passCtrl,
@@ -308,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
-                              onTap: () {},
+                              onTap: () => _showForgotPasswordSheet(context),
                               child: Text(
                                 AppLocalizations.of(context).forgotPassword,
                                 style: TextStyle(
@@ -326,13 +344,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             height: R.pad(context, 48),
                             child: ElevatedButton(
-                              onPressed: _isFormValid && !_loading ? _login : null,
+                              onPressed: _isFormValid && !_loading
+                                  ? _login
+                                  : null,
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                disabledBackgroundColor: const Color(0xFFCBD5E1),
+                                backgroundColor: AppColors.primary,
+                                disabledBackgroundColor: const Color(
+                                  0xFFCBD5E1,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(R.r(context, 14))),
+                                  borderRadius: BorderRadius.circular(
+                                    R.r(context, 14),
+                                  ),
+                                ),
                                 elevation: 0,
                               ),
                               child: _loading
@@ -340,12 +364,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                       width: R.icon(context, 22),
                                       height: R.icon(context, 22),
                                       child: const CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2.5))
-                                  : Text(AppLocalizations.of(context).login,
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : Text(
+                                      AppLocalizations.of(context).login,
                                       style: TextStyle(
-                                          fontSize: R.sp(context, 16),
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.white)),
+                                        fontSize: R.sp(context, 16),
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
                           SizedBox(height: R.pad(context, 22)),
@@ -354,19 +384,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             children: [
                               const Expanded(
-                                  child: Divider(color: Color(0xFFE2E8F0))),
+                                child: Divider(color: Color(0xFFE2E8F0)),
+                              ),
                               Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: R.pad(context, 14)),
-                                child: Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? 'أو' : 'OR',
-                                    style: TextStyle(
-                                        color: const Color(0xFF94A3B8),
-                                        fontSize: R.sp(context, 11),
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 1)),
+                                  horizontal: R.pad(context, 14),
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(
+                                            context,
+                                          ).locale.languageCode ==
+                                          'ar'
+                                      ? 'أو'
+                                      : 'OR',
+                                  style: TextStyle(
+                                    color: const Color(0xFF94A3B8),
+                                    fontSize: R.sp(context, 11),
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
                               ),
                               const Expanded(
-                                  child: Divider(color: Color(0xFFE2E8F0))),
+                                child: Divider(color: Color(0xFFE2E8F0)),
+                              ),
                             ],
                           ),
                           SizedBox(height: R.pad(context, 16)),
@@ -379,10 +420,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _loading ? null : _googleLogin,
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(
-                                    color: Color(0xFFE2E8F0), width: 1.2),
+                                  color: Color(0xFFE2E8F0),
+                                  width: 1.2,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        R.r(context, 14))),
+                                  borderRadius: BorderRadius.circular(
+                                    R.r(context, 14),
+                                  ),
+                                ),
                                 backgroundColor: Colors.white,
                               ),
                               child: Row(
@@ -393,16 +438,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                     width: R.icon(context, 22),
                                     height: R.icon(context, 22),
                                     errorBuilder: (_, __, ___) => Icon(
-                                        Icons.g_mobiledata_rounded,
-                                        color: Colors.blue,
-                                        size: R.icon(context, 28)),
+                                      Icons.g_mobiledata_rounded,
+                                      color: Colors.blue,
+                                      size: R.icon(context, 28),
+                                    ),
                                   ),
                                   SizedBox(width: R.pad(context, 10)),
-                                  Text(AppLocalizations.of(context).continueWithGoogle,
-                                      style: TextStyle(
-                                          fontSize: R.sp(context, 14),
-                                          fontWeight: FontWeight.w700,
-                                          color: const Color(0xFF0F172A))),
+                                  Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    ).continueWithGoogle,
+                                    style: TextStyle(
+                                      fontSize: R.sp(context, 14),
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF0F172A),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -417,20 +468,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppLocalizations.of(context).dontHaveAccount + ' ',
-                          style: TextStyle(
-                              color: const Color(0xFF64748B),
-                          fontSize: R.sp(context, 13))),
+                      Text(
+                        AppLocalizations.of(context).dontHaveAccount + ' ',
+                        style: TextStyle(
+                          color: const Color(0xFF64748B),
+                          fontSize: R.sp(context, 13),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const RegisterScreen())),
-                        child: Text(AppLocalizations.of(context).createAccount,
-                            style: TextStyle(
-                                color: orangeColor,
-                                fontSize: R.sp(context, 13),
-                                fontWeight: FontWeight.w800)),
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterScreen(),
+                          ),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context).createAccount,
+                          style: TextStyle(
+                            color: orangeColor,
+                            fontSize: R.sp(context, 13),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -443,11 +502,231 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _showForgotPasswordSheet(BuildContext context) {
+    final emailCtrl = TextEditingController();
+    bool sending = false;
+    bool sent = false;
+    final l10n = AppLocalizations.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  R.pad(context, 24),
+                  R.pad(context, 28),
+                  R.pad(context, 24),
+                  R.pad(context, 36),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFCBD5E1),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: R.pad(context, 24)),
+
+                    if (!sent) ...[
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.lock_reset_rounded,
+                            color: AppColors.primary, size: 28),
+                      ),
+                      SizedBox(height: R.pad(context, 16)),
+                      Text(
+                        l10n.forgotPassword,
+                        style: TextStyle(
+                          fontSize: R.sp(context, 20),
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
+                      SizedBox(height: R.pad(context, 6)),
+                      Text(
+                        l10n.locale.languageCode == 'ar'
+                            ? 'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور'
+                            : 'Enter your email and we\'ll send you a reset link',
+                        style: TextStyle(
+                          fontSize: R.sp(context, 13),
+                          color: const Color(0xFF64748B),
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: R.pad(context, 24)),
+                      TextField(
+                        controller: emailCtrl,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(fontSize: R.sp(context, 14)),
+                        decoration: InputDecoration(
+                          hintText: 'you@example.com',
+                          hintStyle: TextStyle(
+                              color: const Color(0xFF94A3B8),
+                              fontSize: R.sp(context, 14)),
+                          prefixIcon: const Icon(Icons.mail_outline_rounded,
+                              color: Color(0xFF94A3B8), size: 20),
+                          filled: true,
+                          fillColor: const Color(0xFFF8FAFC),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: R.pad(context, 20)),
+                      SizedBox(
+                        width: double.infinity,
+                        height: R.pad(context, 50),
+                        child: ElevatedButton(
+                          onPressed: sending
+                              ? null
+                              : () async {
+                                  if (emailCtrl.text.trim().isEmpty) return;
+                                  setSheetState(() => sending = true);
+                                  await Future.delayed(const Duration(seconds: 2));
+                                  setSheetState(() {
+                                    sending = false;
+                                    sent = true;
+                                  });
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            disabledBackgroundColor: const Color(0xFFCBD5E1),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
+                          child: sending
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2.5),
+                                )
+                              : Text(
+                                  l10n.locale.languageCode == 'ar'
+                                      ? 'إرسال رابط الاستعادة'
+                                      : 'Send Reset Link',
+                                  style: TextStyle(
+                                    fontSize: R.sp(context, 15),
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ] else ...[
+                      Center(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: AppColors.success.withOpacity(0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.mark_email_read_rounded,
+                                  color: AppColors.success, size: 40),
+                            ),
+                            SizedBox(height: R.pad(context, 20)),
+                            Text(
+                              l10n.locale.languageCode == 'ar'
+                                  ? 'تم إرسال الرابط!'
+                                  : 'Link Sent!',
+                              style: TextStyle(
+                                fontSize: R.sp(context, 22),
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF0F172A),
+                              ),
+                            ),
+                            SizedBox(height: R.pad(context, 8)),
+                            Text(
+                              l10n.locale.languageCode == 'ar'
+                                  ? 'تحقق من بريدك الإلكتروني واتبع التعليمات لإعادة تعيين كلمة المرور'
+                                  : 'Check your email and follow the instructions to reset your password',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: R.sp(context, 13),
+                                color: const Color(0xFF64748B),
+                                height: 1.5,
+                              ),
+                            ),
+                            SizedBox(height: R.pad(context, 28)),
+                            SizedBox(
+                              width: double.infinity,
+                              height: R.pad(context, 50),
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14)),
+                                ),
+                                child: Text(
+                                  l10n.ok,
+                                  style: TextStyle(
+                                    fontSize: R.sp(context, 15),
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   TextStyle _labelStyle(BuildContext context) => TextStyle(
-        fontSize: R.sp(context, 13),
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF334155),
-      );
+    fontSize: R.sp(context, 13),
+    fontWeight: FontWeight.w700,
+    color: const Color(0xFF334155),
+  );
 
   InputDecoration _field(
     BuildContext context, {
@@ -458,24 +737,33 @@ class _LoginScreenState extends State<LoginScreen> {
     return InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(
-          color: const Color(0xFF94A3B8), fontSize: R.sp(context, 14)),
-      prefixIcon: Icon(icon,
-          color: const Color(0xFF94A3B8), size: R.icon(context, 20)),
+        color: const Color(0xFF94A3B8),
+        fontSize: R.sp(context, 14),
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: const Color(0xFF94A3B8),
+        size: R.icon(context, 20),
+      ),
       suffixIcon: suffix,
       filled: true,
       fillColor: Colors.white,
       contentPadding: EdgeInsets.symmetric(
-          horizontal: R.pad(context, 16), vertical: R.pad(context, 14)),
+        horizontal: R.pad(context, 16),
+        vertical: R.pad(context, 14),
+      ),
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(R.r(context, 12)),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+        borderRadius: BorderRadius.circular(R.r(context, 12)),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
       enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(R.r(context, 12)),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+        borderRadius: BorderRadius.circular(R.r(context, 12)),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
       focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(R.r(context, 12)),
-          borderSide:
-              const BorderSide(color: AppColors.primary, width: 1.5)),
+        borderRadius: BorderRadius.circular(R.r(context, 12)),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
     );
   }
 }

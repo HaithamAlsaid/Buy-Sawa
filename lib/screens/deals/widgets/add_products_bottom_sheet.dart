@@ -9,6 +9,8 @@ class AddProductsBottomSheet extends StatefulWidget {
     return showModalBottomSheet<List<Map<String, dynamic>>>(
       context: context,
       isScrollControlled: true,
+      enableDrag: false,
+      isDismissible: false,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -22,8 +24,7 @@ class AddProductsBottomSheet extends StatefulWidget {
 }
 
 class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
-  int _selectedFilter = 2; // Default 'Top Brands'
-
+  int _selectedFilter = 2; 
   final List<Map<String, dynamic>> _dummyProducts = [
     {'name': 'PowerBank 20k mAh', 'price': '99', 'code': 'PB20K', 'icon': Icons.image_outlined, 'isAdded': false},
     {'name': 'Sony WH-1000XM5', 'price': '1299', 'code': 'SONYXM5', 'icon': Icons.headphones_rounded, 'isAdded': false},
@@ -36,21 +37,9 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: 20),
       child: Column(
         children: [
-          // Drag handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1), // Slate 300
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
           // Header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -123,10 +112,15 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               itemCount: _dummyProducts.length,
+              addAutomaticKeepAlives: true,
+              addRepaintBoundaries: true,
               separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final product = _dummyProducts[index];
+                final bool isAdded = product['isAdded'] as bool;
+                final IconData productIcon = product['icon'] as IconData;
                 return Container(
+                  key: ValueKey(product['code']),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -144,7 +138,7 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
-                          product['icon'] as IconData,
+                          productIcon,
                           color: const Color(0xFF94A3B8),
                           size: 28,
                         ),
@@ -201,22 +195,22 @@ class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            product['isAdded'] = !(product['isAdded'] as bool);
+                            _dummyProducts[index]['isAdded'] = !isAdded;
                           });
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: (product['isAdded'] as bool) ? AppColors.success : AppColors.primary,
+                            color: isAdded ? AppColors.success : AppColors.primary,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon((product['isAdded'] as bool) ? Icons.check_rounded : Icons.add_rounded, color: Colors.white, size: 14),
+                              Icon(isAdded ? Icons.check_rounded : Icons.add_rounded, color: Colors.white, size: 14),
                               const SizedBox(width: 4),
                               Text(
-                                (product['isAdded'] as bool) ? AppLocalizations.of(context).addedToCart : AppLocalizations.of(context).addBtn,
+                                isAdded ? AppLocalizations.of(context).addedToCart : AppLocalizations.of(context).addBtn,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,

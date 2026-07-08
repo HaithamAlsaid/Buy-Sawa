@@ -5,6 +5,7 @@ import '../../core/constants/app_colors.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
+import '../../widgets/payment_method_sheet.dart';
 import '../../core/localization/app_localizations.dart';
 
 class CartScreen extends StatefulWidget {
@@ -15,50 +16,28 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  bool _checkingOut = false;
 
   @override
   void dispose() {
     super.dispose();
   }
 
-  void _checkout() async {
+  void _checkout() {
     final auth = context.read<AuthProvider>();
     if (auth.isGuest) {
       AuthBottomSheet.show(context);
       return;
     }
-    setState(() => _checkingOut = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
 
     final cart = context.read<CartProvider>();
-    final total = cart.total;
-    cart.clear();
-    setState(() => _checkingOut = false);
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    showDialog(
+    final total = cart.subtotal + 25.0;
+
+    showModalBottomSheet(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.orderPlaced,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.check_circle_rounded,
-              color: AppColors.success, size: 60),
-          const SizedBox(height: 12),
-          Text('${l10n.orderPlacedSuccessfully}\n${l10n.total}: ${total.toInt()} ${l10n.aed}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textGray)),
-        ]),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).popUntil((r) => r.isFirst),
-            child: Text(l10n.continueShopping),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => PaymentMethodSheet(
+        totalAmount: total,
       ),
     );
   }
@@ -208,7 +187,7 @@ class _CartScreenState extends State<CartScreen> {
                           width: double.infinity,
                           height: 54,
                           child: ElevatedButton(
-                            onPressed: _checkingOut ? null : _checkout,
+                            onPressed: _checkout,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(
@@ -216,21 +195,15 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                               elevation: 0,
                             ),
-                            child: _checkingOut
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white, strokeWidth: 2.5))
-                                : Text(
-                                    auth.isGuest
-                                        ? l10n.signInToCheckout
-                                        : l10n.proceedToCheckout,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white),
-                                  ),
+                            child: Text(
+                              auth.isGuest
+                                  ? l10n.signInToCheckout
+                                  : l10n.proceedToCheckout,
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 32),

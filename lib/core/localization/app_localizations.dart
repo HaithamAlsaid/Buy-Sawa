@@ -215,6 +215,12 @@ class AppLocalizations {
   String get specifications => _t('specifications');
   String get viewAllSpecs => _t('viewAllSpecs');
   String get reviewsAndComments => _t('reviewsAndComments');
+  String get writeReview => _t('writeReview');
+  String get rateProduct => _t('rateProduct');
+  String get shareExperience => _t('shareExperience');
+  String get likeOrDislike => _t('likeOrDislike');
+  String get submitReview => _t('submitReview');
+  String get writeCommentFirst => _t('writeCommentFirst');
 
   // ─── Cart ──────────────────────────────────────────────────
   String get myCart => _t('myCart');
@@ -470,6 +476,12 @@ class AppLocalizations {
       'faq4q': '?How long does delivery take',
       'faq5q': '?Can I cancel my order',
       'faq6q': '?What are SAWA Coins',
+      'writeReview': 'Write a Review',
+      'rateProduct': 'How would you rate this product?',
+      'shareExperience': 'Share your experience',
+      'likeOrDislike': 'What did you like or dislike?',
+      'submitReview': 'Submit Review',
+      'writeCommentFirst': 'Please write a comment before submitting.',
     },
 
     //ARABIC
@@ -677,6 +689,12 @@ class AppLocalizations {
       'faq4q': 'كم يستغرق التوصيل؟',
       'faq5q': 'هل يمكنني إلغاء طلبي؟',
       'faq6q': 'ما هي عملات ساوا؟',
+      'writeReview': 'كتابة تقييم',
+      'rateProduct': 'كيف تقيّم هذا المنتج؟',
+      'shareExperience': 'شارك تجربتك',
+      'likeOrDislike': 'ما الذي أعجبك أو لم يعجبك؟',
+      'submitReview': 'إرسال التقييم',
+      'writeCommentFirst': 'يرجى كتابة تعليق قبل الإرسال.',
     },
   };
 }
