@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import '../core/services/secure_storage_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const _key = 'isLoggedIn';
@@ -9,14 +10,29 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn;
   UserModel? _user;
 
-  AuthProvider(this._prefs)
-      : _isLoggedIn = _prefs.getBool(_key) ?? false {
+  AuthProvider(this._prefs) : _isLoggedIn = _prefs.getBool(_key) ?? false {
     if (_isLoggedIn) _loadMockUser();
+    // ─── تحقق من الـ Secure Token عند الإقلاع
+    _verifyTokenOnStartup();
   }
 
   bool get isLoggedIn => _isLoggedIn;
   bool get isGuest => !_isLoggedIn;
   UserModel? get user => _user;
+
+  /// تتحقق إن التوكن المحفوظ موجود فعلاً في SecureStorage
+  /// لو مش موجود تعمل logout تلقائي
+  Future<void> _verifyTokenOnStartup() async {
+    if (_isLoggedIn) {
+      final hasToken = await SecureStorageService.hasToken();
+      if (!hasToken) {
+        _isLoggedIn = false;
+        _user = null;
+        await _prefs.setBool(_key, false);
+        notifyListeners();
+      }
+    }
+  }
 
   void _loadMockUser() {
     _user = UserModel(
@@ -77,6 +93,7 @@ class AuthProvider extends ChangeNotifier {
     _isLoggedIn = false;
     _user = null;
     await _prefs.setBool(_key, false);
+    await SecureStorageService.clearToken();
     notifyListeners();
   }
 }

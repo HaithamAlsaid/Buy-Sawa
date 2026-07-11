@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
         color1: AppColors.primary,
         color2: AppColors.primary,
       ),
-      
     ];
   }
 
@@ -65,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _startAutoScroll();
   }
 
-  void _startAutoScroll(){
+  void _startAutoScroll() {
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
       final banners = _getBanners(context);
@@ -94,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          // ── AppBar 
+          // ── AppBar
           SliverAppBar(
             pinned: true,
             floating: false,
@@ -145,8 +144,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Cart
                     GestureDetector(
-                      onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const CartScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartScreen()),
+                      ),
                       child: Container(
                         width: 44,
                         height: 44,
@@ -158,8 +159,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           clipBehavior: Clip.none,
                           alignment: Alignment.center,
                           children: [
-                            const Icon(Icons.shopping_cart_outlined,
-                                color: Colors.white, size: 22),
+                            const Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Colors.white,
+                              size: 22,
+                            ),
                             if (cartCount > 0)
                               Positioned(
                                 top: -2,
@@ -169,7 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFFF4757), // Red badge
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: AppColors.primary, width: 2),
+                                    border: Border.all(
+                                      color: AppColors.primary,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: Text(
                                     '$cartCount',
@@ -189,8 +196,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 12),
                     // Notifications
                     GestureDetector(
-                      onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      ),
                       child: Container(
                         width: 44,
                         height: 44,
@@ -202,8 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           clipBehavior: Clip.none,
                           alignment: Alignment.center,
                           children: [
-                            const Icon(Icons.notifications_outlined,
-                                color: Colors.white, size: 22),
+                            const Icon(
+                              Icons.notifications_outlined,
+                              color: Colors.white,
+                              size: 22,
+                            ),
                             Positioned(
                               top: 2,
                               right: 2,
@@ -213,7 +227,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF5A623), // Orange dot
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: AppColors.primary, width: 2),
+                                  border: Border.all(
+                                    color: AppColors.primary,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
                             ),
@@ -232,6 +249,47 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ── Search Bar ─────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16), // حواف ناعمة (Rounded Rectangle)
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).locale.languageCode == 'ar' 
+                          ? 'ابحث عن منتجات، ماركات وأكثر...' 
+                          : 'Search for products, brands and more...',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF9E9E9E), // Lighter grey for hint
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Icon(Icons.search, color: AppColors.primary, size: 24),
+                        ),
+                        suffixIcon: const Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Icon(Icons.tune, color: AppColors.primary, size: 22), // 3 horizontal sliders
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                      ),
+                    ),
+                  ),
+                ),
+
                 // ── Hero Banner ─────────────────────────────────
                 const SizedBox(height: 16),
                 Padding(
@@ -243,8 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: PageView.builder(
                         controller: _bannerCtrl,
                         itemCount: _getBanners(context).length,
-                        onPageChanged: (i) =>
-                            setState(() => _bannerIndex = i),
+                        onPageChanged: (i) => setState(() => _bannerIndex = i),
                         itemBuilder: (_, i) =>
                             _BannerCard(data: _getBanners(context)[i]),
                       ),
@@ -368,16 +425,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      childAspectRatio: 0.62,
-                    ),
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 0.62,
+                        ),
                     itemCount: productProvider.trending.length,
                     itemBuilder: (_, i) {
-                      return ProductCard(
-                        product: productProvider.trending[i],
-                      )
+                      return ProductCard(product: productProvider.trending[i])
                           .animate(delay: (i * 80).ms)
                           .fadeIn(duration: 350.ms)
                           .slideY(begin: 0.15, end: 0);
@@ -391,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      );
+    );
   }
 }
 
@@ -461,8 +516,10 @@ class _BannerCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(6),
@@ -490,7 +547,7 @@ class _BannerCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   data.subtitle,
-                  style: TextStyle( 
+                  style: TextStyle(
                     color: Colors.white.withOpacity(0.85),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
@@ -505,7 +562,7 @@ class _BannerCard extends StatelessWidget {
   }
 }
 
-//Category Chip 
+//Category Chip
 class _CategoryChip extends StatelessWidget {
   final CategoryModel category;
   const _CategoryChip({required this.category});
@@ -566,8 +623,8 @@ class _CategoryChip extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              AppLocalizations.of(context).locale.languageCode == 'ar' 
-                  ? category.arabicName 
+              AppLocalizations.of(context).locale.languageCode == 'ar'
+                  ? category.arabicName
                   : category.name,
               style: const TextStyle(
                 fontSize: 11,

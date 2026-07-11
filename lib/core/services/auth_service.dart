@@ -4,8 +4,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // import 'dart:convert';
 // import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_model.dart';
+import 'secure_storage_service.dart';
 
 class AuthResult {
   final bool success;
@@ -16,26 +16,12 @@ class AuthResult {
 }
 
 class AuthService {
-  static const _tokenKey = 'auth_token';
-  static const _loggedInKey = 'isLoggedIn';
-
   // ─── Token Management ────────────────────────────────────────
-  static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
-  }
+  static Future<String?> getToken() => SecureStorageService.getToken();
 
-  static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
-    await prefs.setBool(_loggedInKey, true);
-  }
+  static Future<void> saveToken(String token) => SecureStorageService.saveToken(token);
 
-  static Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    await prefs.setBool(_loggedInKey, false);
-  }
+  static Future<void> clearToken() => SecureStorageService.clearToken();
 
   // ─── Login ───────────────────────────────────────────────────
   // REAL API (uncomment when API is ready):
@@ -79,15 +65,35 @@ class AuthService {
     return const AuthResult(success: false, error: 'Invalid email or password');
   }
 
-  // ─── Register ────────────────────────────────────────────────
+  //Register 
   // REAL API (uncomment when API is ready):
-  // static Future<AuthResult> register({...}) async {
+  // static Future<AuthResult> register({
+  //   required String fullName,
+  //   required String email,
+  //   required String password,
+  //   required String phone,
+  //   String? referralCode,
+  // }) async {
   //   final res = await http.post(
   //     Uri.parse(ApiService.registerEndpoint),
   //     headers: ApiService.headers(),
-  //     body: jsonEncode({...}),
+  //     body: jsonEncode({
+  //       'full_name': fullName,
+  //       'email': email,
+  //       'password': password,
+  //       'phone': phone,
+  //       if (referralCode != null && referralCode.isNotEmpty)
+  //         'referral_code': referralCode,
+  //     }),
   //   );
-  //   ...
+  //   if (res.statusCode == 201) {
+  //     final data = jsonDecode(res.body);
+  //     final token = data['token'];
+  //     final user = UserModel.fromJson(data['user']);
+  //     await saveToken(token);
+  //     return AuthResult(success: true, token: token, user: user);
+  //   }
+  //   return AuthResult(success: false, error: jsonDecode(res.body)['message']);
   // }
 
   // MOCK (remove when API is ready):

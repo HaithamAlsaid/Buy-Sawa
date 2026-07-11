@@ -22,6 +22,29 @@ class TransactionModel {
   });
 
   bool get isCredit => amount > 0;
+
+  static TransactionType _typeFromString(String type) {
+    switch (type) {
+      case 'cashback':    return TransactionType.cashback;
+      case 'referral':    return TransactionType.referral;
+      case 'purchase':    return TransactionType.purchase;
+      case 'groupReward': return TransactionType.groupReward;
+      default:            return TransactionType.purchase;
+    }
+  }
+
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    return TransactionModel(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      arabicTitle: json['arabic_title'] as String? ?? json['title'] as String,
+      subtitle: json['subtitle'] as String? ?? '',
+      arabicSubtitle: json['arabic_subtitle'] as String? ?? '',
+      amount: (json['amount'] as num).toDouble(),
+      type: _typeFromString(json['type'] as String),
+      date: DateTime.parse(json['date'] as String),
+    );
+  }
 }
 
 final List<TransactionModel> mockTransactions = [

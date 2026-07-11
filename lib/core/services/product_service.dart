@@ -8,19 +8,34 @@ import '../../models/product_model.dart';
 import '../../models/category_model.dart';
 // import 'api_service.dart';
 // import 'auth_service.dart';
+// import 'cache_service.dart';
 
 class ProductService {
   // ─── Get All Products ────────────────────────────────────────
   // REAL API (uncomment when API is ready):
   // static Future<List<ProductModel>> getProducts({String? query, String? category}) async {
-  //   final token = await AuthService.getToken();
-  //   var url = ApiService.productsEndpoint;
-  //   if (query != null) url += '?q=$query';
-  //   if (category != null) url += '${query != null ? '&' : '?'}category=$category';
-  //   final res = await http.get(Uri.parse(url), headers: ApiService.headers(token: token));
-  //   if (res.statusCode == 200) {
-  //     final data = jsonDecode(res.body) as List;
-  //     return data.map((e) => ProductModel.fromJson(e)).toList();
+  //   try {
+  //     final token = await AuthService.getToken();
+  //     var url = ApiService.productsEndpoint;
+  //     if (query != null) url += '?q=$query';
+  //     if (category != null) url += '${query != null ? '&' : '?'}category=$category';
+  //     final res = await http.get(Uri.parse(url), headers: ApiService.headers(token: token));
+  //     if (res.statusCode == 200) {
+  //       final data = jsonDecode(res.body) as List;
+  //       await CacheService.saveProducts(data); // حفظ في الكاش
+  //       return data.map((e) => ProductModel.fromJson(e)).toList();
+  //     }
+  //   } catch (e) {
+  //     // في حالة عدم وجود إنترنت، نسترجع من الكاش
+  //     final cachedData = await CacheService.getCachedProducts();
+  //     if (cachedData != null) {
+  //       var list = cachedData.map((e) => ProductModel.fromJson(e)).toList();
+  //       if (category != null) list = list.where((p) => p.category == category).toList();
+  //       if (query != null && query.isNotEmpty) {
+  //         list = list.where((p) => p.name.toLowerCase().contains(query.toLowerCase())).toList();
+  //       }
+  //       return list;
+  //     }
   //   }
   //   return [];
   // }
@@ -68,10 +83,18 @@ class ProductService {
   // ─── Get Categories ──────────────────────────────────────────
   // REAL API (uncomment when API is ready):
   // static Future<List<CategoryModel>> getCategories() async {
-  //   final res = await http.get(Uri.parse(ApiService.categoriesEndpoint));
-  //   if (res.statusCode == 200) {
-  //     final data = jsonDecode(res.body) as List;
-  //     return data.map((e) => CategoryModel.fromJson(e)).toList();
+  //   try {
+  //     final res = await http.get(Uri.parse(ApiService.categoriesEndpoint));
+  //     if (res.statusCode == 200) {
+  //       final data = jsonDecode(res.body) as List;
+  //       await CacheService.saveCategories(data);
+  //       return data.map((e) => CategoryModel.fromJson(e)).toList();
+  //     }
+  //   } catch (e) {
+  //     final cachedData = await CacheService.getCachedCategories();
+  //     if (cachedData != null) {
+  //       return cachedData.map((e) => CategoryModel.fromJson(e)).toList();
+  //     }
   //   }
   //   return [];
   // }

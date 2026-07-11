@@ -6,18 +6,27 @@
 import '../../models/group_buy_model.dart';
 // import 'api_service.dart';
 // import 'auth_service.dart';
+// import 'cache_service.dart';
 
 class GroupBuyService {
   // REAL API (uncomment when API is ready):
   // static Future<List<GroupBuyModel>> getActiveGroups() async {
-  //   final token = await AuthService.getToken();
-  //   final res = await http.get(
-  //     Uri.parse('${ApiService.groupsEndpoint}?status=active'),
-  //     headers: ApiService.headers(token: token),
-  //   );
-  //   if (res.statusCode == 200) {
-  //     final data = jsonDecode(res.body) as List;
-  //     return data.map((e) => GroupBuyModel.fromJson(e)).toList();
+  //   try {
+  //     final token = await AuthService.getToken();
+  //     final res = await http.get(
+  //       Uri.parse('${ApiService.groupsEndpoint}?status=active'),
+  //       headers: ApiService.headers(token: token),
+  //     );
+  //     if (res.statusCode == 200) {
+  //       final data = jsonDecode(res.body) as List;
+  //       await CacheService.saveActiveGroups(data); // حفظ في الكاش
+  //       return data.map((e) => GroupBuyModel.fromJson(e)).toList();
+  //     }
+  //   } catch (e) {
+  //     final cachedData = await CacheService.getCachedActiveGroups();
+  //     if (cachedData != null) {
+  //       return cachedData.map((e) => GroupBuyModel.fromJson(e)).toList();
+  //     }
   //   }
   //   return [];
   // }
@@ -28,6 +37,29 @@ class GroupBuyService {
     return mockGroupBuys.where((g) => g.isActive).toList();
   }
 
+  // REAL API (uncomment when API is ready):
+  // static Future<List<GroupBuyModel>> getAllGroups() async {
+  //   try {
+  //     final token = await AuthService.getToken();
+  //     final res = await http.get(
+  //       Uri.parse(ApiService.groupsEndpoint),
+  //       headers: ApiService.headers(token: token),
+  //     );
+  //     if (res.statusCode == 200) {
+  //       final data = jsonDecode(res.body) as List;
+  //       await CacheService.saveAllGroups(data); // حفظ في الكاش
+  //       return data.map((e) => GroupBuyModel.fromJson(e)).toList();
+  //     }
+  //   } catch (e) {
+  //     final cachedData = await CacheService.getCachedAllGroups();
+  //     if (cachedData != null) {
+  //       return cachedData.map((e) => GroupBuyModel.fromJson(e)).toList();
+  //     }
+  //   }
+  //   return [];
+  // }
+
+  // MOCK:
   static Future<List<GroupBuyModel>> getAllGroups() async {
     await Future.delayed(const Duration(milliseconds: 700));
     return List.from(mockGroupBuys);

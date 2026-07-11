@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
@@ -15,7 +14,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
 
-      // ── Typography ───────────────────────────────────────────
+      //Typography
       textTheme: GoogleFonts.interTextTheme().copyWith(
         displayLarge: GoogleFonts.inter(
           fontSize: 32, fontWeight: FontWeight.w800, color: AppColors.textDark,
@@ -49,7 +48,7 @@ class AppTheme {
         ),
       ),
 
-      // ── AppBar ───────────────────────────────────────────────
+      //AppBar 
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
@@ -61,7 +60,7 @@ class AppTheme {
         ),
       ),
 
-      // ── Elevated Button ──────────────────────────────────────
+      //Elevated Button 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,

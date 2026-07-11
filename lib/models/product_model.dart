@@ -39,6 +39,31 @@ class ProductModel {
     if (originalPrice == null || originalPrice! <= price) return 0;
     return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
   }
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      arabicName: json['arabic_name'] as String? ?? json['name'] as String,
+      category: json['category'] as String,
+      price: (json['price'] as num).toDouble(),
+      originalPrice: (json['original_price'] as num?)?.toDouble(),
+      rating: (json['rating'] as num).toDouble(),
+      reviewCount: json['review_count'] as int? ?? 0,
+      imageUrl: json['image_url'] as String,
+      alternateImages: (json['alternate_images'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      description: json['description'] as String,
+      arabicDescription: json['arabic_description'] as String? ?? json['description'] as String,
+      hasGroupDeal: json['has_group_deal'] as bool? ?? false,
+      groupDealDiscount: json['group_deal_discount'] as int?,
+      shareEarnPercent: (json['share_earn_percent'] as num?)?.toDouble(),
+      reviews: (json['reviews'] as List<dynamic>?)
+          ?.map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+    );
+  }
 }
 
 class ProductReview {
@@ -57,6 +82,17 @@ class ProductReview {
     required this.date,
     required this.comment,
   });
+
+  factory ProductReview.fromJson(Map<String, dynamic> json) {
+    return ProductReview(
+      id: json['id'] as String,
+      userName: json['user_name'] as String,
+      userAvatarUrl: json['user_avatar_url'] as String? ?? '',
+      rating: (json['rating'] as num).toDouble(),
+      date: DateTime.parse(json['date'] as String),
+      comment: json['comment'] as String,
+    );
+  }
 }
 
 // ──── Mock Data ────────────────────────────────────────────────

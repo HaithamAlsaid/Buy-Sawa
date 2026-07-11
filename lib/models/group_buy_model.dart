@@ -28,6 +28,25 @@ class GroupBuyModel {
   });
 
   double get progressPercent => memberCount / maxMembers;
+
+  factory GroupBuyModel.fromJson(Map<String, dynamic> json) {
+    return GroupBuyModel(
+      id: json['id'] as String,
+      code: json['code'] as String,
+      ownerName: json['owner_name'] as String,
+      arabicOwnerName: json['arabic_owner_name'] as String? ?? json['owner_name'] as String,
+      memberCount: json['member_count'] as int,
+      maxMembers: json['max_members'] as int,
+      isActive: json['is_active'] as bool,
+      productId: json['product_id'] as String,
+      productName: json['product_name'] as String,
+      arabicProductName: json['arabic_product_name'] as String? ?? json['product_name'] as String,
+      discountPercent: json['discount_percent'] as int,
+      expiresAt: json['expires_at'] != null
+          ? DateTime.parse(json['expires_at'] as String)
+          : null,
+    );
+  }
 }
 
 final List<GroupBuyModel> mockGroupBuys = [
