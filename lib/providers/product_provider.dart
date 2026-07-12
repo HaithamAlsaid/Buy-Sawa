@@ -32,4 +32,12 @@ class ProductProvider extends ChangeNotifier {
     _selectedCategory = cat;
     notifyListeners();
   }
+
+  Future<void> refreshProducts() async {
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
+    // Shuffle the products to simulate "new" items appearing
+    _all.shuffle();
+    notifyListeners();
+  }
 }

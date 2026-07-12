@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
 
-// ── Notification Model 
+// ── Notification Model
 class _NotifItem {
   final String title;
   final String arabicTitle;
@@ -120,7 +120,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     _read = List.generate(_mockNotifs.length, (i) => !_mockNotifs[i].isUnread);
   }
 
-  void _markAllRead() => setState(() => _read = List.filled(_mockNotifs.length, true));
+  void _markAllRead() =>
+      setState(() => _read = List.filled(_mockNotifs.length, true));
 
   @override
   Widget build(BuildContext context) {
@@ -143,11 +144,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         color: Color(0xFFF1F3F6),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 18, color: Color(0xFF1A1A2E)),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18,
+                        color: Color(0xFF1A1A2E),
+                      ),
                     ),
                   ),
-                   Expanded(
+                  Expanded(
                     child: Text(
                       AppLocalizations.of(context).locale.languageCode == 'ar'
                           ? 'الإشعارات'
@@ -164,18 +168,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     onTap: _markAllRead,
                     child: Row(
                       children: [
-                        Icon(Icons.done_all_rounded,
-                            color: AppColors.primary, size: 16),
+                        Icon(
+                          Icons.done_all_rounded,
+                          color: AppColors.primary,
+                          size: 16,
+                        ),
                         const SizedBox(width: 4),
                         Text(
-                            AppLocalizations.of(context).locale.languageCode == 'ar'
-                                ? 'قراءة الكل'
-                                : 'Read all',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            )),
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
+                              ? 'قراءة الكل'
+                              : 'Read all',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -192,10 +201,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   final n = _mockNotifs[i];
                   final isRead = _read[i];
                   return _NotifCard(
-                    item: n,
-                    isRead: isRead,
-                    onTap: () => setState(() => _read[i] = true),
-                  )
+                        item: n,
+                        isRead: isRead,
+                        onTap: () => setState(() => _read[i] = true),
+                      )
                       .animate(delay: (i * 60).ms)
                       .fadeIn(duration: 300.ms)
                       .slideY(begin: 0.08, end: 0);
@@ -209,7 +218,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 }
 
-// ── Notification Card ──────────────────────────────────────────────────────────
+// ── Notification Card
 class _NotifCard extends StatelessWidget {
   final _NotifItem item;
   final bool isRead;
@@ -276,12 +285,14 @@ class _NotifCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          AppLocalizations.of(context).locale.languageCode == 'ar'
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
                               ? item.arabicTitle
                               : item.title,
                           style: TextStyle(
-                            fontWeight:
-                                isRead ? FontWeight.w500 : FontWeight.w700,
+                            fontWeight: isRead
+                                ? FontWeight.w500
+                                : FontWeight.w700,
                             fontSize: 14,
                             color: const Color(0xFF1A1A2E),
                           ),

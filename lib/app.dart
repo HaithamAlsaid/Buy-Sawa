@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_theme.dart';
 import 'core/localization/app_localizations.dart';
 import 'providers/locale_provider.dart';
-import 'screens/splash/splash_screen.dart';
+import 'providers/auth_provider.dart';
+import 'screens/main/main_screen.dart';
+import 'screens/onboarding/onboarding_screen.dart';
 
 class BuySawaApp extends StatelessWidget {
   const BuySawaApp({super.key});
@@ -12,6 +14,15 @@ class BuySawaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeProvider = context.watch<LocaleProvider>();
+    final isGuest = context.watch<AuthProvider>().isGuest;
+    final showOnboarding = localeProvider.isFirstLaunch && isGuest;
+
+    if (showOnboarding) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        localeProvider.markLaunched();
+      });
+    }
+
     return MaterialApp(
       title: 'BuySawa',
       debugShowCheckedModeBanner: false,
@@ -27,7 +38,7 @@ class BuySawaApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const SplashScreen(),
+      home: showOnboarding ? const OnboardingScreen() : const MainScreen(),
     );
   }
 }

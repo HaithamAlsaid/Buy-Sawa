@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,22 +14,21 @@ import 'providers/app_settings_provider.dart';
 import 'core/services/firebase_messaging_service.dart';
 
 void main() async {
-  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // Keep native splash while initializing, then remove it immediately
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
+  
   // Disable fetching fonts from the internet to prevent errors
   GoogleFonts.config.allowRuntimeFetching = false;
   
-  try {
-    await Firebase.initializeApp();
-    await FirebaseMessagingService.initialize();
-  } catch (e) {
+  // Initialize Firebase in the background without blocking the app launch!
+  Firebase.initializeApp().then((_) {
+    FirebaseMessagingService.initialize();
+  }).catchError((e) {
     debugPrint('Firebase initialization error: $e');
-  }
+  });
 
+  // Only wait for local storage
   final prefs = await SharedPreferences.getInstance();
-  // Remove native splash ASAP — our Flutter splash takes over
-  FlutterNativeSplash.remove();
+  
   runApp(
     MultiProvider(
       providers: [

@@ -121,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
 
-            //Main Content
+            // Main Content
             Center(
               child:
                   AnimatedBuilder(
@@ -133,38 +133,33 @@ class _SplashScreenState extends State<SplashScreen>
                               BoxShadow(
                                 color: const Color(
                                   0xFFF5A623,
-                                ).withOpacity(0.3 + _pulseCtrl.value * 0.3),
-                                blurRadius: 40 + _pulseCtrl.value * 25,
-                                spreadRadius: 4 + _pulseCtrl.value * 6,
-                              ),
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 24,
-                                offset: const Offset(0, 10),
+                                ).withOpacity(0.15 + _pulseCtrl.value * 0.15),
+                                blurRadius: 50 + _pulseCtrl.value * 30,
+                                spreadRadius: 2 + _pulseCtrl.value * 4,
                               ),
                             ],
                           ),
                           child: child,
                         ),
-                        child: AppLogo(size: 130, borderRadius: 32),
+                        child: AppLogo(size: 180, borderRadius: 44),
                       )
-                       .animate()
-                       // Step 1: Start at the bottom, shoot up to the top
-                       .slideY(
-                         begin: 4.0,
-                         end: -2.5,
-                         duration: 800.ms,
-                         curve: Curves.easeOutCirc,
-                       )
-                       // Step 2: Bounce back down to the center
-                       .then()
-                       .slideY(
-                         begin: 0.0,
-                         end: 2.5,
-                         duration: 1000.ms,
-                         curve: Curves.elasticOut,
-                       )
-                       .fade(begin: 0.0, end: 1.0, duration: 400.ms),
+                      .animate()
+                      // Step 1: Start at the bottom, shoot up to the top
+                      .slideY(
+                        begin: 4.0,
+                        end: -2.5,
+                        duration: 800.ms,
+                        curve: Curves.easeOutCirc,
+                      )
+                      // Step 2: Bounce back down to the center
+                      .then()
+                      .slideY(
+                        begin: 0.0,
+                        end: 2.5,
+                        duration: 1000.ms,
+                        curve: Curves.elasticOut,
+                      )
+                      .fade(begin: 0.0, end: 1.0, duration: 400.ms),
             ),
           ],
         ),
@@ -173,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// ── Glow Blob ─────────────────────────────────────────────────
+//Glow Blob
 class _GlowBlob extends StatelessWidget {
   final double size;
   final double opacity;
@@ -196,8 +191,7 @@ class _GlowBlob extends StatelessWidget {
   );
 }
 
-// ── Fallback Logo (if image not found) ────────────────────────
-// ── Animated Loading Dots ─────────────────────────────────────
+//Animated Loading Dots
 class _AnimatedDots extends StatefulWidget {
   @override
   State<_AnimatedDots> createState() => _AnimatedDotsState();

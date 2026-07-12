@@ -91,10 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // ── AppBar
-          SliverAppBar(
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        onRefresh: () async {
+          await context.read<ProductProvider>().refreshProducts();
+        },
+        child: CustomScrollView(
+          slivers: [
+            // ── AppBar
+            SliverAppBar(
             pinned: true,
             floating: false,
             toolbarHeight: 90,
@@ -106,32 +112,36 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(top: 8.0, left: 4.0),
               child: Row(
                 children: [
-                  AppLogo(size: 44, borderRadius: 12),
-                  const SizedBox(width: 14),
-                  RichText(
-                    text: const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Buy ',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
+                  AppLogo(size: 40, borderRadius: 10),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
-                        TextSpan(
-                          text: 'SAWA',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
+                        ],
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context).locale.languageCode == 'ar' 
+                            ? 'ابحث عن منتج...' 
+                            : 'Search products...',
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF9E9E9E),
+                            fontSize: 13,
                           ),
+                          prefixIcon: const Icon(Icons.search, color: AppColors.primary, size: 20),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
@@ -249,48 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Search Bar ─────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16), // حواف ناعمة (Rounded Rectangle)
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context).locale.languageCode == 'ar' 
-                          ? 'ابحث عن منتجات، ماركات وأكثر...' 
-                          : 'Search for products, brands and more...',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF9E9E9E), // Lighter grey for hint
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Icon(Icons.search, color: AppColors.primary, size: 24),
-                        ),
-                        suffixIcon: const Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: Icon(Icons.tune, color: AppColors.primary, size: 22), // 3 horizontal sliders
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // ── Hero Banner ─────────────────────────────────
+                // Hero Banner 
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -445,6 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

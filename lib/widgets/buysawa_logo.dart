@@ -62,7 +62,7 @@ class _LocalAssetLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/images/logo.png',
+      'assets/images/Icon.png',
       width: size,
       height: size,
       fit: fit,
