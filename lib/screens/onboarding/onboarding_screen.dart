@@ -48,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final List<Map<String, dynamic>> _slides = [
+    final List<Map<String, dynamic>> slides = [
       {
         'tag': l10n.onboarding1Tag,
         'title': l10n.onboarding1Title,
@@ -80,7 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -147,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      _slides[_currentIndex]['tag'],
+                      slides[_currentIndex]['tag'],
                       style: const TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w900,
@@ -161,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   
                   // Title
                   Text(
-                    _slides[_currentIndex]['title'],
+                    slides[_currentIndex]['title'],
                     style: const TextStyle(
                       color: Color(0xFF0F172A),
                       fontSize: 34,
@@ -174,7 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   
                   // Description
                   Text(
-                    _slides[_currentIndex]['desc'],
+                    slides[_currentIndex]['desc'],
                     style: const TextStyle(
                       color: Color(0xFF64748B),
                       fontSize: 16,
@@ -222,7 +222,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: (_currentIndex == 1 ? const Color(0xFFFBBF24) : AppColors.primary).withOpacity(0.3),
+                                color: (_currentIndex == 1 ? const Color(0xFFFBBF24) : AppColors.primary).withValues(alpha: 0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               )
@@ -277,7 +277,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 color: Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 30, offset: const Offset(0, 15))
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 30, offset: const Offset(0, 15))
                 ],
               ),
               child: const Center(
@@ -323,7 +323,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(35),
                 boxShadow: [
-                  BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 15))
+                  BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 30, offset: const Offset(0, 15))
                 ],
               ),
               child: const Icon(Icons.shopping_cart_checkout_rounded, size: 60, color: Colors.white),
@@ -363,7 +363,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         color: color,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
         ]
       ),
       child: Text(
@@ -379,9 +379,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
-        border: Border.all(color: color.withOpacity(0.3), width: 3),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 3),
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.2), blurRadius: 10)
+          BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 10)
         ]
       ),
       child: Icon(icon, color: color, size: 28),

@@ -133,7 +133,7 @@ class _SplashScreenState extends State<SplashScreen>
                               BoxShadow(
                                 color: const Color(
                                   0xFFF5A623,
-                                ).withOpacity(0.15 + _pulseCtrl.value * 0.15),
+                                ).withValues(alpha: 0.15 + _pulseCtrl.value * 0.15),
                                 blurRadius: 50 + _pulseCtrl.value * 30,
                                 spreadRadius: 2 + _pulseCtrl.value * 4,
                               ),
@@ -186,7 +186,7 @@ class _GlowBlob extends StatelessWidget {
     height: size,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: color.withOpacity(opacity),
+      color: color.withValues(alpha: opacity),
     ),
   );
 }
@@ -238,7 +238,7 @@ class _AnimatedDotsState extends State<_AnimatedDots>
                   height: 8,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(opacity),
+                    color: Colors.white.withValues(alpha: opacity),
                   ),
                 ),
               ),

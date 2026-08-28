@@ -57,13 +57,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (ok) {
       Navigator.pop(context);
     } else {
-      final l10n = AppLocalizations.of(context);
+      // Show the real error message from the server
+      final errorMsg = auth.errorMessage ?? 
+          (AppLocalizations.of(context).locale.languageCode == 'ar'
+              ? 'فشل التسجيل. يرجى المحاولة مرة أخرى.'
+              : 'Registration failed. Please try again.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.locale.languageCode == 'ar'
-              ? 'فشل التسجيل. يرجى المحاولة مرة أخرى.'
-              : 'Registration failed. Please try again.'),
+          content: Text(errorMsg),
           backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
         ),
       );
     }
@@ -195,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: TextStyle(fontSize: R.sp(context, 14)),
                               decoration: _field(
                                 context,
-                                hint: 'Haitham Alsayed',
+                                hint: 'full name',
                                 icon: Icons.person_outline_rounded,
                               ),
                             ),
@@ -307,7 +311,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          AppLocalizations.of(context).alreadyHaveAccount + ' ',
+                          '${AppLocalizations.of(context).alreadyHaveAccount} ',
                           style: TextStyle(
                             color: const Color(0xFF64748B),
                             fontSize: R.sp(context, 13),

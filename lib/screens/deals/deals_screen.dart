@@ -53,6 +53,7 @@ class _DealsScreenState extends State<DealsScreen> {
     final groupProvider = context.read<GroupBuyProvider>();
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final invalidMsg = AppLocalizations.of(context).groupCodeInvalid(code);
 
     final found = await groupProvider.tryJoinGroup(code);
     if (!mounted) return;
@@ -71,7 +72,7 @@ class _DealsScreenState extends State<DealsScreen> {
     } else {
       messenger.showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).groupCodeInvalid(code)),
+          content: Text(invalidMsg),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -228,10 +229,10 @@ class _DealsScreenState extends State<DealsScreen> {
                 ),
                 decoration: BoxDecoration(
                   // ignore: deprecated_member_use
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                   // ignore: deprecated_member_use
-                  border: Border.all(color: Colors.white.withOpacity(0.4)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -294,7 +295,7 @@ class _DealsScreenState extends State<DealsScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: const Icon(
@@ -320,7 +321,7 @@ class _DealsScreenState extends State<DealsScreen> {
                             Text(
                               AppLocalizations.of(context).enjoyDiscounts,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                                 fontSize: 13,
                               ),
                             ),
@@ -450,7 +451,7 @@ class _DealsScreenState extends State<DealsScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 14,
                         offset: const Offset(0, 4),
                       ),

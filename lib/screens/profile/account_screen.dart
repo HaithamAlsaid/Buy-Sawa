@@ -52,7 +52,7 @@ class _GuestProfileView extends StatelessWidget {
                       height: R.pad(context, 250),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -68,7 +68,7 @@ class _GuestProfileView extends StatelessWidget {
                       children: [
                         DottedBorder(
                           options: RoundedRectDottedBorderOptions(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             strokeWidth: 1.5,
                             dashPattern: const [4, 4],
                             radius: Radius.circular(R.r(context, 38)),
@@ -96,7 +96,7 @@ class _GuestProfileView extends StatelessWidget {
                         Text(
                           AppLocalizations.of(context).loginSubtitle,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.85),
+                            color: Colors.white.withValues(alpha: 0.85),
                             fontSize: R.sp(context, 13),
                             fontWeight: FontWeight.w500,
                           ),
@@ -116,7 +116,7 @@ class _GuestProfileView extends StatelessWidget {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -180,7 +180,7 @@ class _GuestProfileView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(R.r(context, 24)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
+                            color: Colors.black.withValues(alpha: 0.02),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -359,7 +359,7 @@ class _LoggedInProfileView extends StatelessWidget {
                       height: R.pad(context, 250),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -381,7 +381,7 @@ class _LoggedInProfileView extends StatelessWidget {
                             color: const Color(0xFFF5A623), // Orange
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               width: 1.5,
                             ),
                           ),
@@ -443,7 +443,7 @@ class _LoggedInProfileView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(R.r(context, 24)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
+                            color: Colors.black.withValues(alpha: 0.02),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),

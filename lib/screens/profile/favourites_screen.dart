@@ -137,7 +137,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       height: R.pad(context, 120),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.06),
+                        color: Colors.white.withValues(alpha: 0.06),
                       ),
                     ),
                   ),
@@ -149,7 +149,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       height: R.pad(context, 150),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.06),
+                        color: Colors.white.withValues(alpha: 0.06),
                       ),
                     ),
                   ),
@@ -164,7 +164,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           width: R.pad(context, 40),
                           height: R.pad(context, 40),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -181,7 +181,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           Text(
                             AppLocalizations.of(context).items(_favourites.length),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               fontSize: R.sp(context, 12),
                               fontWeight: FontWeight.w600,
                             ),
@@ -202,7 +202,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                         width: R.pad(context, 40),
                         height: R.pad(context, 40),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -304,7 +304,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.02),
+                                    color: Colors.black.withValues(alpha: 0.02),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),

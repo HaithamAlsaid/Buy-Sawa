@@ -428,8 +428,8 @@ class _HeroSectionState extends State<_HeroSection> {
   // Color filters to tint the SAME product image
   final List<Color?> _colorFilters = [
     null, // Original (White/Light)
-    Colors.black.withOpacity(0.65), // Black tint
-    Colors.grey.shade700.withOpacity(0.65), // Gray tint
+    Colors.black.withValues(alpha: 0.65), // Black tint
+    Colors.grey.shade700.withValues(alpha: 0.65), // Gray tint
   ];
 
   @override
@@ -916,7 +916,7 @@ class _BottomBar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -1020,7 +1020,7 @@ class _CircleBtn extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),

@@ -1,30 +1,48 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// ApiService — المكان الوحيد الذي يحتوي على baseUrl
-// لما يجهز الـ API: غيّر baseUrl بس وكل الأبلكيشن هيشتغل
+// ApiService — السيرفر الحقيقي بتاع BuySawa
+// Base URL: http://dxbalpha.com/api/v1
 // ─────────────────────────────────────────────────────────────────────────────
 
 class ApiService {
-  // ✏️ غيّر السطر ده لما يجهز الـ API
-  static const String baseUrl = 'https://api.buysawa.com/v1';
+  static const String baseUrl = 'https://dxbalpha.com/api/v1';
 
-  // ─── Endpoints ──────────────────────────────────────────────
-  static const String loginEndpoint       = '$baseUrl/auth/login';
-  static const String registerEndpoint    = '$baseUrl/auth/register';
-  static const String logoutEndpoint      = '$baseUrl/auth/logout';
-  static const String profileEndpoint     = '$baseUrl/auth/profile';
+  // ─── Auth Endpoints ─────────────────────────────────────────
+  static const String registerEndpoint  = '$baseUrl/users/auth/register';
+  static const String loginEndpoint     = '$baseUrl/auth/login';
+  static const String logoutEndpoint    = '$baseUrl/auth/logout';
+  static const String meEndpoint        = '$baseUrl/auth/me';
 
+  // ─── Password Endpoints ──────────────────────────────────────
+  static const String forgotPasswordEndpoint  = '$baseUrl/auth/password/forgot';
+  static const String changePasswordEndpoint  = '$baseUrl/auth/password/change';
+
+  // ─── Profile Endpoints ──────────────────────────────────────
+  static const String profileEndpoint   = '$baseUrl/profile/details';
+  static const String avatarEndpoint    = '$baseUrl/profile/details/avatar';
+  static const String favoritesEndpoint = '$baseUrl/profile/favorites';
+
+  // ─── Products Endpoints ──────────────────────────────────────
   static const String productsEndpoint    = '$baseUrl/products';
-  static const String categoriesEndpoint  = '$baseUrl/categories';
+  static String productDetailEndpoint(dynamic id) => '$baseUrl/products/$id';
+  static String productVariationsEndpoint(dynamic id) => '$baseUrl/products/$id/variations';
 
-  static const String walletEndpoint      = '$baseUrl/wallet';
-  static const String transactionsEndpoint= '$baseUrl/wallet/transactions';
+  // ─── Contact & Support ──────────────────────────────────────
+  static const String contactUsEndpoint     = '$baseUrl/contact-us/submit';
+  static const String contactPurposesEndpoint = '$baseUrl/contact-us/purposes';
+  static const String supportTicketsEndpoint  = '$baseUrl/support/tickets';
 
-  static const String groupsEndpoint      = '$baseUrl/groups';
+  // Settings 
+  static const String settingsEndpoint      = '$baseUrl/settings';
+  static const String userSettingsEndpoint  = '$baseUrl/settings/user';
 
-  static const String settingsEndpoint       = '$baseUrl/settings';
-  static const String notificationsEndpoint  = '$baseUrl/notifications'; // ← الإشعارات الحقيقية
+  //Lang
+  static const String langEndpoint        = '$baseUrl/lang';
+  static const String langSwitchEndpoint  = '$baseUrl/lang/switch';
 
-  // ─── Headers Helper ─────────────────────────────────────────
+  // Notifications 
+  static const String notificationsEndpoint = '$baseUrl/notifications';
+
+  //  Headers Helper 
   static Map<String, String> headers({String? token}) {
     return {
       'Content-Type': 'application/json',

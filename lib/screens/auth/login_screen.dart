@@ -40,29 +40,30 @@ class _LoginScreenState extends State<LoginScreen> {
     if (ok) {
       Navigator.pop(context);
     } else {
-      final l10n = AppLocalizations.of(context);
+      // Show the real error message from the server
+      final errorMsg = auth.errorMessage ??
+          (AppLocalizations.of(context).locale.languageCode == 'ar'
+              ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
+              : 'Invalid email or password');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            l10n.locale.languageCode == 'ar'
-                ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
-                : 'Invalid email or password',
-          ),
+          content: Text(errorMsg),
           backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
         ),
       );
     }
   }
 
   Future<void> _googleLogin() async {
-    setState(() => _loading = true);
-    final auth = context.read<AuthProvider>();
-    final ok = await auth.login('google@example.com', '123456');
-    if (!mounted) return;
-    setState(() => _loading = false);
-    if (ok) {
-      Navigator.pop(context);
-    }
+    // Google login requires OAuth flow — not yet available in API
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Google login coming soon!'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -134,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: R.pad(context, 36),
                     decoration: BoxDecoration(
                       // ignore: deprecated_member_use
-                      color: Colors.white.withOpacity(0.22),
+                      color: Colors.white.withValues(alpha: 0.22),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -469,7 +470,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context).dontHaveAccount + ' ',
+                        '${AppLocalizations.of(context).dontHaveAccount} ',
                         style: TextStyle(
                           color: const Color(0xFF64748B),
                           fontSize: R.sp(context, 13),
@@ -553,7 +554,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.lock_reset_rounded,
@@ -657,7 +658,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.12),
+                                color: AppColors.success.withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.mark_email_read_rounded,

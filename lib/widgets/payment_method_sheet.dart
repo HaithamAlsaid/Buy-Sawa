@@ -125,7 +125,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? (method['color'] as Color).withOpacity(0.06)
+                        ? (method['color'] as Color).withValues(alpha: 0.06)
                         : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
@@ -142,7 +142,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: (method['color'] as Color).withOpacity(0.12),
+                          color: (method['color'] as Color).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -175,7 +175,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                                         horizontal: 7, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: (method['color'] as Color)
-                                          .withOpacity(0.12),
+                                          .withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
