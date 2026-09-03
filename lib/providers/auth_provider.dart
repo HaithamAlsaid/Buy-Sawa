@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,7 +110,7 @@ class AuthProvider extends ChangeNotifier {
       if (e.toString().contains('TimeoutException')) {
         _errorMessage = 'Server timeout. Please try again.';
       } else if (e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
-        _errorMessage = 'Cannot reach server: dxbalpha.com - Check your internet or the server may be down.';
+        _errorMessage = 'Cannot reach server: buysawa.com - Check your internet or the server may be down.';
       } else {
         _errorMessage = 'Error: ${e.toString()}';
       }
@@ -124,7 +125,7 @@ class AuthProvider extends ChangeNotifier {
     required String fullName,
     required String email,
     required String password,
-    required String phone,
+    required String passwordConfirmation,
     String? referralCode,
   }) async {
     _isLoading = true;
@@ -139,8 +140,7 @@ class AuthProvider extends ChangeNotifier {
           'name': fullName,
           'email': email,
           'password': password,
-          'password_confirmation': password,
-          if (phone.isNotEmpty) 'phone': phone,
+          'password_confirmation': passwordConfirmation,
           if (referralCode != null && referralCode.isNotEmpty)
             'referral_code': referralCode,
         }),
@@ -188,7 +188,7 @@ class AuthProvider extends ChangeNotifier {
       if (e.toString().contains('TimeoutException')) {
         _errorMessage = 'Server timeout. Please try again.';
       } else if (e.toString().contains('SocketException') || e.toString().contains('Failed host lookup')) {
-        _errorMessage = 'Cannot reach server: dxbalpha.com - Check your internet or the server may be down.';
+        _errorMessage = 'Cannot reach server: buysawa.com - Check your internet or the server may be down.';
       } else {
         _errorMessage = 'Error: ${e.toString()}';
       }
@@ -203,6 +203,62 @@ class AuthProvider extends ChangeNotifier {
     if (_user != null) {
       _user = _user!.copyWith(fullName: fullName, birthdate: birthdate);
       notifyListeners();
+    }
+  }
+
+  // ─── Upload Avatar ───────────────────────────────────────────
+  Future<bool> uploadAvatar(File imageFile) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse(ApiService.avatarEndpoint),
+      );
+      request.headers.addAll(ApiService.headers(token: token));
+      request.files.add(await http.MultipartFile.fromPath('profile_image', imageFile.path));
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final body = jsonDecode(response.body);
+        // DEBUG: print full response to console
+        debugPrint('=== Avatar Upload Response ===');
+        debugPrint(response.body);
+        debugPrint('==============================');
+        
+        final data = body['data'] ?? body;
+        // Try all possible field names the backend might use
+        final newAvatarUrl = data['avatar_url'] 
+            ?? data['profile_image'] 
+            ?? data['avatar'] 
+            ?? data['image_url']
+            ?? data['url'];
+            
+        if (newAvatarUrl != null) {
+          _user = _user?.copyWith(avatarUrl: newAvatarUrl.toString());
+        } else {
+          // Reload from API to get updated profile with new avatar
+          await _loadUserFromApi();
+        }
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = 'Failed to upload image.';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Error uploading image: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
   }
 

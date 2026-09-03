@@ -14,6 +14,7 @@ import '../../widgets/auth_bottom_sheet.dart';
 import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
+import '../../core/services/favourite_service.dart';
 
 //Mock specs per product category
 Map<String, String> _specsFor(ProductModel p) {
@@ -111,6 +112,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  Future<void> _toggleWishlist() async {
+    final oldState = _isWishlisted;
+    setState(() => _isWishlisted = !_isWishlisted);
+
+    bool success;
+    if (_isWishlisted) {
+      success = await FavouriteService.addFavourite(widget.product.id);
+    } else {
+      success = await FavouriteService.removeFavourite(widget.product.id);
+    }
+
+    if (!success && mounted) {
+      setState(() => _isWishlisted = oldState);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update favorites.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void _shareProduct() {
     final p = widget.product;
     Share.share(
@@ -188,8 +211,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     product: product,
                     isWishlisted: _isWishlisted,
                     onBack: () => Navigator.pop(context),
-                    onWishlist: () =>
-                        setState(() => _isWishlisted = !_isWishlisted),
+                    onWishlist: _toggleWishlist,
                     onShare: _shareProduct,
                   ),
                 ),

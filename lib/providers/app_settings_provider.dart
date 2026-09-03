@@ -36,7 +36,7 @@ class AppSettingsProvider extends ChangeNotifier {
     try {
       final response = await http
           .get(
-            Uri.parse(ApiService.settingsEndpoint),
+            Uri.parse(ApiService.platformSettingsEndpoint),
             headers: ApiService.headers(),
           )
           .timeout(const Duration(seconds: 10));

@@ -1,107 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
-
-// ── Notification Model
-class _NotifItem {
-  final String title;
-  final String arabicTitle;
-  final String subtitle;
-  final String arabicSubtitle;
-  final String time;
-  final String arabicTime;
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final bool isUnread;
-
-  const _NotifItem({
-    required this.title,
-    required this.arabicTitle,
-    required this.subtitle,
-    required this.arabicSubtitle,
-    required this.time,
-    required this.arabicTime,
-    required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    this.isUnread = false,
-  });
-}
-
-//Mock Notifications
-final _mockNotifs = [
-  _NotifItem(
-    title: 'Ahmed joined your Group Cart',
-    arabicTitle: 'انضم أحمد لمجموعة الشراء الخاصة بك',
-    subtitle: "You're 1 member away from a 15% group discount.",
-    arabicSubtitle: 'أنت على بعد عضو واحد من خصم 15٪.',
-    time: 'Just now',
-    arabicTime: 'الآن',
-    icon: Icons.group_rounded,
-    iconBg: const Color(0xFFE8F5E9),
-    iconColor: const Color(0xFF43A047),
-    isUnread: true,
-  ),
-  _NotifItem(
-    title: 'Cashback credited · 65 AED',
-    arabicTitle: 'تم إضافة كاش باك · 65 درهم',
-    subtitle: 'Your Sony WH-1000XM5 cashback is now in your wallet.',
-    arabicSubtitle: 'الكاش باك الخاص بسماعات سوني أصبح في محفظتك.',
-    time: '2h ago',
-    arabicTime: 'منذ ساعتين',
-    icon: Icons.card_giftcard_rounded,
-    iconBg: const Color(0xFFFFF3E0),
-    iconColor: const Color(0xFFF5A623),
-    isUnread: true,
-  ),
-  _NotifItem(
-    title: 'Order #SW-29412 is out for delivery',
-    arabicTitle: 'الطلب #SW-29412 في الطريق إليك',
-    subtitle: 'Expected today between 4 – 7 PM.',
-    arabicSubtitle: 'متوقع اليوم بين 4 – 7 مساءً.',
-    time: '5h ago',
-    arabicTime: 'منذ 5 ساعات',
-    icon: Icons.local_shipping_rounded,
-    iconBg: const Color(0xFFE8F5E9),
-    iconColor: AppColors.primary,
-    isUnread: true,
-  ),
-  _NotifItem(
-    title: 'Flash Sale starts in 1 hour',
-    arabicTitle: 'التخفيضات السريعة تبدأ بعد ساعة',
-    subtitle: 'Up to 60% off Beauty essentials. Set a reminder.',
-    arabicSubtitle: 'خصم يصل إلى 60% على منتجات التجميل. اضبط منبهك.',
-    time: 'Yesterday',
-    arabicTime: 'أمس',
-    icon: Icons.local_offer_rounded,
-    iconBg: const Color(0xFFFCE4EC),
-    iconColor: const Color(0xFFE91E63),
-  ),
-  _NotifItem(
-    title: 'Layla shared a product with you',
-    arabicTitle: 'شاركت ليلى منتجًا معك',
-    subtitle: 'Check out Apple Watch Series 9 — Share & Earn 5%.',
-    arabicSubtitle: 'شاهد ساعة آبل الجيل التاسع — شارك واكسب 5%.',
-    time: 'Yesterday',
-    arabicTime: 'أمس',
-    icon: Icons.notifications_rounded,
-    iconBg: const Color(0xFFEDE7F6),
-    iconColor: const Color(0xFF7E57C2),
-  ),
-  _NotifItem(
-    title: 'Referral bonus · 25 AED',
-    arabicTitle: 'مكافأة دعوة · 25 درهم',
-    subtitle: 'Ahmed completed his first order — bonus added.',
-    arabicSubtitle: 'أكمل أحمد طلبه الأول — تمت إضافة المكافأة.',
-    time: 'Yesterday',
-    arabicTime: 'أمس',
-    icon: Icons.card_giftcard_rounded,
-    iconBg: const Color(0xFFFFF3E0),
-    iconColor: const Color(0xFFF5A623),
-  ),
-];
+import '../../providers/notifications_provider.dart';
 
 // ── Notifications Screen
 class NotificationsScreen extends StatefulWidget {
@@ -112,19 +15,28 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  late List<bool> _read;
-
   @override
   void initState() {
     super.initState();
-    _read = List.generate(_mockNotifs.length, (i) => !_mockNotifs[i].isUnread);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<NotificationsProvider>();
+      // Only fetch if empty to avoid reloading unnecessarily, 
+      // or we can force reload to get latest. Let's force fetch to ensure it's fresh.
+      provider.fetchNotifications();
+    });
   }
 
-  void _markAllRead() =>
-      setState(() => _read = List.filled(_mockNotifs.length, true));
+  void _markAllRead() {
+    context.read<NotificationsProvider>().markAllAsRead();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<NotificationsProvider>();
+    final notifications = provider.notifications;
+    final l10n = AppLocalizations.of(context);
+    final isAr = l10n.locale.languageCode == 'ar';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
       body: SafeArea(
@@ -153,9 +65,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context).locale.languageCode == 'ar'
-                          ? 'الإشعارات'
-                          : 'Notifications',
+                      isAr ? 'الإشعارات' : 'Notifications',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 18,
@@ -164,52 +74,94 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: _markAllRead,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.done_all_rounded,
-                          color: AppColors.primary,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppLocalizations.of(context).locale.languageCode ==
-                                  'ar'
-                              ? 'قراءة الكل'
-                              : 'Read all',
-                          style: TextStyle(
+                  if (notifications.isNotEmpty)
+                    GestureDetector(
+                      onTap: _markAllRead,
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.done_all_rounded,
                             color: AppColors.primary,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            size: 16,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isAr ? 'قراءة الكل' : 'Read all',
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    const SizedBox(width: 70), // Keep title centered
                 ],
               ),
             ),
 
             // ── List ──────────────────────────────────────────────
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _mockNotifs.length,
-                itemBuilder: (context, i) {
-                  final n = _mockNotifs[i];
-                  final isRead = _read[i];
-                  return _NotifCard(
-                        item: n,
-                        isRead: isRead,
-                        onTap: () => setState(() => _read[i] = true),
-                      )
-                      .animate(delay: (i * 60).ms)
-                      .fadeIn(duration: 300.ms)
-                      .slideY(begin: 0.08, end: 0);
-                },
-              ),
+              child: provider.isLoading && notifications.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppColors.primary),
+                    )
+                  : provider.hasError && notifications.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                              const SizedBox(height: 16),
+                              Text(
+                                isAr ? 'حدث خطأ. اسحب للتحديث.' : 'An error occurred. Pull to refresh.',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        )
+                      : notifications.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey[300]),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    isAr ? 'لا توجد إشعارات' : 'No notifications yet',
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: provider.fetchNotifications,
+                              color: AppColors.primary,
+                              child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: notifications.length,
+                                itemBuilder: (context, i) {
+                                  final n = notifications[i];
+                                  return _NotifCard(
+                                    item: n,
+                                    onTap: () {
+                                      if (!n.isRead) {
+                                        provider.markAsRead(n.id);
+                                      }
+                                    },
+                                  )
+                                  .animate(delay: (i * 60).ms)
+                                  .fadeIn(duration: 300.ms)
+                                  .slideY(begin: 0.08, end: 0);
+                                },
+                              ),
+                            ),
             ),
           ],
         ),
@@ -220,26 +172,57 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
 // ── Notification Card
 class _NotifCard extends StatelessWidget {
-  final _NotifItem item;
-  final bool isRead;
+  final NotificationModel item;
   final VoidCallback onTap;
 
   const _NotifCard({
     required this.item,
-    required this.isRead,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    IconData icon;
+    Color iconBg;
+    Color iconColor;
+
+    switch (item.type.toLowerCase()) {
+      case 'order':
+        icon = Icons.local_shipping_rounded;
+        iconBg = const Color(0xFFE8F5E9);
+        iconColor = AppColors.primary;
+        break;
+      case 'group':
+        icon = Icons.group_rounded;
+        iconBg = const Color(0xFFE8F5E9);
+        iconColor = const Color(0xFF43A047);
+        break;
+      case 'cashback':
+      case 'referral':
+        icon = Icons.card_giftcard_rounded;
+        iconBg = const Color(0xFFFFF3E0);
+        iconColor = const Color(0xFFF5A623);
+        break;
+      default:
+        icon = Icons.notifications_rounded;
+        iconBg = const Color(0xFFEDE7F6);
+        iconColor = const Color(0xFF7E57C2);
+    }
+
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    // Format date properly (e.g., "12 Oct, 10:30 AM")
+    final timeString = DateFormat('dd MMM, hh:mm a', isAr ? 'ar' : 'en').format(item.createdAt);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: item.isRead ? Colors.white : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEEEFF3)),
+          border: Border.all(
+            color: item.isRead ? const Color(0xFFEEEFF3) : AppColors.primary.withValues(alpha: 0.3),
+          ),
         ),
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -253,12 +236,12 @@ class _NotifCard extends StatelessWidget {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: item.iconBg,
+                    color: iconBg,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(item.icon, color: item.iconColor, size: 22),
+                  child: Icon(icon, color: iconColor, size: 22),
                 ),
-                if (!isRead)
+                if (!item.isRead)
                   Positioned(
                     top: 0,
                     right: 0,
@@ -285,14 +268,9 @@ class _NotifCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          AppLocalizations.of(context).locale.languageCode ==
-                                  'ar'
-                              ? item.arabicTitle
-                              : item.title,
+                          item.title,
                           style: TextStyle(
-                            fontWeight: isRead
-                                ? FontWeight.w500
-                                : FontWeight.w700,
+                            fontWeight: item.isRead ? FontWeight.w600 : FontWeight.w800,
                             fontSize: 14,
                             color: const Color(0xFF1A1A2E),
                           ),
@@ -300,9 +278,7 @@ class _NotifCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context).locale.languageCode == 'ar'
-                            ? item.arabicTime
-                            : item.time,
+                        timeString,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color(0xFFAAAAAA),
@@ -312,14 +288,10 @@ class _NotifCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppLocalizations.of(context).locale.languageCode == 'ar'
-                        ? item.arabicSubtitle
-                        : item.subtitle,
+                    item.body,
                     style: TextStyle(
                       fontSize: 13,
-                      color: isRead
-                          ? const Color(0xFF9E9E9E)
-                          : const Color(0xFF555555),
+                      color: item.isRead ? const Color(0xFF9E9E9E) : const Color(0xFF555555),
                       height: 1.4,
                     ),
                   ),

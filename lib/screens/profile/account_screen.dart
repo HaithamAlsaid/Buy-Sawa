@@ -11,6 +11,7 @@ import 'contact_us_screen.dart';
 import 'profile_details_screen.dart';
 import 'favourites_screen.dart';
 import 'delete_account_screen.dart';
+import '../orders/my_orders_screen.dart';
 import '../../core/localization/app_localizations.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -23,6 +24,17 @@ class AccountScreen extends StatelessWidget {
     if (auth.isGuest) {
       return _GuestProfileView();
     }
+    
+    // If logged in but user data is not yet loaded, show loading
+    if (auth.user == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+    
     return _LoggedInProfileView();
   }
 }
@@ -267,7 +279,7 @@ class _GuestProfileView extends StatelessWidget {
 class _GuestMenuItem extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
-  final Color iconBgColor;
+  final Color iconBgColor; // kept for backward compat but unused
   final String label;
   final VoidCallback onTap;
 
@@ -291,23 +303,13 @@ class _GuestMenuItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: R.pad(context, 40),
-              height: R.pad(context, 40),
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Icon(icon, color: iconColor, size: R.icon(context, 20)),
-              ),
-            ),
+            Icon(icon, color: iconColor, size: R.icon(context, 22)),
             SizedBox(width: R.pad(context, 14)),
             Expanded(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   fontSize: R.sp(context, 15),
                   color: const Color(0xFF0F172A),
                 ),
@@ -373,28 +375,33 @@ class _LoggedInProfileView extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Avatar orange circle
+                        // Avatar teal circle
                         Container(
                           width: R.pad(context, 76),
                           height: R.pad(context, 76),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5A623), // Orange
+                            color: AppColors.primary, // Teal
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white.withValues(alpha: 0.6),
                               width: 1.5,
                             ),
+                            image: (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                                ? DecorationImage(
+                                    image: NetworkImage(user.avatarUrl!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
-                          child: Center(
-                            child: Text(
-                              user.initials,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: R.sp(context, 24),
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
+                          child: (user.avatarUrl == null || user.avatarUrl!.isEmpty)
+                              ? Center(
+                                  child: Icon(
+                                    Icons.person_outline_rounded,
+                                    size: R.icon(context, 40),
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : null,
                         ),
                         SizedBox(height: R.pad(context, 16)),
                         Text(
@@ -437,6 +444,7 @@ class _LoggedInProfileView extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // ── All Menu Items in one card ─────────────────────────
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -455,10 +463,11 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
+                          // My Profile
                           _GuestMenuItem(
                             icon: Icons.person_outline_rounded,
                             iconColor: AppColors.primary,
-                            iconBgColor: const Color(0xFFE8F7F6),
+                            iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).profile,
                             onTap: () {
                               Navigator.push(
@@ -470,10 +479,45 @@ class _LoggedInProfileView extends StatelessWidget {
                             },
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // My Orders
+                          _GuestMenuItem(
+                            icon: Icons.shopping_bag_outlined,
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar'
+                                ? 'طلباتي'
+                                : 'My Orders',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MyOrdersScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // Wishlist
+                          _GuestMenuItem(
+                            icon: Icons.favorite_border_rounded,
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
+                            label: 'Wishlist',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FavouritesScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // FAQs
                           _GuestMenuItem(
                             icon: Icons.help_outline_rounded,
-                            iconColor: const Color(0xFF7C4DFF),
-                            iconBgColor: const Color(0xFFF1EEFF),
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).faqs,
                             onTap: () {
                               Navigator.push(
@@ -485,10 +529,11 @@ class _LoggedInProfileView extends StatelessWidget {
                             },
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // Contact Us
                           _GuestMenuItem(
                             icon: Icons.headset_mic_outlined,
-                            iconColor: const Color(0xFFF97316),
-                            iconBgColor: const Color(0xFFFFF7ED),
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).contactUs,
                             onTap: () {
                               Navigator.push(
@@ -500,33 +545,20 @@ class _LoggedInProfileView extends StatelessWidget {
                             },
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                          _GuestMenuItem(
-                            icon: Icons.favorite_border_rounded,
-                            iconColor: const Color(0xFFF43F5E),
-                            iconBgColor: const Color(0xFFFFF1F2),
-                            label: AppLocalizations.of(context).myFavourites,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const FavouritesScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // Language
                           _GuestMenuItem(
                             icon: Icons.language_rounded,
-                            iconColor: const Color(0xFF0EA5E9),
-                            iconBgColor: const Color(0xFFF0F9FF),
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).language,
                             onTap: () => LanguagePickerSheet.show(context),
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // Delete Account
                           _GuestMenuItem(
                             icon: Icons.delete_outline_rounded,
                             iconColor: const Color(0xFFEF4444),
-                            iconBgColor: const Color(0xFFFFEEEF),
+                            iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).deleteAccount,
                             onTap: () {
                               Navigator.push(

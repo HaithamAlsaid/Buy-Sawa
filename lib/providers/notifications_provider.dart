@@ -26,14 +26,17 @@ class NotificationModel {
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    // Handle standard flat json or Laravel's DatabaseNotification structure
+    final data = json['data'] is Map<String, dynamic> ? json['data'] as Map<String, dynamic> : json;
+    
     return NotificationModel(
       id: json['id'].toString(),
-      title: json['title'] as String,
-      body: json['body'] as String,
-      type: json['type'] as String? ?? 'promo',
-      createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ??
+      title: (data['title'] ?? json['title'] ?? 'Notification').toString(),
+      body: (data['body'] ?? data['message'] ?? json['body'] ?? json['message'] ?? '').toString(),
+      type: (data['type'] ?? json['type'] ?? 'promo').toString(),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
-      isRead: json['is_read'] as bool? ?? false,
+      isRead: json['read_at'] != null || (json['is_read'] == true),
     );
   }
 
@@ -75,7 +78,7 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   /// جلب الإشعارات من الـ API
-  /// GET /api/v1/notifications
+  /// GET /api/v1/profile/notifications
   Future<void> fetchNotifications() async {
     if (_token == null) return;
 
@@ -92,15 +95,19 @@ class NotificationsProvider extends ChangeNotifier {
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body) as List;
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        final rawList = (body['data'] is List 
+            ? body['data'] 
+            : (body is List ? body : [])) as List<dynamic>;
+            
         _notifications =
-            data.map((e) => NotificationModel.fromJson(e as Map<String, dynamic>)).toList();
+            rawList.map((e) => NotificationModel.fromJson(e as Map<String, dynamic>)).toList();
         _hasError = false;
       } else {
         _hasError = true;
       }
-    } catch (_) {
-      // لو الـ API مش جاهز، هتظهر الشاشة فاضية
+    } catch (e) {
+      debugPrint('Notifications Error: $e');
       _hasError = true;
     } finally {
       _isLoading = false;
@@ -109,7 +116,7 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   /// تحديد إشعار كـ مقروء
-  /// PUT /api/v1/notifications/{id}/read
+  /// POST /api/v1/profile/notifications/{id}/read
   Future<void> markAsRead(String id) async {
     final index = _notifications.indexWhere((n) => n.id == id);
     if (index == -1) return;
@@ -119,8 +126,8 @@ class NotificationsProvider extends ChangeNotifier {
 
     // بنعلم الـ Backend
     try {
-      await http.put(
-        Uri.parse('${ApiService.notificationsEndpoint}/$id/read'),
+      await http.post(
+        Uri.parse(ApiService.notificationReadEndpoint(id)),
         headers: ApiService.headers(token: _token),
       );
     } catch (_) {
@@ -129,14 +136,14 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   /// تحديد كل الإشعارات كـ مقروءة
-  /// PUT /api/v1/notifications/read-all
+  /// POST /api/v1/profile/notifications/read-all
   Future<void> markAllAsRead() async {
     _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
     notifyListeners();
 
     try {
-      await http.put(
-        Uri.parse('${ApiService.notificationsEndpoint}/read-all'),
+      await http.post(
+        Uri.parse(ApiService.notificationsReadAllEndpoint),
         headers: ApiService.headers(token: _token),
       );
     } catch (_) {

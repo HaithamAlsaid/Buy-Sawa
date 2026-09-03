@@ -389,24 +389,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Product Grid
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 0.62,
-                        ),
-                    itemCount: productProvider.trending.length,
-                    itemBuilder: (_, i) {
-                      return ProductCard(product: productProvider.trending[i])
-                          .animate(delay: (i * 80).ms)
-                          .fadeIn(duration: 350.ms)
-                          .slideY(begin: 0.15, end: 0);
-                    },
-                  ),
+                  child: productProvider.isLoading && productProvider.trending.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32.0),
+                            child: CircularProgressIndicator(color: AppColors.primary),
+                          ),
+                        )
+                      : productProvider.hasError && productProvider.trending.isEmpty
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(32.0),
+                                child: Text('Failed to load products. Pull to refresh.'),
+                              ),
+                            )
+                          : GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 14,
+                                crossAxisSpacing: 14,
+                                childAspectRatio: 0.62,
+                              ),
+                              itemCount: productProvider.trending.length,
+                              itemBuilder: (_, i) {
+                                return ProductCard(product: productProvider.trending[i])
+                                    .animate(delay: (i * 80).ms)
+                                    .fadeIn(duration: 350.ms)
+                                    .slideY(begin: 0.15, end: 0);
+                              },
+                            ),
                 ),
 
                 const SizedBox(height: 100),

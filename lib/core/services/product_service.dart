@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// ProductService — متربط بالـ API الحقيقي بتاع dxbalpha.com
+// ProductService — متربط بالـ API الحقيقي بتاع buysawa.com
 // ─────────────────────────────────────────────────────────────────────────────
 import 'dart:convert';
 import 'package:http/http.dart' as http;

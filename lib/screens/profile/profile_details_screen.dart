@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
@@ -16,6 +18,8 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
   late TextEditingController _nameCtrl;
   String _birthdate = '';
   bool _saving = false;
+  File? _pickedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -70,6 +74,56 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
       setState(() {
         _birthdate = '$formattedMonth / $formattedDay / ${picked.year}';
       });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+      );
+      if (image != null) {
+        setState(() {
+          _pickedImage = File(image.path);
+        });
+        
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).locale.languageCode == 'ar' 
+                ? 'جاري رفع الصورة...' : 'Uploading image...'),
+            backgroundColor: AppColors.primary,
+          ),
+        );
+        
+        final success = await context.read<AuthProvider>().uploadAvatar(_pickedImage!);
+        
+        if (mounted) {
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context).locale.languageCode == 'ar' 
+                    ? 'تم تحديث الصورة بنجاح' : 'Image updated successfully'),
+                backgroundColor: AppColors.success,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.read<AuthProvider>().errorMessage ?? 'Failed to upload image'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick image: $e')),
+      );
     }
   }
 
@@ -205,178 +259,156 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
             children: [
               // ── Avatar Area ──────────────────────────────────────────
               Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: R.pad(context, 96),
-                      height: R.pad(context, 96),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5A623), // Orange
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          user.initials,
-                          style: TextStyle(
-                            fontSize: R.sp(context, 32),
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: R.pad(context, 32),
-                        height: R.pad(context, 32),
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: R.pad(context, 96),
+                        height: R.pad(context, 96),
                         decoration: BoxDecoration(
-                          color: AppColors.primary, // Teal edit color
+                          color: AppColors.primary, // Teal
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white,
-                            width: 1.5,
+                            width: 2.0,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          image: _pickedImage != null
+                              ? DecorationImage(
+                                  image: FileImage(_pickedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                                  ? DecorationImage(
+                                      image: NetworkImage(user.avatarUrl!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                         ),
-                        child: Center(
-                          child: Icon(
-                            Icons.edit_rounded,
-                            color: Colors.white,
-                            size: R.icon(context, 16),
+                        child: (_pickedImage == null && (user.avatarUrl == null || user.avatarUrl!.isEmpty))
+                            ? Center(
+                                child: Icon(
+                                  Icons.person_outline_rounded,
+                                  size: R.icon(context, 48),
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: R.pad(context, 32),
+                          height: R.pad(context, 32),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5A623), // Orange edit color
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Center(
+                            child: context.watch<AuthProvider>().isLoading
+                                ? SizedBox(
+                                    width: R.pad(context, 16),
+                                    height: R.pad(context, 16),
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Colors.white,
+                                    size: R.icon(context, 16),
+                                  ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
               SizedBox(height: R.pad(context, 32)),
 
-              // ── Card 1: Personal Info ───────────────────────────────
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(R.r(context, 24)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: const Color(0xFFF1F5F9),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    // Full Name Row
-                    _InfoEditRow(
-                      icon: Icons.person_outline_rounded,
-                      iconColor: AppColors.primary,
-                      iconBgColor: const Color(0xFFE8F7F6),
-                      label: l10n.fullName.toUpperCase(),
-                      value: _nameCtrl.text,
-                      onTap: _editNameDialog,
-                      trailingIcon: Icons.edit_rounded,
-                      trailingColor: AppColors.primary,
-                    ),
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    // Birthdate Row
-                    _InfoEditRow(
-                      icon: Icons.calendar_today_outlined,
-                      iconColor: AppColors.primary,
-                      iconBgColor: const Color(0xFFE8F7F6),
-                      label: l10n.birthdate.toUpperCase(),
-                      value: _birthdate.isEmpty ? 'Not Set' : _birthdate,
-                      onTap: _selectBirthdate,
-                      trailingIcon: Icons.edit_rounded,
-                      trailingColor: AppColors.primary,
-                      extraTrailingIcon: Icons.calendar_month_outlined,
-                    ),
-                  ],
+              // ── 1. Full Name ────────────────────────────────────────────────
+              _buildSingleCard(
+                context,
+                child: _InfoEditRow(
+                  icon: Icons.person_outline_rounded,
+                  iconColor: AppColors.primary,
+                  iconBgColor: const Color(0xFFE8F7F6),
+                  label: l10n.fullName.toUpperCase(),
+                  value: _nameCtrl.text,
+                  onTap: _editNameDialog,
+                  trailingIcon: Icons.edit_rounded,
+                  trailingColor: AppColors.primary,
                 ),
               ),
 
-              SizedBox(height: R.pad(context, 24)),
+              SizedBox(height: R.pad(context, 16)),
 
-              // ── Security Label ───────────────────────────────────────
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: R.pad(context, 8),
-                    bottom: R.pad(context, 12),
-                  ),
-                  child: Text(
-                    l10n.securityReadOnly,
-                    style: TextStyle(
-                      color: const Color(0xFF94A3B8),
-                      fontSize: R.sp(context, 11),
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
+              // ── 2. Phone Number ──────────────────────────────────────────────
+              _buildSingleCard(
+                context,
+                child: _InfoEditRow(
+                  icon: Icons.phone_rounded,
+                  iconColor: AppColors.primary,
+                  iconBgColor: const Color(0xFFE8F7F6),
+                  label: l10n.phone.toUpperCase(),
+                  value: user.phone,
+                  onTap: null, // Usually read-only
+                  trailingIcon: Icons.lock_outline_rounded,
+                  trailingColor: const Color(0xFFCBD5E1),
                 ),
               ),
 
-              // ── Card 2: Security Read Only ───────────────────────────
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(R.r(context, 24)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: const Color(0xFFF1F5F9),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    _InfoEditRow(
-                      icon: Icons.phone_rounded,
-                      iconColor: const Color(0xFF0EA5E9),
-                      iconBgColor: const Color(0xFFF0F9FF),
-                      label: l10n.phone.toUpperCase(),
-                      value: user.phone,
-                      onTap: null, // Read-only
-                      trailingIcon: Icons.lock_outline_rounded,
-                      trailingColor: const Color(0xFFCBD5E1),
-                    ),
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    _InfoEditRow(
-                      icon: Icons.email_outlined,
-                      iconColor: const Color(0xFF0EA5E9),
-                      iconBgColor: const Color(0xFFF0F9FF),
-                      label: l10n.email.toUpperCase(),
-                      value: user.email,
-                      onTap: null, // Read-only
-                      trailingIcon: Icons.lock_outline_rounded,
-                      trailingColor: const Color(0xFFCBD5E1),
-                    ),
-                  ],
+              SizedBox(height: R.pad(context, 16)),
+
+              // ── 3. Email ───────────────────────────────────────────────────
+              _buildSingleCard(
+                context,
+                child: _InfoEditRow(
+                  icon: Icons.email_outlined,
+                  iconColor: AppColors.primary,
+                  iconBgColor: const Color(0xFFE8F7F6),
+                  label: l10n.email.toUpperCase(),
+                  value: user.email,
+                  onTap: null, // Usually read-only
+                  trailingIcon: Icons.lock_outline_rounded,
+                  trailingColor: const Color(0xFFCBD5E1),
                 ),
               ),
+
+              SizedBox(height: R.pad(context, 16)),
+
+              // ── 4. Address ─────────────────────────────────────────────────
+              _buildSingleCard(
+                context,
+                child: _InfoEditRow(
+                  icon: Icons.location_on_outlined,
+                  iconColor: AppColors.primary,
+                  iconBgColor: const Color(0xFFE8F7F6),
+                  label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'العنوان' : 'ADDRESS',
+                  value: 'Manage your addresses',
+                  onTap: () {
+                    // Navigate to address screen later
+                  },
+                  trailingIcon: Icons.arrow_forward_ios_rounded,
+                  trailingColor: const Color(0xFFCBD5E1),
+                ),
+              ),
+              // (End of single cards)
 
               SizedBox(height: R.pad(context, 40)),
 
@@ -416,6 +448,27 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSingleCard(BuildContext context, {required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(R.r(context, 16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: const Color(0xFFF1F5F9),
+          width: 1,
+        ),
+      ),
+      child: child,
     );
   }
 }

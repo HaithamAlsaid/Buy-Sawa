@@ -1,6 +1,8 @@
 import 'package:buysawa/core/constants/app_colors.dart';
+import 'package:buysawa/core/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
@@ -57,13 +59,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _googleLogin() async {
-    // Google login requires OAuth flow — not yet available in API
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Google login coming soon!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    // Open Google OAuth via server redirect
+    final uri = Uri.parse(ApiService.googleRedirectEndpoint);
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open Google login. Please try again.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -252,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 TextSpan(
                                   text:
-                                      '${AppLocalizations.of(context).welcomeBackTitle} ',
+                                      '${AppLocalizations.of(context).welcomeBack} ',
                                   style: TextStyle(
                                     fontSize: R.sp(context, 24),
                                     fontWeight: FontWeight.w900,

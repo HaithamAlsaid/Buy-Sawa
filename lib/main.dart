@@ -8,8 +8,11 @@ import 'providers/locale_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/order_provider.dart';
+import 'providers/address_provider.dart';
 import 'providers/group_buy_provider.dart';
 import 'providers/wallet_provider.dart';
+import 'providers/notifications_provider.dart';
 import 'providers/app_settings_provider.dart';
 import 'core/services/firebase_messaging_service.dart';
 
@@ -34,10 +37,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider(prefs)),
         ChangeNotifierProvider(create: (_) => AuthProvider(prefs)),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()..loadProducts()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => AddressProvider()),
         ChangeNotifierProvider(create: (_) => GroupBuyProvider()),
         ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationsProvider()),
         ChangeNotifierProvider(
           create: (_) => AppSettingsProvider()..fetchSettings(),
         ),

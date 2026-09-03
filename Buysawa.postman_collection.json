@@ -1,0 +1,2927 @@
+{
+  "info": {
+    "_postman_id": "d79802bd-9ac6-495f-bc4c-a38cf7f5414d",
+    "name": "Buysawa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38653602"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Built In",
+          "item": [
+            {
+              "name": "Lang",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get all available Locales",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/lang",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "lang"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get current lang",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/lang/current",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "lang",
+                            "current"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "switch current lang",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"locale\":\"ar\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/lang/switch",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "lang",
+                            "switch"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Contact Us",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get all available contact us message purposes",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/contact-us/purposes",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "contact-us",
+                            "purposes"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "submit a contact us message",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"full_name\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"phone\": \"+1 234 567 890\",\r\n    \"purpose_id\": 1,\r\n    \"message\": \"Hello, I have a question about your services and would like to get more information.\",\r\n    \"source\": \"website\"\r\n}\r\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://dxbalpha.com/api/v1/contact-us/submit",
+                          "protocol": "http",
+                          "host": [
+                            "dxbalpha",
+                            "com"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "contact-us",
+                            "submit"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Security",
+              "item": [
+                {
+                  "name": "Registration",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "platform registration",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"name\": \"Mohamed Fawzi Zaki\",\r\n  \"email\": \"mohamedfawzizaki@gmail.com\",\r\n  \"password\": \"SecurePassword123!\",\r\n  \"password_confirmation\": \"SecurePassword123!\"\r\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/register",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "users",
+                                "auth",
+                                "register"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Authentication",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "Mfa",
+                          "item": [
+                            {
+                              "name": "setup",
+                              "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                  "raw": "http://localhost:8000/api/v1/auth/mfa/setup",
+                                  "protocol": "http",
+                                  "host": [
+                                    "localhost"
+                                  ],
+                                  "port": "8000",
+                                  "path": [
+                                    "api",
+                                    "v1",
+                                    "auth",
+                                    "mfa",
+                                    "setup"
+                                  ]
+                                }
+                              },
+                              "response": []
+                            },
+                            {
+                              "name": "confirm",
+                              "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                  "mode": "raw",
+                                  "raw": "{\r\n  \"code\": \"637885\",\r\n  \"device_name\": \"mobile_app\"\r\n}",
+                                  "options": {
+                                    "raw": {
+                                      "language": "json"
+                                    }
+                                  }
+                                },
+                                "url": {
+                                  "raw": "http://localhost:8000/api/v1/auth/mfa/confirm",
+                                  "protocol": "http",
+                                  "host": [
+                                    "localhost"
+                                  ],
+                                  "port": "8000",
+                                  "path": [
+                                    "api",
+                                    "v1",
+                                    "auth",
+                                    "mfa",
+                                    "confirm"
+                                  ]
+                                }
+                              },
+                              "response": []
+                            },
+                            {
+                              "name": "verify",
+                              "request": {
+                                "auth": {
+                                  "type": "bearer",
+                                  "bearer": [
+                                    {
+                                      "key": "token",
+                                      "value": "5|McOxK96VY7nh7rWJKCLi79xSV4IW5SUp06CRqcmM9f5512a7",
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                  "mode": "raw",
+                                  "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}",
+                                  "options": {
+                                    "raw": {
+                                      "language": "json"
+                                    }
+                                  }
+                                },
+                                "url": {
+                                  "raw": "http://localhost:8000/api/v1/auth/mfa/verify",
+                                  "protocol": "http",
+                                  "host": [
+                                    "localhost"
+                                  ],
+                                  "port": "8000",
+                                  "path": [
+                                    "api",
+                                    "v1",
+                                    "auth",
+                                    "mfa",
+                                    "verify"
+                                  ]
+                                }
+                              },
+                              "response": []
+                            },
+                            {
+                              "name": "disable",
+                              "request": {
+                                "auth": {
+                                  "type": "bearer",
+                                  "bearer": [
+                                    {
+                                      "key": "token",
+                                      "value": "6|aJ0R2xYnMysRjK7Se4LbM6xwnq8yuJN4MmAtlEZF8cbf7c75",
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                  "mode": "raw",
+                                  "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}"
+                                },
+                                "url": {
+                                  "raw": "http://localhost:8000/api/v1/auth/mfa/disable",
+                                  "protocol": "http",
+                                  "host": [
+                                    "localhost"
+                                  ],
+                                  "port": "8000",
+                                  "path": [
+                                    "api",
+                                    "v1",
+                                    "auth",
+                                    "mfa",
+                                    "disable"
+                                  ]
+                                }
+                              },
+                              "response": []
+                            }
+                          ],
+                          "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                              {
+                                "key": "token",
+                                "value": "3|PuW2X7SPEmjR63u3MmtdDQL6R1q4gvHRwLKKW5YLa4618bcd",
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "event": [
+                            {
+                              "listen": "prerequest",
+                              "script": {
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {},
+                                "exec": [
+                                  ""
+                                ]
+                              }
+                            },
+                            {
+                              "listen": "test",
+                              "script": {
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {},
+                                "exec": [
+                                  ""
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "name": "plateform login",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n    \"email\":\"mohamedfawzizaki2@gmail.com\",\n    \"password\":\"ASFDFFDG@DSDSDas1232\"\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/login",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "login"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "social login",
+                          "request": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/providers/google/redirect?client=web",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "providers",
+                                "google",
+                                "redirect"
+                              ],
+                              "query": [
+                                {
+                                  "key": "client",
+                                  "value": "web"
+                                }
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Passwords",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "forgot",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"email\": \"mohamedfawzizaki2@gmail.com\"\r\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/password/forgot",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "password",
+                                "forgot"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "change",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "4|8rLo0AAasmXXrFQtSihdziknG6mjfZfr22K4sMnzcb8e1a00",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n    \"current_password\":\"SecurePassword123!\",\n    \"password\":\"ASFDFFDG@DSDSDas1232\",\n    \"password_confirmation\":\"ASFDFFDG@DSDSDas1232\"\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/password/change",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "password",
+                                "change"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Email",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "resend",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "4|8rLo0AAasmXXrFQtSihdziknG6mjfZfr22K4sMnzcb8e1a00",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n    \"current_password\":\"SecurePassword123!\",\n    \"password\":\"ASFDFFDG@DSDSDas1232\",\n    \"password_confirmation\":\"ASFDFFDG@DSDSDas1232\"\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/auth/email/resend",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "email",
+                                "resend"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Others",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "me",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"current_password\":\"SecurePassword123!\",\n    \"password\":\"ASFDFFDG@DSDSDas1232\",\n    \"password_confirmation\":\"ASFDFFDG@DSDSDas1232\"\n}"
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/auth/me",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "me"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "logout",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"current_password\":\"SecurePassword123!\",\n    \"password\":\"ASFDFFDG@DSDSDas1232\",\n    \"password_confirmation\":\"ASFDFFDG@DSDSDas1232\"\n}"
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/auth/logout",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "logout"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ],
+                  "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                      {
+                        "key": "token",
+                        "value": "5|IIfjoD6lnGM3Wfc1rRTVPzFOh7vFYqPW0EAqfsj328b21a2d",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Comparisons",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "compere",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/comparisons/compare/1/2?model_key=warehouse",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "comparisons",
+                            "compare",
+                            "1",
+                            "2"
+                          ],
+                          "query": [
+                            {
+                              "key": "model_key",
+                              "value": "warehouse"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Favorites",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get my favorites",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/profile/favorites",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "profile",
+                            "favorites"
+                          ]
+                        },
+                        "description": "## Get User Favorites\n\nThis endpoint retrieves a list of favorites associated with the user's profile.\n\n### Request\n\n- **Method**: `GET`\n    \n- **Endpoint**: `http://localhost:8000/api/v1/profile/favorites`\n    \n\n### Response\n\nUpon a successful request, the server will respond with a status code of `200` and a JSON object containing the following structure:\n\n- **data**: An array of favorite items, where each item includes:\n    \n    - `id`: Unique identifier for the favorite item.\n        \n    - `favoritable_type`: The type of the item that is favorited.\n        \n    - `favoritable_id`: The identifier of the favorited item.\n        \n    - `favoritable`: An object containing:\n        \n        - `id`: Unique identifier of the favoritable item.\n            \n        - `title`: Title of the favoritable item.\n            \n        - `url`: URL of the favoritable item.\n            \n    - `created_at`: Timestamp of when the favorite was created.\n        \n- **links**: Pagination links for navigating through the results, including:\n    \n    - `first`: URL to the first page.\n        \n    - `last`: URL to the last page.\n        \n    - `prev`: URL to the previous page (null if there is no previous page).\n        \n    - `next`: URL to the next page (null if there is no next page).\n        \n- **meta**: Metadata about the response, including:\n    \n    - `current_page`: The current page number.\n        \n    - `from`: The starting index of the current page.\n        \n    - `last_page`: The total number of pages available.\n        \n    - `links`: An array of pagination links.\n        \n    - `path`: The path for the current request.\n        \n    - `per_page`: The number of items per page.\n        \n    - `to`: The ending index of the current page.\n        \n    - `total`: The total number of favorite items.\n        \n\nThis endpoint is useful for users to view their saved favorite items in a structured format."
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "add to favorites",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"model_id\":\"1\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/profile/favorites?model_type=equipment",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "profile",
+                            "favorites"
+                          ],
+                          "query": [
+                            {
+                              "key": "model_type",
+                              "value": "equipment"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "remove from favorites",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/profile/favorites/1",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "profile",
+                            "favorites",
+                            "1"
+                          ]
+                        },
+                        "description": "### DELETE /api/v1/profile/favorites/{id}\n\nThis endpoint allows users to remove a specific favorite item from their profile by providing the unique identifier of the favorite item.\n\n#### Request Parameters\n\n- **id** (path parameter): The unique identifier of the favorite item to be deleted. In this example, the ID is `4`.\n    \n\n#### Expected Response\n\n- **Status Code**: `200 OK`\n    \n- **Content-Type**: `application/json`\n    \n- **Response Body**:\n    \n    - `status`: A string indicating the status of the operation.\n        \n    - `message`: A string providing additional information about the operation.\n        \n    - `data`: This will be `null` as the response does not return any data upon successful deletion.\n        \n\n#### Notes\n\n- Ensure that the ID provided in the request corresponds to an existing favorite item; otherwise, the operation may fail.\n    \n- This operation is idempotent, meaning that calling it multiple times with the same ID will have the same effect as calling it once."
+                      },
+                      "response": []
+                    }
+                  ],
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {},
+                        "exec": [
+                          ""
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Support",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get all available support messages types",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/support/types",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "support",
+                            "types"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get all support tickets",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/support/tickets",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "support",
+                            "tickets"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get a specific support ticket",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"full_name\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"phone\": \"+1 234 567 890\",\r\n    \"purpose_id\": 2,\r\n    \"message\": \"Hello, I have a question about your services and would like to get more information.\",\r\n    \"source\": \"website\"\r\n}\r\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/support/tickets/1",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "support",
+                            "tickets",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create a support ticket",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"subject\": \"Equipment maintenance inquiry\",\n  \"description\": \"I need assistance with setting up the new variation for excavator equipment model #402.\",\n  \"type_id\": 1,\n  \"priority\": 2\n}\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/support/tickets",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "support",
+                            "tickets"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "reply on a support ticket",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"message\": \"Thank you for the update. I checked the settings and the issue is resolved.\"\n}\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/support/tickets/1/reply",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "support",
+                            "tickets",
+                            "1",
+                            "reply"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Settings",
+              "item": [
+                {
+                  "name": "User",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all user 's settings",
+                          "protocolProfileBehavior": {
+                            "disableBodyPruning": true
+                          },
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/user",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "user"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get all user's settings grouped",
+                          "protocolProfileBehavior": {
+                            "disableBodyPruning": true
+                          },
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/user/grouped",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "user",
+                                "grouped"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get a specific user's setting",
+                          "protocolProfileBehavior": {
+                            "disableBodyPruning": true
+                          },
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/user/lang",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "user",
+                                "lang"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update user's settings",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"email_notifications\": true,\n  \"browser_notifications\": false,\n  \"security_alerts\": true,\n  \"marketing_emails\": false\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/user",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "user"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "reset all user settings to defualts",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "6|aJ0R2xYnMysRjK7Se4LbM6xwnq8yuJN4MmAtlEZF8cbf7c75",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n  \"code\": \"813702\",\r\n  \"device_name\": \"mobile_app\"\r\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/user/reset",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "user",
+                                "reset"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ],
+                  "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                      {
+                        "key": "token",
+                        "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Platform",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all Public Settings",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get all Public Setting Grouped",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/grouped",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "grouped"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get a specific Public Setting By Key",
+                          "protocolProfileBehavior": {
+                            "disableBodyPruning": true
+                          },
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\r\n    \"locale\":\"ar\"\r\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/settings/favicon",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "settings",
+                                "favicon"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Profile",
+              "item": [
+                {
+                  "name": "Me",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get user profile",
+                          "protocolProfileBehavior": {
+                            "disableBodyPruning": true
+                          },
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n    \"model_id\":\"1\"\n}"
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/details",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "details"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update user profile",
+                          "request": {
+                            "method": "PUT",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"name\": \"Mohamed Fawzi\",\n  \"email\": \"mohamedfawzizaki3@gmail.com\",\n  \"phone\": \"+201012345678\",\n  \"gender\": 1,\n  \"date_of_birth\": \"1995-06-15\",\n  \"bio\": \"Software Engineer & Backend Developer.\",\n  \"password\": \"NewStrongPassword123!\",\n  \"password_confirmation\": \"NewStrongPassword123!\"\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/details",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "details"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update profile image",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "profile_image",
+                                  "type": "file",
+                                  "uuid": "7e33c741-c3f7-4fec-bd42-5a94e834a314",
+                                  "src": "/home/mohamed-fawzi-zaki/Pictures/Screenshots/Screenshot From 2026-08-04 10-26-10.png"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/details/avatar",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "details",
+                                "avatar"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "delete profile image",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "profile_image",
+                                  "type": "file",
+                                  "uuid": "7e33c741-c3f7-4fec-bd42-5a94e834a314",
+                                  "src": "/home/mohamed-fawzi-zaki/Pictures/Screenshots/Screenshot From 2026-08-04 10-26-10.png"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/details/avatar",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "details",
+                                "avatar"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ],
+                  "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                      {
+                        "key": "token",
+                        "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Notifications",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all notifications",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get unread notification count",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications/unread-count",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications",
+                                "unread-count"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "mark all notifications as read",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications/read-all",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications",
+                                "read-all"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "mark a specific notification as read",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications/1/read",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications",
+                                "1",
+                                "read"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "delete all notifications",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "delete a specific notification",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/notifications/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "notifications",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Addresses",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all my addresses",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/addresses",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "addresses"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show a specific address",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/addresses/35",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "addresses",
+                                "35"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "create an new address",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"address_line_1\": \"100 Nile Corniche, Maadi\",\n  \"address_line_2\": \"Tower 4, Apt 12B\",\n  \"city\": \"Cairo\",\n  \"state\": \"Cairo Governorate\",\n  \"country\": \"Egypt\",\n  \"postal_code\": \"11728\",\n  \"label\": \"My Apartment\",\n  \"instructions\": \"Leave with security at the main lobby\",\n  \"phone_code\": \"+20\",\n  \"phone_number\": \"01012345678\",\n  \"latitude\": 30.0444,\n  \"longitude\": 31.2357,\n  \"type\": 3,\n  \"context\": 6,\n  \"purpose\": \"shipping\",\n  \"is_default\": true\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/addresses",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "addresses"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update a specific address",
+                          "request": {
+                            "method": "PUT",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"address_line_1\": \"100 Nile Corniche (Renovated Building)\",\n  \"label\": \"Main Office\",\n  \"phone_code\": \"+966\",\n  \"phone_number\": \"0501234567\",\n  \"is_default\": false\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/addresses/35",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "addresses",
+                                "35"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "set an address as defualt",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/addresses/35/default",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "addresses",
+                                "35",
+                                "default"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Countries-Phone-Codes",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get all countries phone codes",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/countries-phone-codes",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "countries-phone-codes"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Countries",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get all supported countries and thier cities",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "2|MIRUwOVV7Yme4Di7F1SwfpIaUl1Z3wdXvtswem1Q824d6d17",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8000/api/v1/countries",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8000",
+                          "path": [
+                            "api",
+                            "v1",
+                            "countries"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Business",
+          "item": [
+            {
+              "name": "Products",
+              "item": [
+                {
+                  "name": "Products",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all products",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products?page=1&per_page=10",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products"
+                              ],
+                              "query": [
+                                {
+                                  "key": "page",
+                                  "value": "1"
+                                },
+                                {
+                                  "key": "per_page",
+                                  "value": "10"
+                                }
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show an product",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/11",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "11"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Variations",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all product variations",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/1/variations",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "1",
+                                "variations"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show an product variation",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/1/variations/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "1",
+                                "variations",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Accessories",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all product accessories",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/1/accessories",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "1",
+                                "accessories"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show an product accessory",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/1/accessories/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "1",
+                                "accessories",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Orders",
+              "item": [
+                {
+                  "name": "Wishlists",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all my wishlists",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get a specific wishlist",
+                          "request": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vvv"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/3",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "3"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "create a new wishlists",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"name\": \"Home Office Setup\",\n  \"description\": \"Ergonomic chair, monitor arm, and desk accessories\",\n  \"privacy\": 2,\n  \"is_default\": false\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update a specific wishlist",
+                          "request": {
+                            "method": "PUT",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "mo_sdsfgdgdh244637567"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"name\": \"Updated Wishlist Title\",\n  \"description\": \"New updated description\",\n  \"privacy\": 2\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/3",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "3"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "delete a specific wishlist",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "mo_sdsfgdgdh244637567"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/3",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "3"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "generate / retrieve sharing link",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "mo_sdsfgdgdh244637567"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/4/share",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "4",
+                                "share"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "public access to a shared wishlist via token.",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/shared/wsh_eL6AnSnZmbF8TTOBCRU27N5Y3KlvrgRa",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "shared",
+                                "wsh_eL6AnSnZmbF8TTOBCRU27N5Y3KlvrgRa"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "add an item to a wishlist",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n    \"product_id\": 10,\n    \"product_variant_id\": 1,\n    \"desired_quantity\": 2,\n    \"priority\": 3,\n    \"note\": \"Get the matte black finish\"\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/3/items",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "3",
+                                "items"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update an item details in a wishlist",
+                          "request": {
+                            "method": "PUT",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "mo_sdsfgdgdh244637567"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"desired_quantity\": 3,\n  \"priority\": 3,\n  \"note\": \"Updated personal note\"\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/4/items/2",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "4",
+                                "items",
+                                "2"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "remove an item from a wishlist",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "mo_sdsfgdgdh244637567"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/4/items/1",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "4",
+                                "items",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "clear all items in a wishlist",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/whishlists/3/items",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "whishlists",
+                                "3",
+                                "items"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Carts",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get active cart",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "add an item to the cart",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vv"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"product_id\": 11,\n  \"product_variant_id\": 2,\n  \"quantity\": 2,\n  \"custom_options\": {\n    \"gift_wrap\": true,\n    \"gift_message\": \"Happy Birthday!\"\n  }\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart/items/",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart",
+                                "items",
+                                ""
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update cart item quantity",
+                          "request": {
+                            "method": "PUT",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vv"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"quantity\": 5\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart/items/7",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart",
+                                "items",
+                                "7"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "transfer wishlist items to cart",
+                          "request": {
+                            "method": "POST",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vvv"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"wishlist_id\": 11\n}",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart/transfer-wishlist",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart",
+                                "transfer-wishlist"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "remove an item from the cart",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vv"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart/items/7",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart",
+                                "items",
+                                "7"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "clear all items in the cart",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [
+                              {
+                                "key": "X-Session-ID",
+                                "value": "vvv"
+                              }
+                            ],
+                            "url": {
+                              "raw": "http:/localhost:8000/api/v1/cart/items",
+                              "host": [
+                                "http"
+                              ],
+                              "port": "",
+                              "path": [
+                                "localhost:8000",
+                                "api",
+                                "v1",
+                                "cart",
+                                "items"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Orders",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all my orders",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/orders?page=1&per_page=10",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "orders"
+                              ],
+                              "query": [
+                                {
+                                  "key": "page",
+                                  "value": "1"
+                                },
+                                {
+                                  "key": "per_page",
+                                  "value": "10"
+                                }
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show a specific order",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/orders/117",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "117"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "checkout (place an order)",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{\n  \"shipping_address_id\": 1,\n  \"billing_address_id\": 1,\n  \"payment_method\": \"cod\",\n  \"phone\": \"01010101010\",\n  \"target_currency\": \"EGP\",\n  \"customer_note\": \"Please deliver between 2 PM and 5 PM\"\n}\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/orders/checkout",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "checkout"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "cancel an order",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/orders/12/cancel",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "12",
+                                "cancel"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "reorder (add items back to cart)",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/orders/12/reorder",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "12",
+                                "reorder"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Payments",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get active payment methods",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/payments/methods?currency=EGP",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "payments",
+                                "methods"
+                              ],
+                              "query": [
+                                {
+                                  "key": "currency",
+                                  "value": "EGP"
+                                }
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get all my paymetns",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/payments/",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "payments",
+                                ""
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show a specific payment datials",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "1|ab8QwccZEQOqIG7MtNlCUh8VXMQgxojmMwgI5aUNc17bd9dc",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/payments/127",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "payments",
+                                "127"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "pay or retry payment",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "1|ab8QwccZEQOqIG7MtNlCUh8VXMQgxojmMwgI5aUNc17bd9dc",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "//  {\n//     \"payment_method_type\": \"cash_on_delivery\",\n//     \"provider\": \"cash\"\n// }\n\n  {\n    \"payment_method_type\": \"card\"\n    // \"provider\": \"stripe\"\n  }\n\n// {\n//   \"payment_method_type\": \"wallet\",\n//   \"provider\": \"paymob\",\n//   \"phone\": \"01012345678\"\n// }\n",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/payments/127/retry",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "payments",
+                                "127",
+                                "retry"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "5|7dmAP6C3WpP6vGBfgijsOJMDE2xMjN4OTl1mIDx45c002cf0",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Currencies",
+              "item": [
+                {
+                  "name": "V1",
+                  "item": [
+                    {
+                      "name": "get supported currencies",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http:/localhost:8000/api/v1/currencies",
+                          "host": [
+                            "http"
+                          ],
+                          "port": "",
+                          "path": [
+                            "localhost:8000",
+                            "api",
+                            "v1",
+                            "currencies"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get current active currency",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "2|MIRUwOVV7Yme4Di7F1SwfpIaUl1Z3wdXvtswem1Q824d6d17",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http:/localhost:8000/api/v1/currencies/current",
+                          "host": [
+                            "http"
+                          ],
+                          "port": "",
+                          "path": [
+                            "localhost:8000",
+                            "api",
+                            "v1",
+                            "currencies",
+                            "current"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "switch currency",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "2|MIRUwOVV7Yme4Di7F1SwfpIaUl1Z3wdXvtswem1Q824d6d17",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"currency\": \"EGP\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http:/localhost:8000/api/v1/currencies/switch",
+                          "host": [
+                            "http"
+                          ],
+                          "port": "",
+                          "path": [
+                            "localhost:8000",
+                            "api",
+                            "v1",
+                            "currencies",
+                            "switch"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

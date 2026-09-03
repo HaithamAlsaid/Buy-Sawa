@@ -17,18 +17,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
-  final _phoneCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _confirmPassCtrl = TextEditingController();
   final _referralCtrl = TextEditingController();
   bool _obscure = true;
+  bool _obscureConfirm = true;
   bool _loading = false;
 
   @override
   void dispose() {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
-    _phoneCtrl.dispose();
     _passCtrl.dispose();
+    _confirmPassCtrl.dispose();
     _referralCtrl.dispose();
     super.dispose();
   }
@@ -36,18 +37,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool get _isFormValid =>
       _nameCtrl.text.isNotEmpty &&
       _emailCtrl.text.isNotEmpty &&
-      _phoneCtrl.text.isNotEmpty &&
-      _passCtrl.text.isNotEmpty;
+      _passCtrl.text.isNotEmpty &&
+      _confirmPassCtrl.text.isNotEmpty;
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_passCtrl.text != _confirmPassCtrl.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).locale.languageCode == 'ar'
+                ? 'كلمات المرور غير متطابقة'
+                : 'Passwords do not match',
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
     setState(() => _loading = true);
     final auth = context.read<AuthProvider>();
     final ok = await auth.register(
       fullName: _nameCtrl.text.trim(),
       email: _emailCtrl.text.trim(),
       password: _passCtrl.text,
-      phone: _phoneCtrl.text.trim(),
+      passwordConfirmation: _confirmPassCtrl.text,
       referralCode: _referralCtrl.text.trim().isEmpty
           ? null
           : _referralCtrl.text.trim(),
@@ -220,21 +235,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             SizedBox(height: R.pad(context, 16)),
 
-                            // Phone
-                            Text(AppLocalizations.of(context).phone, style: _labelStyle(context)),
-                            SizedBox(height: R.pad(context, 8)),
-                            TextFormField(
-                              controller: _phoneCtrl,
-                              keyboardType: TextInputType.phone,
-                              style: TextStyle(fontSize: R.sp(context, 14)),
-                              decoration: _field(
-                                context,
-                                hint: '+971 50 123 4567',
-                                icon: Icons.phone_outlined,
-                              ),
-                            ),
-                            SizedBox(height: R.pad(context, 16)),
-
                             // Password
                             Text(AppLocalizations.of(context).password, style: _labelStyle(context)),
                             SizedBox(height: R.pad(context, 8)),
@@ -244,7 +244,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: TextStyle(fontSize: R.sp(context, 14)),
                               decoration: _field(
                                 context,
-                                hint: 'Min. 4 characters',
+                                hint: 'Min. 8 characters',
                                 icon: Icons.lock_outline_rounded,
                                 suffix: IconButton(
                                   icon: Icon(
@@ -256,6 +256,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   onPressed: () =>
                                       setState(() => _obscure = !_obscure),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: R.pad(context, 16)),
+
+                            // Confirm Password
+                            Text(
+                              AppLocalizations.of(context).locale.languageCode == 'ar'
+                                  ? 'تأكيد كلمة المرور'
+                                  : 'Confirm Password',
+                              style: _labelStyle(context),
+                            ),
+                            SizedBox(height: R.pad(context, 8)),
+                            TextFormField(
+                              controller: _confirmPassCtrl,
+                              obscureText: _obscureConfirm,
+                              style: TextStyle(fontSize: R.sp(context, 14)),
+                              decoration: _field(
+                                context,
+                                hint: 'Re-enter password',
+                                icon: Icons.lock_outline_rounded,
+                                suffix: IconButton(
+                                  icon: Icon(
+                                    _obscureConfirm
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
+                                    color: const Color(0xFF94A3B8),
+                                    size: R.icon(context, 20),
+                                  ),
+                                  onPressed: () =>
+                                      setState(() => _obscureConfirm = !_obscureConfirm),
                                 ),
                               ),
                             ),
