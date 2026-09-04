@@ -50,7 +50,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         setState(() {
           _favourites.removeWhere((e) => e['id']?.toString() == favId);
         });
-        final name = _productName(item);
+        final name = _productName(item, isAr: AppLocalizations.of(context).locale.languageCode == 'ar');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -64,9 +64,19 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     }
   }
 
-  /// Safely extract the product name from different response shapes
-  String _productName(Map<String, dynamic> item) {
+  /// Safely extract the product name — returns Arabic name if locale is AR
+  String _productName(Map<String, dynamic> item, {bool isAr = false}) {
     final product = item['product'] as Map<String, dynamic>?;
+    if (isAr) {
+      return product?['arabic_name'] ??
+          product?['name_ar'] ??
+          product?['name'] ??
+          product?['title'] ??
+          item['arabic_name'] ??
+          item['name'] ??
+          item['title'] ??
+          '';
+    }
     return product?['name'] ??
         product?['title'] ??
         item['name'] ??
@@ -128,6 +138,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isAr = l10n.locale.languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -289,7 +300,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                 final item = _favourites[index];
                                 final favId = item['id']?.toString() ?? '';
                                 final isRemoving = _removingIds.contains(favId);
-                                final name = _productName(item);
+                                final name = _productName(item, isAr: isAr);
                                 final price = _price(item);
                                 final originalPrice = _originalPrice(item);
                                 final rating = _rating(item);

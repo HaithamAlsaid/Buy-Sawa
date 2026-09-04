@@ -502,7 +502,7 @@ class _LoggedInProfileView extends StatelessWidget {
                             icon: Icons.favorite_border_rounded,
                             iconColor: AppColors.primary,
                             iconBgColor: Colors.transparent,
-                            label: 'Wishlist',
+                            label: AppLocalizations.of(context).myFavourites,
                             onTap: () {
                               Navigator.push(
                                 context,
