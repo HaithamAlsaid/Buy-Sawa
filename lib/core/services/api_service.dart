@@ -8,7 +8,7 @@ class ApiService {
   static const String baseUrl = 'https://buysawa.com/api/v1';
 
   // ─── Auth 
-  static const String registerEndpoint = '$baseUrl/auth/register';
+  static const String registerEndpoint = '$baseUrl/users/auth/register';
   static const String loginEndpoint = '$baseUrl/auth/login';
   static const String logoutEndpoint = '$baseUrl/auth/logout';
   static const String meEndpoint = '$baseUrl/auth/me';
@@ -44,6 +44,13 @@ class ApiService {
       '$baseUrl/profile/notifications/$id/read';
   static String notificationDeleteEndpoint(dynamic id) =>
       '$baseUrl/profile/notifications/$id';
+
+  // ─── Wallet
+  static const String walletEndpoint = '$baseUrl/user/wallet';
+  static const String walletTransactionsEndpoint = '$baseUrl/user/wallet/transactions';
+  static const String walletTopUpEndpoint = '$baseUrl/user/wallet/top-up';
+
+  // ─── Categories 
 
   // ─── Favorites 
   static const String favoritesEndpoint = '$baseUrl/profile/favorites';

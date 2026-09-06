@@ -1,55 +1,56 @@
 import 'package:flutter/material.dart';
 import '../models/transaction_model.dart';
+import '../core/services/wallet_service.dart';
 
 class WalletProvider extends ChangeNotifier {
-  double _balance = 150.00;
-  final List<TransactionModel> _transactions = List.from(mockTransactions);
+  double _balance = 0.0;
+  List<TransactionModel> _transactions = [];
+  bool _isLoading = false;
+  String? _token;
 
   double get balance => _balance;
   List<TransactionModel> get transactions => _transactions;
+  bool get isLoading => _isLoading;
 
-  void addCashback(double amount, String label) {
-    _balance += amount;
-    _transactions.insert(0, TransactionModel(
-      id: DateTime.now().toString(),
-      title: 'Cashback · $label',
-      arabicTitle: 'استرداد نقدي · $label',
-      subtitle: 'Just now · Cashback',
-      arabicSubtitle: 'الآن · استرداد نقدي',
-      amount: amount,
-      type: TransactionType.cashback,
-      date: DateTime.now(),
-    ));
+  void setToken(String? token) {
+    _token = token;
+    if (token != null) {
+      fetchWallet();
+    } else {
+      _balance = 0.0;
+      _transactions.clear();
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchWallet() async {
+    if (_token == null) return;
+    _isLoading = true;
+    notifyListeners();
+
+    final data = await WalletService.getWallet();
+    if (data != null) {
+      _balance = data.balance;
+      _transactions = data.transactions;
+    }
+    
+    _isLoading = false;
     notifyListeners();
   }
 
-  void addReferralBonus(double amount, String friendName) {
-    _balance += amount;
-    _transactions.insert(0, TransactionModel(
-      id: DateTime.now().toString(),
-      title: 'Referral Bonus · $friendName joined',
-      arabicTitle: 'مكافأة دعوة · انضم $friendName',
-      subtitle: 'Just now · Referral',
-      arabicSubtitle: 'الآن · دعوة',
-      amount: amount,
-      type: TransactionType.referral,
-      date: DateTime.now(),
-    ));
+  Future<bool> topUpWallet(double amount, String provider) async {
+    if (_token == null) return false;
+    _isLoading = true;
     notifyListeners();
-  }
 
-  void deduct(double amount, String orderId) {
-    _balance -= amount;
-    _transactions.insert(0, TransactionModel(
-      id: DateTime.now().toString(),
-      title: 'Order #$orderId',
-      arabicTitle: 'طلب #$orderId',
-      subtitle: 'Just now · Purchase',
-      arabicSubtitle: 'الآن · شراء',
-      amount: -amount,
-      type: TransactionType.purchase,
-      date: DateTime.now(),
-    ));
+    final success = await WalletService.topUp(amount: amount, provider: provider);
+    if (success) {
+      // Re-fetch wallet to get updated balance and new transaction
+      await fetchWallet();
+    }
+    
+    _isLoading = false;
     notifyListeners();
+    return success;
   }
 }

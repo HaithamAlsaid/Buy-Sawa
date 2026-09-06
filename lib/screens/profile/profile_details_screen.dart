@@ -191,19 +191,30 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
 
     setState(() => _saving = true);
     // Call provider update
-    context.read<AuthProvider>().updateProfile(name, _birthdate);
-    await Future.delayed(const Duration(milliseconds: 500));
+    final auth = context.read<AuthProvider>();
+    final success = await auth.updateProfile(name, _birthdate);
+    
     if (!mounted) return;
     setState(() => _saving = false);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context).changesSaved),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    Navigator.pop(context);
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).changesSaved),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(auth.errorMessage ?? 'Failed to update profile'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override

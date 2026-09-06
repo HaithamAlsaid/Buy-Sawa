@@ -7,6 +7,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import 'register_screen.dart';
+import 'mfa_verify_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -42,14 +43,27 @@ class _LoginScreenState extends State<LoginScreen> {
     if (ok) {
       Navigator.pop(context);
     } else {
+      // Check if MFA is required
+      final errorMsg = auth.errorMessage ?? '';
+      if (errorMsg.toLowerCase().contains('mfa') || 
+          errorMsg.toLowerCase().contains('two factor') ||
+          errorMsg.toLowerCase().contains('2fa') ||
+          errorMsg.toLowerCase().contains('verification code')) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MfaVerifyScreen()),
+        );
+        return;
+      }
+      
       // Show the real error message from the server
-      final errorMsg = auth.errorMessage ??
+      final finalMsg = errorMsg.isNotEmpty ? errorMsg :
           (AppLocalizations.of(context).locale.languageCode == 'ar'
               ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
               : 'Invalid email or password');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMsg),
+          content: Text(finalMsg),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
@@ -626,11 +640,27 @@ class _LoginScreenState extends State<LoginScreen> {
                               : () async {
                                   if (emailCtrl.text.trim().isEmpty) return;
                                   setSheetState(() => sending = true);
-                                  await Future.delayed(const Duration(seconds: 2));
-                                  setSheetState(() {
-                                    sending = false;
-                                    sent = true;
-                                  });
+                                  
+                                  final auth = context.read<AuthProvider>();
+                                  final success = await auth.forgotPassword(emailCtrl.text.trim());
+                                  
+                                  if (!context.mounted) return;
+                                  
+                                  if (success) {
+                                    setSheetState(() {
+                                      sending = false;
+                                      sent = true;
+                                    });
+                                  } else {
+                                    setSheetState(() => sending = false);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(auth.errorMessage ?? 'Failed to send reset link'),
+                                        backgroundColor: AppColors.error,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,

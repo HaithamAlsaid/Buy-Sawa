@@ -13,6 +13,8 @@ import 'favourites_screen.dart';
 import 'delete_account_screen.dart';
 import '../orders/my_orders_screen.dart';
 import '../../core/localization/app_localizations.dart';
+import '../auth/change_password_screen.dart';
+import '../auth/mfa_setup_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -567,6 +569,109 @@ class _LoggedInProfileView extends StatelessWidget {
                                   builder: (_) => const DeleteAccountScreen(),
                                 ),
                               );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: R.pad(context, 24)),
+                    
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: R.pad(context, 8),
+                        bottom: R.pad(context, 12),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الأمان' : 'SECURITY',
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 12),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(R.r(context, 24)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: const Color(0xFFF1F5F9),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Change Password
+                          _GuestMenuItem(
+                            icon: Icons.lock_outline_rounded,
+                            iconColor: const Color(0xFF0EA5E9),
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'تغيير كلمة المرور' : 'Change Password',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ChangePasswordScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // MFA
+                          _GuestMenuItem(
+                            icon: Icons.security_rounded,
+                            iconColor: const Color(0xFF10B981),
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الأمان المزدوج (MFA)' : 'Two-Factor Auth',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MfaSetupScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // Resend Email
+                          _GuestMenuItem(
+                            icon: Icons.mark_email_unread_outlined,
+                            iconColor: const Color(0xFFF59E0B),
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'إعادة إرسال إيميل التفعيل' : 'Resend Verification Email',
+                            onTap: () async {
+                              final auth = context.read<AuthProvider>();
+                              final success = await auth.resendVerificationEmail();
+                              if (!context.mounted) return;
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                          ? 'تم الإرسال بنجاح، راجع بريدك'
+                                          : 'Email sent successfully, check your inbox',
+                                    ),
+                                    backgroundColor: AppColors.success,
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(auth.errorMessage ?? 'Failed to send email'),
+                                    backgroundColor: AppColors.error,
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              }
                             },
                           ),
                         ],

@@ -199,10 +199,44 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ─── Update Profile ──────────────────────────────────────────
-  void updateProfile(String fullName, String birthdate) {
-    if (_user != null) {
-      _user = _user!.copyWith(fullName: fullName, birthdate: birthdate);
+  Future<bool> updateProfile(String fullName, String birthdate) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.put(
+        Uri.parse(ApiService.profileEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'name': fullName,
+          if (birthdate.isNotEmpty) 'date_of_birth': birthdate,
+          if (_user != null) 'email': _user!.email,
+          if (_user != null) 'phone': _user!.phone,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        if (_user != null) {
+          _user = _user!.copyWith(fullName: fullName, birthdate: birthdate);
+        }
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = body['message'] ?? 'Failed to update profile';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error. Please try again.';
+      _isLoading = false;
       notifyListeners();
+      return false;
     }
   }
 
@@ -280,6 +314,252 @@ class AuthProvider extends ChangeNotifier {
     await _prefs.setBool(_key, false);
     await SecureStorageService.clearToken();
     notifyListeners();
+  }
+
+  // ─── Forgot Password ──────────────────────────────────────────
+  Future<bool> forgotPassword(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final res = await http.post(
+        Uri.parse(ApiService.forgotPasswordEndpoint),
+        headers: ApiService.headers(),
+        body: jsonEncode({'email': email}),
+      ).timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = body['message'] ?? 'Failed to send reset link';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ─── Change Password ──────────────────────────────────────────
+  Future<bool> changePassword(String currentPassword, String newPassword, String confirmPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.changePasswordEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'current_password': currentPassword,
+          'password': newPassword,
+          'password_confirmation': confirmPassword,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = body['message'] ?? 'Failed to change password';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ─── Resend Verification Email ────────────────────────────────
+  Future<bool> resendVerificationEmail() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.emailResendEndpoint),
+        headers: ApiService.headers(token: token),
+      ).timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = body['message'] ?? 'Failed to resend email';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // ─── MFA Methods ─────────────────────────────────────────────
+  Future<String?> setupMfa() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.mfaSetupEndpoint),
+        headers: ApiService.headers(token: token),
+      ).timeout(const Duration(seconds: 15));
+
+      final body = jsonDecode(res.body);
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        // Assuming backend returns QR code URL or secret in 'data'
+        final data = body['data'] ?? body;
+        return data['qr_code_url'] ?? data['secret'] ?? data['url']?.toString();
+      } else {
+        _errorMessage = body['message'] ?? 'Failed to setup MFA';
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error.';
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<bool> confirmMfa(String code) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.mfaConfirmEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'code': code,
+          'device_name': 'mobile_app',
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        final body = jsonDecode(res.body);
+        _errorMessage = body['message'] ?? 'Invalid code';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> verifyMfa(String code) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      // For verify during login, token might be temporary or different, 
+      // but assuming it's passed or stored temporarily.
+      final token = await SecureStorageService.getToken(); 
+      final res = await http.post(
+        Uri.parse(ApiService.mfaVerifyEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'code': code,
+          'device_name': 'mobile_app',
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        final body = jsonDecode(res.body);
+        _errorMessage = body['message'] ?? 'Invalid code';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> disableMfa(String code) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.mfaDisableEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'code': code,
+          'device_name': 'mobile_app',
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        final body = jsonDecode(res.body);
+        _errorMessage = body['message'] ?? 'Invalid code';
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Connection error.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   void clearError() {

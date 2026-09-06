@@ -10,7 +10,7 @@ import 'api_service.dart';
 import 'secure_storage_service.dart';
 
 class AddressService {
-  // ─── Get All Addresses ───────────────────────────────────────
+  // Get All Addresses 
   /// GET /api/v1/profile/addresses
   static Future<List<AddressModel>> getAddresses() async {
     final token = await SecureStorageService.getToken();

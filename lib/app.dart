@@ -10,6 +10,7 @@ import 'providers/cart_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/address_provider.dart';
 import 'providers/notifications_provider.dart';
+import 'providers/wallet_provider.dart';
 import 'screens/main/main_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 
@@ -37,13 +38,14 @@ class _BuySawaAppState extends State<BuySawaApp> {
     if (isLoggedIn && !_wasLoggedIn) {
       // المستخدم سجل دخول → جيب البيانات
       _wasLoggedIn = true;
-      final token = await SecureStorageService.getToken();
-
-      if (!mounted) return;
-      context.read<CartProvider>().setToken(token);
-      context.read<OrderProvider>().setToken(token);
-      context.read<AddressProvider>().setToken(token);
-      context.read<NotificationsProvider>().setToken(token);
+      if (auth.isAuthenticated) {
+        final token = auth.token;
+        context.read<CartProvider>().setToken(token);
+        context.read<OrderProvider>().setToken(token);
+        context.read<AddressProvider>().setToken(token);
+        context.read<NotificationsProvider>().setToken(token);
+        context.read<WalletProvider>().setToken(token);
+      }
     } else if (!isLoggedIn && _wasLoggedIn) {
       // المستخدم طلع → امسح البيانات
       _wasLoggedIn = false;
@@ -52,6 +54,7 @@ class _BuySawaAppState extends State<BuySawaApp> {
       context.read<OrderProvider>().setToken(null);
       context.read<AddressProvider>().setToken(null);
       context.read<NotificationsProvider>().setToken(null);
+      context.read<WalletProvider>().setToken(null);
     }
   }
 

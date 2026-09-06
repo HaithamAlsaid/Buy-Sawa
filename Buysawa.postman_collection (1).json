@@ -183,7 +183,7 @@
                               }
                             },
                             "url": {
-                              "raw": "http://localhost:8000/api/v1/auth/register",
+                              "raw": "http://localhost:8000/api/v1/users/auth/register",
                               "protocol": "http",
                               "host": [
                                 "localhost"
@@ -1434,17 +1434,7 @@
                         }
                       ]
                     }
-                  ],
-                  "auth": {
-                    "type": "bearer",
-                    "bearer": [
-                      {
-                        "key": "token",
-                        "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
-                        "type": "string"
-                      }
-                    ]
-                  }
+                  ]
                 },
                 {
                   "name": "Notifications",
@@ -1741,7 +1731,7 @@
                 "bearer": [
                   {
                     "key": "token",
-                    "value": "4|yE2QVF3yQ7OtIqpftO0SWAGKgf3TvO4Am1rd2yhV6a0175f9",
+                    "value": "9|Mvc74rDzzSujMR6pI3u4CcySm2dhdIkUyJHA2UJT039f4124",
                     "type": "string"
                   }
                 ]
@@ -2809,25 +2799,25 @@
                 "bearer": [
                   {
                     "key": "token",
-                    "value": "5|7dmAP6C3WpP6vGBfgijsOJMDE2xMjN4OTl1mIDx45c002cf0",
+                    "value": "8|bdoy2S6hlYKh8xx0MIGJ7yXVH5pf4CzJybK69KWQcb431794",
                     "type": "string"
                   }
                 ]
               }
             },
             {
-              "name": "Currencies",
+              "name": "Wallet",
               "item": [
                 {
                   "name": "V1",
                   "item": [
                     {
-                      "name": "get supported currencies",
+                      "name": "show my wallet",
                       "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "http:/localhost:8000/api/v1/currencies",
+                          "raw": "http:/localhost:8000/api/v1/user/wallet",
                           "host": [
                             "http"
                           ],
@@ -2836,29 +2826,20 @@
                             "localhost:8000",
                             "api",
                             "v1",
-                            "currencies"
+                            "user",
+                            "wallet"
                           ]
                         }
                       },
                       "response": []
                     },
                     {
-                      "name": "get current active currency",
+                      "name": "get my transactions",
                       "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "2|MIRUwOVV7Yme4Di7F1SwfpIaUl1Z3wdXvtswem1Q824d6d17",
-                              "type": "string"
-                            }
-                          ]
-                        },
                         "method": "GET",
                         "header": [],
                         "url": {
-                          "raw": "http:/localhost:8000/api/v1/currencies/current",
+                          "raw": "http:/localhost:8000/api/v1/user/wallet/transactions",
                           "host": [
                             "http"
                           ],
@@ -2867,31 +2848,22 @@
                             "localhost:8000",
                             "api",
                             "v1",
-                            "currencies",
-                            "current"
+                            "user",
+                            "wallet",
+                            "transactions"
                           ]
                         }
                       },
                       "response": []
                     },
                     {
-                      "name": "switch currency",
+                      "name": "add money to my wallet",
                       "request": {
-                        "auth": {
-                          "type": "bearer",
-                          "bearer": [
-                            {
-                              "key": "token",
-                              "value": "2|MIRUwOVV7Yme4Di7F1SwfpIaUl1Z3wdXvtswem1Q824d6d17",
-                              "type": "string"
-                            }
-                          ]
-                        },
                         "method": "POST",
                         "header": [],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\n    \"currency\": \"EGP\"\n}",
+                          "raw": "{\n    \"amount\": 2000.00,\n    \"provider\": \"paymob\"\n}",
                           "options": {
                             "raw": {
                               "language": "json"
@@ -2899,7 +2871,7 @@
                           }
                         },
                         "url": {
-                          "raw": "http:/localhost:8000/api/v1/currencies/switch",
+                          "raw": "http:/localhost:8000/api/v1/user/wallet/top-up",
                           "host": [
                             "http"
                           ],
@@ -2908,14 +2880,455 @@
                             "localhost:8000",
                             "api",
                             "v1",
-                            "currencies",
-                            "switch"
+                            "user",
+                            "wallet",
+                            "top-up"
                           ]
                         }
                       },
                       "response": []
                     }
                   ]
+                }
+              ],
+              "auth": {
+                "type": "bearer",
+                "bearer": [
+                  {
+                    "key": "token",
+                    "value": "12|nyqfpMStSXrurICxhQ1SnpJhNDEVUdezB2Rxi2oNb5a11b8d",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Referal",
+              "item": [
+                {
+                  "name": "Share",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "product that i refer to others",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "4|ycoJhd3RPVT8KjBs4L9UF3ODFcDLdEo1MFnUg6NG4f3408f4",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/profile/referrals/shared-links",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "profile",
+                                "referrals",
+                                "shared-links"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "resolves any active link token to fetch the product data, potential earnings",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/referrals/resolve/kSHoHec3GhflmJok",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "referrals",
+                                "resolve",
+                                "kSHoHec3GhflmJok"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "share a product",
+                          "request": {
+                            "auth": {
+                              "type": "bearer",
+                              "bearer": [
+                                {
+                                  "key": "token",
+                                  "value": "4|ycoJhd3RPVT8KjBs4L9UF3ODFcDLdEo1MFnUg6NG4f3408f4",
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "//   {\n//       \"product_variant_id\": 1\n//   }",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/products/3/share",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "3",
+                                "share"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Groups",
+                  "item": [
+                    {
+                      "name": "V1",
+                      "item": [
+                        {
+                          "name": "get all public groups",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get the groups that i am a member on them",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/user/groups",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "user",
+                                "groups"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "show a specific group",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/2",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "2"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "create a new group",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "  {\n      \"name\": \"private\",\n      \"description\": \"The official gaming community in Alexandria. Share gaming hardware, consoles, and accessories to earn shared cashback.\",\n      \"image_url\": \"https://images.unsplash.com/photo-1542751371-adc38448a05e\",\n      \"is_private\": false\n  }",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "update a group",
+                          "request": {
+                            "method": "PATCH",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": " {\n      \"name\": \"Alexandria Gamers Club & Esports\",\n      \"description\": \"Updated description with competitive tournament equipment and shared cashback.\",\n      \"is_private\": false\n  }",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "delete a group",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "join a group",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/2/join",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "2",
+                                "join"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "leave a group",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/2/leave",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "2",
+                                "leave"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get all members of a group",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/3/members",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "3",
+                                "members"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "get all products shared in a group",
+                          "request": {
+                            "method": "GET",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/3/products",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "3",
+                                "products"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "share a product in a group",
+                          "request": {
+                            "method": "POST",
+                            "header": [],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "  {\n      \"product_id\": 3,\n      \"note\": \"Amazing active noise cancelling and battery life for study and commute. 10% cashback!\"\n  }\n\n//   {\n//       \"product_id\": 1,\n//       \"product_variation_id\": 2,\n//       \"note\": \"Get the 256GB Midnight Black edition for maximum storage.\"\n//   }",
+                              "options": {
+                                "raw": {
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/3/products/share",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "3",
+                                "products",
+                                "share"
+                              ]
+                            }
+                          },
+                          "response": []
+                        },
+                        {
+                          "name": "remove a shared product from a group",
+                          "request": {
+                            "method": "DELETE",
+                            "header": [],
+                            "url": {
+                              "raw": "http://localhost:8000/api/v1/groups/3/products/1",
+                              "protocol": "http",
+                              "host": [
+                                "localhost"
+                              ],
+                              "port": "8000",
+                              "path": [
+                                "api",
+                                "v1",
+                                "groups",
+                                "3",
+                                "products",
+                                "1"
+                              ]
+                            }
+                          },
+                          "response": []
+                        }
+                      ]
+                    }
+                  ],
+                  "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                      {
+                        "key": "token",
+                        "value": "11|R63JB2v1StJiVEMFJSX0rku4YeK4ClMd0WSJrPQec991066b",
+                        "type": "string"
+                      }
+                    ]
+                  }
                 }
               ]
             }
