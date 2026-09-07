@@ -42,22 +42,35 @@ class ProductCard extends StatelessWidget {
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(R.r(context, 16)),
                     ),
-                    child: Image.network(
-                      product.imageUrl,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: AppColors.background,
-                        child: Center(
-                          child: Icon(
-                            Icons.image_rounded,
-                            color: AppColors.textLight,
-                            size: R.icon(context, 40),
+                    child: (product.imageUrl.trim().isEmpty)
+                        ? Container(
+                            color: AppColors.background,
+                            child: Center(
+                              child: Icon(
+                                Icons.image_rounded,
+                                color: AppColors.textLight,
+                                size: R.icon(context, 40),
+                              ),
+                            ),
+                          )
+                        : Image.network(
+                            product.imageUrl.startsWith('http') 
+                                ? product.imageUrl 
+                                : 'https://buysawa.com${product.imageUrl.startsWith('/') ? '' : '/'}${product.imageUrl}',
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: AppColors.background,
+                              child: Center(
+                                child: Icon(
+                                  Icons.image_rounded,
+                                  color: AppColors.textLight,
+                                  size: R.icon(context, 40),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),

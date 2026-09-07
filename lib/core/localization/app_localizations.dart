@@ -66,7 +66,7 @@ class AppLocalizations {
   String get buyNow => _t('buyNow');
 
   // ─── Categories ──────────────────────────────────────────────
-  String get categoriesCount => _t('categoriesCount');
+  String categoriesCount(int count) => _t('categoriesCount').replaceAll('{count}', count.toString());
 
   // ─── Deals ───────────────────────────────────────────────────
   String get myDeals => _t('myDeals');
@@ -310,7 +310,7 @@ class AppLocalizations {
       'addToCart': 'Add to Cart',
       'addedToCart': 'added to cart',
       'buyNow': 'Buy Now',
-      'categoriesCount': '13 categories',
+      'categoriesCount': '{count} categories',
       'myDeals': 'MY DEALS',
       'activeGroupBuys': 'Active Group Buys',
       'activeGroupBuysSubtitle': "Track every group you've joined or started.",
@@ -526,7 +526,7 @@ class AppLocalizations {
       'addToCart': 'أضف للسلة',
       'addedToCart': 'تم الإضافة للسلة',
       'buyNow': 'اشترِ الآن',
-      'categoriesCount': '13 قسماً',
+      'categoriesCount': '{count} قسماً',
       'myDeals': 'عروضي',
       'activeGroupBuys': 'المشتريات الجماعية النشطة',
       'activeGroupBuysSubtitle': 'تابع كل مجموعة انضممت إليها أو أنشأتها.',

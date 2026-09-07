@@ -95,9 +95,24 @@ class ProductService {
   }
 
   // ─── Get Categories ──────────────────────────────────────────
-  // NOTE: No categories endpoint in API yet - using mock
   static Future<List<CategoryModel>> getCategories() async {
-    return mockCategories;
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.get(
+        Uri.parse(ApiService.categoriesEndpoint),
+        headers: ApiService.headers(token: token),
+      ).timeout(const Duration(seconds: 10));
+
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
+        return rawList
+            .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (_) {}
+
+    return mockCategories; // Fallback
   }
 
   // ─── Map API product response to ProductModel ────────────────
@@ -107,16 +122,40 @@ class ProductService {
       final id = json['id']?.toString() ?? '';
       final name = json['name'] ?? json['title'] ?? '';
       final arabicName = json['arabic_name'] ?? json['name_ar'] ?? json['title_ar'] ?? name;
-      final category = json['category'] ?? json['category_name'] ?? '';
-      final price = (json['price'] as num?)?.toDouble() ?? 0.0;
-      final originalPrice = (json['original_price'] ?? json['compare_price'] as num?)?.toDouble();
+      String categoryName = '';
+      if (json['categories'] is List && (json['categories'] as List).isNotEmpty) {
+        categoryName = json['categories'][0]['name'] ?? json['categories'][0]['slug'] ?? '';
+      } else {
+        categoryName = json['category'] ?? json['category_name'] ?? '';
+      }
+      final category = categoryName;
+      double price = 0.0;
+      double? originalPrice;
+      if (json['pricing'] is Map) {
+        price = (json['pricing']['price'] as num?)?.toDouble() ?? 0.0;
+        originalPrice = (json['pricing']['compare_price'] as num?)?.toDouble();
+      } else {
+        price = (json['price'] as num?)?.toDouble() ?? 0.0;
+        originalPrice = (json['original_price'] ?? json['compare_price'] as num?)?.toDouble();
+      }
       final rating = (json['rating'] as num?)?.toDouble() ?? 0.0;
       final reviewCount = json['review_count'] ?? json['reviews_count'] ?? 0;
 
-      // Handle image URL - could be full URL or just a path
-      var imageUrl = json['image_url'] ?? json['image'] ?? json['thumbnail'] ?? '';
+      // Handle image URL - check for 'avatar' object or standard fields
+      var imageUrl = '';
+      if (json['avatar'] is Map && json['avatar']['url'] != null) {
+        imageUrl = json['avatar']['url'].toString();
+      } else {
+        imageUrl = json['image_url'] ?? json['image'] ?? json['thumbnail'] ?? '';
+      }
+      
       if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
-        imageUrl = '${ApiService.baseUrl.replaceAll('/api/v1', '')}/$imageUrl';
+        String path = imageUrl.toString();
+        if (path.startsWith('/')) path = path.substring(1);
+        if (!path.startsWith('storage/') && !path.startsWith('images/')) {
+           path = 'storage/$path';
+        }
+        imageUrl = '${ApiService.baseUrl.replaceAll('/api/v1', '')}/$path';
       }
 
       final description = json['description'] ?? '';

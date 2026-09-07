@@ -27,10 +27,12 @@ class _BuySawaAppState extends State<BuySawaApp> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _syncProviders();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncProviders();
+    });
   }
 
-  // ─── لما يتغير حالة الـ Auth، ابعت Token للـ Providers ──────
+  //لما يتغير حالة الـ Auth، ابعت Token للـ Providers
   Future<void> _syncProviders() async {
     final auth = context.read<AuthProvider>();
     final isLoggedIn = auth.isLoggedIn;
@@ -38,14 +40,13 @@ class _BuySawaAppState extends State<BuySawaApp> {
     if (isLoggedIn && !_wasLoggedIn) {
       // المستخدم سجل دخول → جيب البيانات
       _wasLoggedIn = true;
-      if (auth.isAuthenticated) {
-        final token = auth.token;
-        context.read<CartProvider>().setToken(token);
-        context.read<OrderProvider>().setToken(token);
-        context.read<AddressProvider>().setToken(token);
-        context.read<NotificationsProvider>().setToken(token);
-        context.read<WalletProvider>().setToken(token);
-      }
+      final token = await SecureStorageService.getToken();
+      if (!mounted) return;
+      context.read<CartProvider>().setToken(token);
+      context.read<OrderProvider>().setToken(token);
+      context.read<AddressProvider>().setToken(token);
+      context.read<NotificationsProvider>().setToken(token);
+      context.read<WalletProvider>().setToken(token);
     } else if (!isLoggedIn && _wasLoggedIn) {
       // المستخدم طلع → امسح البيانات
       _wasLoggedIn = false;

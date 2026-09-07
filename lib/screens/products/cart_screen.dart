@@ -5,8 +5,8 @@ import '../../core/constants/app_colors.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
-import '../../widgets/payment_method_sheet.dart';
 import '../../core/localization/app_localizations.dart';
+import '../checkout/checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -29,16 +29,9 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
 
-    final cart = context.read<CartProvider>();
-    final total = cart.subtotal + 25.0;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => PaymentMethodSheet(
-        totalAmount: total,
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CheckoutScreen()),
     );
   }
 

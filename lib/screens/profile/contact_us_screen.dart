@@ -5,6 +5,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
+import '../../core/services/contact_us_service.dart';
 
 class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key});
@@ -14,34 +15,206 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   final _messageCtrl = TextEditingController();
+
+  List<Map<String, dynamic>> _purposes = [];
+  int? _selectedPurposeId;
+  bool _loadingPurposes = true;
   bool _sending = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchPurposes();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      if (!auth.isGuest && auth.user != null) {
+        if (auth.user!.fullName.isNotEmpty) _nameCtrl.text = auth.user!.fullName;
+        if (auth.user!.email.isNotEmpty) _emailCtrl.text = auth.user!.email;
+        if (auth.user!.phone.isNotEmpty) _phoneCtrl.text = auth.user!.phone;
+      }
+    });
+  }
+
+  Future<void> _fetchPurposes() async {
+    final list = await ContactUsService.getPurposes();
+    if (mounted) {
+      setState(() {
+        _purposes = list;
+        if (_purposes.isNotEmpty) {
+          _selectedPurposeId = _purposes.first['id'];
+        }
+        _loadingPurposes = false;
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
     _messageCtrl.dispose();
     super.dispose();
   }
 
   void _sendMessage() async {
     final msg = _messageCtrl.text.trim();
-    if (msg.isEmpty) return;
+    final name = _nameCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
+    final phone = _phoneCtrl.text.trim();
+
+    if (msg.isEmpty || name.isEmpty || email.isEmpty || phone.isEmpty || (_purposes.isNotEmpty && _selectedPurposeId == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? 'يرجى تعبئة جميع الحقول' : 'Please fill all fields'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
 
     setState(() => _sending = true);
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
+    
+    final success = await ContactUsService.submitMessage(
+      fullName: name,
+      email: email,
+      phone: phone,
+      purposeId: _selectedPurposeId,
+      message: msg,
+    );
+    
     if (!mounted) return;
     setState(() {
       _sending = false;
-      _messageCtrl.clear();
+      if (success) {
+        _messageCtrl.clear();
+      }
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context).messageSent),
-        backgroundColor: AppColors.success,
+        content: Text(success ? AppLocalizations.of(context).messageSent : (AppLocalizations.of(context).locale.languageCode == 'ar' ? 'فشل الإرسال' : 'Failed to send')),
+        backgroundColor: success ? AppColors.success : AppColors.error,
         behavior: SnackBarBehavior.floating,
       ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController ctrl, {int maxLines = 1, TextInputType? keyboardType}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: R.pad(context, 8), bottom: R.pad(context, 8)),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              color: const Color(0xFF94A3B8), // Slate 400
+              fontSize: R.sp(context, 12),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: R.pad(context, 16), vertical: R.pad(context, 16)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(R.r(context, 16)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
+          ),
+          child: TextField(
+            controller: ctrl,
+            maxLines: maxLines,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              fontSize: R.sp(context, 14),
+              color: const Color(0xFF0F172A),
+            ),
+            decoration: InputDecoration(
+              filled: false,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: maxLines == 1 ? EdgeInsets.zero : EdgeInsets.zero,
+              isDense: true,
+            ),
+          ),
+        ),
+        SizedBox(height: R.pad(context, 20)),
+      ],
+    );
+  }
+
+  Widget _buildDropdown() {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: R.pad(context, 8), bottom: R.pad(context, 8)),
+          child: Text(
+            isAr ? 'سبب التواصل' : 'PURPOSE',
+            style: TextStyle(
+              color: const Color(0xFF94A3B8),
+              fontSize: R.sp(context, 12),
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: R.pad(context, 16), vertical: R.pad(context, 3)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(R.r(context, 16)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              value: _selectedPurposeId,
+              isExpanded: true,
+              icon: Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFF94A3B8)),
+              items: _purposes.map((p) {
+                return DropdownMenuItem<int>(
+                  value: p['id'],
+                  child: Text(
+                    isAr ? (p['title_ar'] ?? p['title_en'] ?? '') : (p['title_en'] ?? p['title_ar'] ?? ''),
+                    style: TextStyle(fontSize: R.sp(context, 14), color: const Color(0xFF0F172A)),
+                  ),
+                );
+              }).toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _selectedPurposeId = val);
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: R.pad(context, 20)),
+      ],
     );
   }
 
@@ -49,6 +222,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final isGuest = auth.isGuest;
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -91,27 +265,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Message Box Label ────────────────────────────────────
-              Padding(
-                padding: EdgeInsets.only(
-                  left: R.pad(context, 8),
-                  bottom: R.pad(context, 12),
-                ),
-                child: Text(
-                  AppLocalizations.of(context).yourMessage.toUpperCase(),
-                  style: TextStyle(
-                    color: const Color(0xFF94A3B8), // Slate 400
-                    fontSize: R.sp(context, 12),
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-
-              // ── Message Card ─────────────────────────────────────────
-              GestureDetector(
-                onTap: isGuest ? () => AuthBottomSheet.show(context) : null,
-                child: Container(
+              if (isGuest)
+                Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(R.pad(context, 20)),
                   decoration: BoxDecoration(
@@ -124,112 +279,78 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         offset: const Offset(0, 4),
                       ),
                     ],
-                    border: Border.all(
-                      color: const Color(0xFFF1F5F9),
-                      width: 1,
+                    border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).loginToSend,
+                        style: TextStyle(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: R.sp(context, 14),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: R.pad(context, 20)),
+                      SizedBox(
+                        width: double.infinity,
+                        height: R.pad(context, 48),
+                        child: ElevatedButton.icon(
+                          onPressed: () => AuthBottomSheet.show(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFCBD5E1),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(R.r(context, 16)),
+                            ),
+                          ),
+                          icon: Icon(Icons.login, color: Colors.white, size: R.icon(context, 16)),
+                          label: Text(
+                            AppLocalizations.of(context).login,
+                            style: TextStyle(color: Colors.white, fontSize: R.sp(context, 15), fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else ...[
+                _buildTextField(isAr ? 'الاسم بالكامل' : 'FULL NAME', _nameCtrl),
+                _buildTextField(isAr ? 'البريد الإلكتروني' : 'EMAIL ADDRESS', _emailCtrl, keyboardType: TextInputType.emailAddress),
+                _buildTextField(isAr ? 'رقم الهاتف' : 'PHONE NUMBER', _phoneCtrl, keyboardType: TextInputType.phone),
+                if (_loadingPurposes)
+                  const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+                else if (_purposes.isNotEmpty)
+                  _buildDropdown(),
+                _buildTextField(AppLocalizations.of(context).yourMessage, _messageCtrl, maxLines: 4),
+                
+                SizedBox(
+                  width: double.infinity,
+                  height: R.pad(context, 48),
+                  child: ElevatedButton.icon(
+                    onPressed: _sending ? null : _sendMessage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(R.r(context, 16)),
+                      ),
+                    ),
+                    icon: _sending
+                        ? SizedBox(
+                            width: R.pad(context, 16),
+                            height: R.pad(context, 16),
+                            child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : Icon(Icons.send_rounded, color: Colors.white, size: R.icon(context, 16)),
+                    label: Text(
+                      AppLocalizations.of(context).sendMessage,
+                      style: TextStyle(color: Colors.white, fontSize: R.sp(context, 15), fontWeight: FontWeight.w700),
                     ),
                   ),
-                  child: isGuest
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context).loginToSend,
-                              style: TextStyle(
-                                color: const Color(0xFF94A3B8),
-                                fontSize: R.sp(context, 14),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: R.pad(context, 50)),
-                            SizedBox(
-                              width: double.infinity,
-                              height: R.pad(context, 48),
-                              child: ElevatedButton.icon(
-                                onPressed: () => AuthBottomSheet.show(context),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFCBD5E1), // Muted grey
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(R.r(context, 16)),
-                                  ),
-                                ),
-                                icon: Icon(
-                                  Icons.send_outlined,
-                                  color: Colors.white,
-                                  size: R.icon(context, 16),
-                                ),
-                                label: Text(
-                                  AppLocalizations.of(context).login,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: R.sp(context, 15),
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextField(
-                              controller: _messageCtrl,
-                              maxLines: 4,
-                              style: TextStyle(
-                                fontSize: R.sp(context, 14),
-                                color: const Color(0xFF0F172A),
-                              ),
-                              decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context).messagePlaceholder,
-                                hintStyle: TextStyle(
-                                  color: const Color(0xFF94A3B8),
-                                  fontSize: R.sp(context, 14),
-                                ),
-                                border: InputBorder.none,
-                              ),
-                            ),
-                            SizedBox(height: R.pad(context, 12)),
-                            SizedBox(
-                              height: R.pad(context, 48),
-                              child: ElevatedButton.icon(
-                                onPressed: _sending ? null : _sendMessage,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(R.r(context, 16)),
-                                  ),
-                                ),
-                                icon: _sending
-                                    ? SizedBox(
-                                        width: R.pad(context, 16),
-                                        height: R.pad(context, 16),
-                                        child: const CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Icon(
-                                        Icons.send_rounded,
-                                        color: Colors.white,
-                                        size: R.icon(context, 16),
-                                      ),
-                                label: Text(
-                                  AppLocalizations.of(context).sendMessage,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: R.sp(context, 15),
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                 ),
-              ),
+              ],
 
               SizedBox(height: R.pad(context, 32)),
 
@@ -262,10 +383,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       offset: const Offset(0, 4),
                     ),
                   ],
-                  border: Border.all(
-                    color: const Color(0xFFF1F5F9),
-                    width: 1,
-                  ),
+                  border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
                 ),
                 child: Column(
                   children: [
@@ -275,9 +393,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       iconBgColor: const Color(0xFFFFF7ED),
                       title: AppLocalizations.of(context).callUs.toUpperCase(),
                       subtitle: '800-SAWA',
-                      onTap: () {
-                        // Action to call
-                      },
+                      onTap: () {},
                     ),
                     const Divider(height: 1, color: Color(0xFFF1F5F9)),
                     _ContactItem(
@@ -286,9 +402,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       iconBgColor: const Color(0xFFF0F9FF),
                       title: AppLocalizations.of(context).emailUs.toUpperCase(),
                       subtitle: 'help@buysawa.app',
-                      onTap: () {
-                        // Action to email
-                      },
+                      onTap: () {},
                     ),
                   ],
                 ),
@@ -300,19 +414,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.headset_mic_outlined,
-                    color: const Color(0xFF94A3B8),
-                    size: R.icon(context, 18),
-                  ),
+                  Icon(Icons.headset_mic_outlined, color: const Color(0xFF94A3B8), size: R.icon(context, 18)),
                   SizedBox(width: R.pad(context, 8)),
                   Text(
                     AppLocalizations.of(context).supportAvailable,
-                    style: TextStyle(
-                      color: const Color(0xFF94A3B8),
-                      fontSize: R.sp(context, 13),
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: const Color(0xFF94A3B8), fontSize: R.sp(context, 13), fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -347,26 +453,14 @@ class _ContactItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(R.r(context, 24)),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: R.pad(context, 16),
-          vertical: R.pad(context, 16),
-        ),
+        padding: EdgeInsets.symmetric(horizontal: R.pad(context, 16), vertical: R.pad(context, 16)),
         child: Row(
           children: [
             Container(
               width: R.pad(context, 40),
               height: R.pad(context, 40),
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: R.icon(context, 20),
-                ),
-              ),
+              decoration: BoxDecoration(color: iconBgColor, shape: BoxShape.circle),
+              child: Center(child: Icon(icon, color: iconColor, size: R.icon(context, 20))),
             ),
             SizedBox(width: R.pad(context, 14)),
             Expanded(
@@ -375,30 +469,14 @@ class _ContactItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: R.sp(context, 10),
-                      color: const Color(0xFF94A3B8),
-                      letterSpacing: 0.5,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: R.sp(context, 10), color: const Color(0xFF94A3B8), letterSpacing: 0.5),
                   ),
                   SizedBox(height: R.pad(context, 2)),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: R.sp(context, 15),
-                      color: const Color(0xFF0F172A),
-                    ),
-                  ),
+                  Text(subtitle, style: TextStyle(fontWeight: FontWeight.w700, fontSize: R.sp(context, 15), color: const Color(0xFF0F172A))),
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: const Color(0xFFCBD5E1),
-              size: R.icon(context, 20),
-            ),
+            Icon(Icons.chevron_right_rounded, color: const Color(0xFFCBD5E1), size: R.icon(context, 20)),
           ],
         ),
       ),

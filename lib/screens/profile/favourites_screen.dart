@@ -1,4 +1,6 @@
+import 'package:buysawa/providers/product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
@@ -66,7 +68,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
   /// Safely extract the product name — returns Arabic name if locale is AR
   String _productName(Map<String, dynamic> item, {bool isAr = false}) {
-    final product = item['product'] as Map<String, dynamic>?;
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
     if (isAr) {
       return product?['arabic_name'] ??
           product?['name_ar'] ??
@@ -86,41 +88,66 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
   /// Safely extract image URL
   String _imageUrl(Map<String, dynamic> item) {
-    final product = item['product'] as Map<String, dynamic>?;
-    return product?['image_url'] ??
-        product?['image'] ??
-        product?['thumbnail'] ??
-        item['image_url'] ??
-        item['image'] ??
-        '';
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
+    final src = product ?? item;
+    
+    var url = '';
+    if (src['avatar'] is Map && src['avatar']['url'] != null) {
+      url = src['avatar']['url'].toString();
+    } else {
+      url = src['image_url'] ?? src['image'] ?? src['thumbnail'] ?? '';
+    }
+
+    if (url.isNotEmpty && !url.startsWith('http')) {
+      String path = url.toString();
+      if (path.startsWith('/')) path = path.substring(1);
+      if (!path.startsWith('storage/') && !path.startsWith('images/')) {
+         path = 'storage/$path';
+      }
+      url = 'https://buysawa.com/$path';
+    }
+    
+    // Fallback: If API didn't return image (e.g. eager load missing), try finding it in ProductProvider
+    if (url.isEmpty || url == 'https://buysawa.com/') {
+      final id = (src['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString();
+      try {
+        final existingProduct = context.read<ProductProvider>().products.firstWhere((p) => p.id == id);
+        url = existingProduct.imageUrl;
+      } catch (e) {
+        // Not found
+      }
+    }
+
+    debugPrint('FAVOURITES IMAGE URL: $url for product ${src['name']}');
+    return url;
   }
 
   /// Safely extract price
   double _price(Map<String, dynamic> item) {
-    final product = item['product'] as Map<String, dynamic>?;
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
     final raw = product?['price'] ?? item['price'];
     return (raw as num?)?.toDouble() ?? 0.0;
   }
 
   /// Safely extract original price
   double? _originalPrice(Map<String, dynamic> item) {
-    final product = item['product'] as Map<String, dynamic>?;
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
     final raw = product?['original_price'] ?? item['original_price'];
     return (raw as num?)?.toDouble();
   }
 
   /// Safely extract rating
   double _rating(Map<String, dynamic> item) {
-    final product = item['product'] as Map<String, dynamic>?;
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
     final raw = product?['rating'] ?? product?['average_rating'] ?? item['rating'];
     return (raw as num?)?.toDouble() ?? 0.0;
   }
 
   /// Build a ProductModel from the favourite map (best-effort)
   ProductModel _toProductModel(Map<String, dynamic> item) {
-    final product = item['product'] as Map<String, dynamic>? ?? item;
+    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>? ?? item;
     return ProductModel(
-      id: (product['id'] ?? item['product_id'] ?? '').toString(),
+      id: (product['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString(),
       name: _productName(item),
       arabicName: product['arabic_name'] ?? product['name'] ?? _productName(item),
       category: product['category'] ?? '',
@@ -359,7 +386,9 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                 ),
                                                 child: imageUrl.isNotEmpty
                                                     ? Image.network(
-                                                        imageUrl,
+                                                        imageUrl.startsWith('http') 
+                                                            ? imageUrl 
+                                                            : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
                                                         height: R.pad(context, 130),
                                                         width: double.infinity,
                                                         fit: BoxFit.cover,
@@ -422,14 +451,14 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    name,
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
+                                                       name.isEmpty ? item.toString() : name,
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.w700,
                                                       fontSize: R.sp(context, 14),
                                                       color: const Color(0xFF0F172A),
                                                     ),
+                                                    maxLines: name.isEmpty ? 10 : 2,
+                                                    overflow: name.isEmpty ? TextOverflow.visible : TextOverflow.ellipsis,
                                                   ),
                                                   const Spacer(),
                                                   if (rating > 0)

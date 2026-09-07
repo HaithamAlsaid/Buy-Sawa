@@ -1,3 +1,4 @@
+import 'package:buysawa/core/services/product_service.dart';
 import 'package:buysawa/screens/categories/categories_screen.dart';
 import 'package:buysawa/screens/categories/category_products_screen.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
           await context.read<ProductProvider>().refreshProducts();
         },
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           slivers: [
             // ── AppBar
             SliverAppBar(
@@ -338,16 +340,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 14),
                 SizedBox(
                   height: 90,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: mockCategories.length,
-                    itemBuilder: (_, i) {
-                      final cat = mockCategories[i];
-                      return _CategoryChip(category: cat)
-                          .animate(delay: (i * 60).ms)
-                          .fadeIn(duration: 300.ms)
-                          .slideX(begin: 0.2, end: 0);
+                  child: FutureBuilder<List<CategoryModel>>(
+                    future: ProductService.getCategories(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                      }
+                      final categories = snapshot.data ?? [];
+                      if (categories.isEmpty) {
+                        return const SizedBox();
+                      }
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        itemCount: categories.length,
+                        itemBuilder: (_, i) {
+                          final cat = categories[i];
+                          return _CategoryChip(category: cat)
+                              .animate(delay: (i * 60).ms)
+                              .fadeIn(duration: 300.ms)
+                              .slideX(begin: 0.2, end: 0);
+                        },
+                      );
                     },
                   ),
                 ),

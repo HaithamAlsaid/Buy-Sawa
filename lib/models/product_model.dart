@@ -64,6 +64,27 @@ class ProductModel {
           .toList() ?? [],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'arabic_name': arabicName,
+      'category': category,
+      'price': price,
+      'original_price': originalPrice,
+      'rating': rating,
+      'review_count': reviewCount,
+      'image_url': imageUrl,
+      'alternate_images': alternateImages,
+      'description': description,
+      'arabic_description': arabicDescription,
+      'has_group_deal': hasGroupDeal,
+      'group_deal_discount': groupDealDiscount,
+      'share_earn_percent': shareEarnPercent,
+      'reviews': reviews.map((r) => r.toJson()).toList(),
+    };
+  }
 }
 
 class ProductReview {
@@ -92,6 +113,17 @@ class ProductReview {
       date: DateTime.parse(json['date'] as String),
       comment: json['comment'] as String,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_name': userName,
+      'user_avatar_url': userAvatarUrl,
+      'rating': rating,
+      'date': date.toIso8601String(),
+      'comment': comment,
+    };
   }
 }
 

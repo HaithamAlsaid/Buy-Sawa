@@ -69,11 +69,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String? _selectedSize;
   bool _specsExpanded = false;
   late List<ProductReview> _localReviews;
+  late final PageController _pageCtrl;
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _localReviews = List.from(widget.product.reviews);
+    _pageCtrl = PageController();
+    _checkIfFavourite();
+  }
+
+  void _checkIfFavourite() async {
+    final favs = await FavouriteService.getFavourites();
+    if (mounted) {
+      final isFav = favs.any((f) {
+        final id = (f['favoritable_id'] ?? f['product_id'] ?? f['model_id'] ?? f['id'] ?? '').toString();
+        return id == widget.product.id;
+      });
+      setState(() {
+        _isWishlisted = isFav;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageCtrl.dispose();
+    super.dispose();
   }
 
   // Actions
@@ -345,8 +368,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         SizedBox(height: R.pad(context, 10)),
                         Text(
                           AppLocalizations.of(context).locale.languageCode == 'ar'
-                              ? product.arabicDescription
-                              : product.description,
+                              ? (product.arabicDescription.isNotEmpty ? product.arabicDescription : 'لا يوجد وصف متاح لهذا المنتج.')
+                              : (product.description.isNotEmpty ? product.description : 'No description available for this product.'),
                           style: TextStyle(
                             fontSize: R.sp(context, 13),
                             height: 1.65,
@@ -490,17 +513,26 @@ class _HeroSectionState extends State<_HeroSection> {
             itemCount: _colorFilters.length,
             itemBuilder: (context, index) {
               final filter = _colorFilters[index];
-              final imageWidget = Image.network(
-                widget.product.imageUrl,
-                fit: BoxFit.contain,
-                color: filter,
-                colorBlendMode: filter != null ? BlendMode.srcATop : null,
-                errorBuilder: (_, __, ___) => Icon(
-                  Icons.image_outlined,
-                  size: R.icon(context, 80),
-                  color: const Color(0xFF94A3B8),
-                ),
-              );
+              final String imageUrl = widget.product.imageUrl.trim();
+              final Widget imageWidget = imageUrl.isEmpty
+                  ? Icon(
+                      Icons.image_outlined,
+                      size: R.icon(context, 80),
+                      color: const Color(0xFF94A3B8),
+                    )
+                  : Image.network(
+                      imageUrl.startsWith('http') 
+                          ? imageUrl 
+                          : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
+                      fit: BoxFit.contain,
+                      color: filter,
+                      colorBlendMode: filter != null ? BlendMode.srcATop : null,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.image_outlined,
+                        size: R.icon(context, 80),
+                        color: const Color(0xFF94A3B8),
+                      ),
+                    );
 
               return Center(
                 child: Padding(

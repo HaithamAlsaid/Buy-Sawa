@@ -18,6 +18,19 @@ class CategoryModel {
     required this.bgColor,
     this.imagePath,
   });
+
+  factory CategoryModel.fromJson(Map<String, dynamic> json) {
+    final nameStr = json['name']?.toString() ?? 'Category';
+    return CategoryModel(
+      id: json['id']?.toString() ?? '',
+      name: nameStr,
+      arabicName: json['name_ar'] ?? json['arabic_name'] ?? nameStr,
+      icon: Icons.category_rounded, // Default icon since API doesn't provide one
+      iconColor: const Color(0xFF277895), // Default color
+      bgColor: const Color(0xFFE8F7F6), // Default bg
+      imagePath: json['image_url'] ?? json['image'],
+    );
+  }
 }
 
 final List<CategoryModel> mockCategories = [

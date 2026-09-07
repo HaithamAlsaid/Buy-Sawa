@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
+import 'credit_card_sheet.dart';
 
 class PaymentMethodSheet extends StatefulWidget {
   final double totalAmount;
@@ -29,28 +30,28 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> paymentMethods = [
       {
-        'name': 'Tabby',
-        'subtitle': AppLocalizations.of(context).payIn4Tabby,
-        'logo': 'assets/images/tabby_logo.png',
-        'color': const Color(0xFF3DBCA1),
-        'icon': Icons.splitscreen_rounded,
-        'url': 'https://tabby.ai',
-        'tag': AppLocalizations.of(context).popular,
+        'name': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'رصيد المحفظة' : 'Wallet Balance',
+        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'خصم فوري' : 'Instant deduction',
+        'logo': null,
+        'color': AppColors.primary,
+        'icon': Icons.account_balance_wallet_rounded,
+        'url': null,
+        'tag': null,
       },
       {
-        'name': 'Tamara',
-        'subtitle': AppLocalizations.of(context).buyNowPayLaterTamara,
-        'logo': 'assets/images/tamara_logo.png',
+        'name': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الدفع عند الاستلام' : 'Cash on Delivery',
+        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الدفع عند الاستلام' : 'Pay when received',
+        'logo': null,
         'color': const Color(0xFF1D1D1D),
-        'icon': Icons.payment_rounded,
-        'url': 'https://tamara.co',
+        'icon': Icons.local_shipping_rounded,
+        'url': null,
         'tag': null,
       },
       {
         'name': AppLocalizations.of(context).creditDebitCard,
-        'subtitle': AppLocalizations.of(context).cardsAccepted,
+        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'بوابة الدفع الإلكتروني' : 'Online gateway',
         'logo': null,
-        'color': AppColors.primary,
+        'color': const Color(0xFF3DBCA1),
         'icon': Icons.credit_card_rounded,
         'url': null,
         'tag': AppLocalizations.of(context).instant,
@@ -244,13 +245,12 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                         if (url != null) {
                           _launchUrl(url);
                         } else {
-                          // Credit card - show card form (TODO)
                           Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? 'دفع البطاقة قريباً!' : 'Card payment coming soon!'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => CreditCardSheet(totalAmount: widget.totalAmount),
                           );
                         }
                       },

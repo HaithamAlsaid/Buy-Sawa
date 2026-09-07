@@ -119,61 +119,69 @@ class WalletScreen extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          alignment: Alignment.centerLeft,
-                                          child: RichText(
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: wallet.balance
-                                                      .toStringAsFixed(2),
-                                                  style: TextStyle(
-                                                    color: const Color(0xFFF5A623),
-                                                    fontSize: R.sp(context, 40),
-                                                    fontWeight: FontWeight.w900,
+                                        Expanded(
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            alignment: Alignment.centerLeft,
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: wallet.balance
+                                                        .toStringAsFixed(2),
+                                                    style: TextStyle(
+                                                      color: const Color(0xFFF5A623),
+                                                      fontSize: R.sp(context, 40),
+                                                      fontWeight: FontWeight.w900,
+                                                    ),
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: ' ${AppLocalizations.of(context).aed}',
-                                                  style: TextStyle(
-                                                    color: const Color(0xFF94A3B8),
-                                                    fontSize: R.sp(context, 14),
-                                                    fontWeight: FontWeight.w600,
+                                                  TextSpan(
+                                                    text: ' ${AppLocalizations.of(context).aed}',
+                                                    style: TextStyle(
+                                                      color: const Color(0xFF94A3B8),
+                                                      fontSize: R.sp(context, 14),
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                        // Top Up Button
-                                        ElevatedButton.icon(
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              backgroundColor: Colors.transparent,
-                                              builder: (_) => const TopUpSheet(),
-                                            );
-                                          },
-                                          icon: const Icon(Icons.add_rounded, color: Color(0xFF1E2230), size: 20),
-                                          label: Text(
-                                            AppLocalizations.of(context).locale.languageCode == 'ar' ? 'شحن' : 'Top-up',
-                                            style: const TextStyle(
-                                              color: Color(0xFF1E2230),
-                                              fontWeight: FontWeight.w800,
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFFF5A623),
-                                            foregroundColor: const Color(0xFF1E2230),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                            elevation: 0,
-                                          ),
-                                        ),
+                                        const SizedBox(width: 12),
+                                         // Top Up Button
+                                         SizedBox(
+                                           width: 110,
+                                           height: 40,
+                                           child: ElevatedButton.icon(
+                                             onPressed: () {
+                                               showModalBottomSheet(
+                                                 context: context,
+                                                 isScrollControlled: true,
+                                                 backgroundColor: Colors.transparent,
+                                                 builder: (_) => const TopUpSheet(),
+                                               );
+                                             },
+                                             icon: const Icon(Icons.add_rounded, color: Color(0xFF1E2230), size: 18),
+                                             label: Text(
+                                               AppLocalizations.of(context).locale.languageCode == 'ar' ? 'شحن' : 'Top-up',
+                                               style: const TextStyle(
+                                                 color: Color(0xFF1E2230),
+                                                 fontWeight: FontWeight.w800,
+                                                 fontSize: 13,
+                                               ),
+                                             ),
+                                             style: ElevatedButton.styleFrom(
+                                               backgroundColor: const Color(0xFFF5A623),
+                                               foregroundColor: const Color(0xFF1E2230),
+                                               shape: RoundedRectangleBorder(
+                                                 borderRadius: BorderRadius.circular(12),
+                                               ),
+                                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                               elevation: 0,
+                                             ),
+                                           ),
+                                         ),
                                       ],
                                     ),
                                   ],

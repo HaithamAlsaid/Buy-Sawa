@@ -143,6 +143,54 @@ class _TopUpSheetState extends State<TopUpSheet> {
             ),
             const SizedBox(height: 24),
 
+            // Payment Provider Selection
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isAr ? 'وسيلة الدفع' : 'Payment Method',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textGray,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _selectedProvider,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'paymob',
+                        child: Text('Credit / Debit Card (Paymob)'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'tabby',
+                        child: Text('Tabby'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'tamara',
+                        child: Text('Tamara'),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() => _selectedProvider = val);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
             // Confirm Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

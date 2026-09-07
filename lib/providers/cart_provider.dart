@@ -4,7 +4,9 @@
 // لو غير مسجل (guest) → بيحفظ محلياً
 // ─────────────────────────────────────────────────────────────────────────────
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cart_item_model.dart';
 import '../models/product_model.dart';
 import '../core/services/cart_service.dart';
@@ -14,6 +16,12 @@ class CartProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSynced = false; // هل جبنا الـ Cart من السيرفر؟
   String? _token;
+
+  CartProvider() {
+    _loadLocalCart();
+  }
+
+  static const _localCartKey = 'guest_cart';
 
   List<CartItemModel> get items => _items;
   bool get isLoading => _isLoading;
@@ -26,11 +34,11 @@ class CartProvider extends ChangeNotifier {
     _token = token;
     if (token != null && !_isSynced) {
       fetchCart();
+      fetchCart();
     } else if (token == null) {
-      // Guest mode: امسح الـ Cart
-      _items.clear();
+      // Guest mode: load local cart if available
       _isSynced = false;
-      notifyListeners();
+      _loadLocalCart();
     }
   }
 
@@ -45,7 +53,30 @@ class CartProvider extends ChangeNotifier {
     _items.addAll(serverItems);
     _isSynced = true;
     _isLoading = false;
+    _isLoading = false;
     notifyListeners();
+  }
+
+  // ─── Local Persistence ──────────────────────────────────────────
+  Future<void> _saveLocalCart() async {
+    if (_token != null) return; // Only save locally if guest
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = _items.map((i) => i.toJson()).toList();
+    await prefs.setString(_localCartKey, jsonEncode(jsonList));
+  }
+
+  Future<void> _loadLocalCart() async {
+    if (_token != null) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final str = prefs.getString(_localCartKey);
+      if (str != null) {
+        final List<dynamic> jsonList = jsonDecode(str);
+        _items.clear();
+        _items.addAll(jsonList.map((e) => CartItemModel.fromJson(e as Map<String, dynamic>)));
+        notifyListeners();
+      }
+    } catch (_) {}
   }
 
   // ─── إضافة منتج ──────────────────────────────────────────────
@@ -58,6 +89,7 @@ class CartProvider extends ChangeNotifier {
       _items.add(CartItemModel(product: product));
     }
     notifyListeners();
+    _saveLocalCart();
 
     // إرسال للسيرفر في الخلفية
     if (_token != null) {
@@ -88,6 +120,7 @@ class CartProvider extends ChangeNotifier {
     final item = _items[idx];
     _items.removeAt(idx);
     notifyListeners();
+    _saveLocalCart();
 
     // إرسال للسيرفر
     if (_token != null && item.cartItemId != null) {
@@ -102,6 +135,7 @@ class CartProvider extends ChangeNotifier {
 
     _items[idx].quantity++;
     notifyListeners();
+    _saveLocalCart();
 
     if (_token != null && _items[idx].cartItemId != null) {
       await CartService.updateItem(
@@ -119,6 +153,7 @@ class CartProvider extends ChangeNotifier {
     if (_items[idx].quantity > 1) {
       _items[idx].quantity--;
       notifyListeners();
+      _saveLocalCart();
 
       if (_token != null && _items[idx].cartItemId != null) {
         await CartService.updateItem(
@@ -135,6 +170,7 @@ class CartProvider extends ChangeNotifier {
   Future<void> clear() async {
     _items.clear();
     notifyListeners();
+    _saveLocalCart();
 
     if (_token != null) {
       await CartService.clearCart();

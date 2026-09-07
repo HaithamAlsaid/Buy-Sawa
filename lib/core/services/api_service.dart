@@ -8,7 +8,7 @@ class ApiService {
   static const String baseUrl = 'https://buysawa.com/api/v1';
 
   // ─── Auth 
-  static const String registerEndpoint = '$baseUrl/users/auth/register';
+  static const String registerEndpoint = '$baseUrl/auth/register';
   static const String loginEndpoint = '$baseUrl/auth/login';
   static const String logoutEndpoint = '$baseUrl/auth/logout';
   static const String meEndpoint = '$baseUrl/auth/me';
@@ -51,7 +51,7 @@ class ApiService {
   static const String walletTopUpEndpoint = '$baseUrl/user/wallet/top-up';
 
   // ─── Categories 
-
+  static const String categoriesEndpoint = '$baseUrl/categories';
   // ─── Favorites 
   static const String favoritesEndpoint = '$baseUrl/profile/favorites';
   static String removeFavoriteEndpoint(dynamic id) =>
@@ -62,6 +62,9 @@ class ApiService {
   static String addressEndpoint(dynamic id) => '$baseUrl/profile/addresses/$id';
   static String addressDefaultEndpoint(dynamic id) =>
       '$baseUrl/profile/addresses/$id/default';
+  // ─── Contact Us ──────────────────────────────────────────────
+  static const String contactUsPurposesEndpoint = '$baseUrl/contact-us/purposes';
+  static const String contactUsSubmitEndpoint = '$baseUrl/contact-us/submit';
 
   // ─── Products 
   static const String productsEndpoint = '$baseUrl/products';

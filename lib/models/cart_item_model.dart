@@ -29,6 +29,13 @@ class CartItemModel {
         (productData['price'] as num?)?.toDouble() ??
         0.0;
 
+      var extractedUrl = '';
+      if (productData['avatar'] is Map && productData['avatar']['url'] != null) {
+        extractedUrl = productData['avatar']['url'].toString();
+      } else {        
+        extractedUrl = productData['image_url'] ?? productData['image'] ?? '';
+      }
+
     final product = ProductModel(
       id: (productData['id'] ?? json['product_id'] ?? '').toString(),
       name: productData['name'] ?? productData['title'] ?? '',
@@ -38,7 +45,7 @@ class CartItemModel {
       originalPrice: (productData['original_price'] as num?)?.toDouble(),
       rating: (productData['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: productData['review_count'] ?? 0,
-      imageUrl: _buildImageUrl(productData['image_url'] ?? productData['image'] ?? ''),
+      imageUrl: _buildImageUrl(extractedUrl),
       description: productData['description'] ?? '',
       arabicDescription: productData['description_ar'] ?? productData['description'] ?? '',
     );
@@ -50,9 +57,22 @@ class CartItemModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': cartItemId,
+      'product': product.toJson(),
+      'quantity': quantity,
+    };
+  }
+
   static String _buildImageUrl(String url) {
     if (url.isEmpty) return '';
     if (url.startsWith('http')) return url;
-    return 'https://buysawa.com/$url';
+    String path = url.toString();
+    if (path.startsWith('/')) path = path.substring(1);
+    if (!path.startsWith('storage/') && !path.startsWith('images/')) {
+       path = 'storage/$path';
+    }
+    return 'https://buysawa.com/$path';
   }
 }
