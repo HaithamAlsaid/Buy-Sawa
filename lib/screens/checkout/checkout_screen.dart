@@ -113,11 +113,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       // 1. Create Address
       final address = await AddressService.createAddress(
-        addressLine1: _detailsCtrl.text.trim(),
-        country: _selectedCountry!['name'],
-        state: _selectedGovernorate!,
-        city: _selectedCity!['name'],
-        phoneNumber: _phoneCtrl.text.trim(),
+        countryKey: _selectedCountry!['key'],
+        cityKey: _selectedCity!['key'],
+        governorate: _selectedGovernorate!,
+        details: _detailsCtrl.text.trim(),
+        phone: '${_selectedCountry!['phone_code']} ${_phoneCtrl.text.trim()}',
       );
 
       if (address == null) {
@@ -265,9 +265,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         _selectedCountry = val;
                         _selectedGovernorate = null;
                         _selectedCity = null;
-                        if (val != null && _phoneCtrl.text.isEmpty) {
-                          _phoneCtrl.text = val['phone_code'] ?? '';
-                        }
                       });
                     },
                     isError: _showValidation && _selectedCountry == null,
@@ -381,7 +378,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           keyboardType: TextInputType.phone,
                           onChanged: (_) => setState(() {}),
                           decoration: InputDecoration(
-                            hintText: '+971 50 123 4567',
+                            prefixText: _selectedCountry != null ? '${_selectedCountry!['phone_code']}  ' : '+971  ',
+                            prefixStyle: TextStyle(color: AppColors.textDark, fontSize: R.sp(context, 14), fontWeight: FontWeight.w600),
+                            hintText: '50 123 4567',
                             hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 14)),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(vertical: 14),

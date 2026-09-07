@@ -48,33 +48,19 @@ class AddressProvider extends ChangeNotifier {
 
   // ─── إضافة عنوان ─────────────────────────────────────────────
   Future<AddressModel?> addAddress({
-    required String addressLine1,
-    String? addressLine2,
-    required String city,
-    required String state,
-    required String country,
-    String? postalCode,
-    String? label,
-    String? instructions,
-    String? phoneCode,
-    String? phoneNumber,
-    double? latitude,
-    double? longitude,
+    required String countryKey,
+    required String cityKey,
+    required String governorate,
+    required String details,
+    required String phone,
     bool isDefault = false,
   }) async {
     final newAddress = await AddressService.createAddress(
-      addressLine1: addressLine1,
-      addressLine2: addressLine2,
-      city: city,
-      state: state,
-      country: country,
-      postalCode: postalCode,
-      label: label,
-      instructions: instructions,
-      phoneCode: phoneCode,
-      phoneNumber: phoneNumber,
-      latitude: latitude,
-      longitude: longitude,
+      countryKey: countryKey,               
+      cityKey: cityKey,
+      governorate: governorate,
+      details: details,
+      phone: phone,
       isDefault: isDefault,
     );
 

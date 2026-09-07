@@ -157,4 +157,19 @@ class ApiService {
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
+
+  // ─── Groups ───
+  static const String publicGroupsEndpoint = '/groups';
+  static const String myGroupsEndpoint = '/user/groups';
+  static String groupEndpoint(dynamic id) => '/groups/';
+  static String joinGroupEndpoint(dynamic id) => '/groups//join';
+  static String leaveGroupEndpoint(dynamic id) => '/groups//leave';
+  static String groupMembersEndpoint(dynamic id) => '/groups//members';
+  static String groupProductsEndpoint(dynamic id) => '/groups//products';
+  static String shareProductInGroupEndpoint(dynamic id) => '/groups//products/share';
+
+  // ─── Referrals ───
+  static const String mySharedLinksEndpoint = '/profile/referrals/shared-links';
+  static String resolveLinkEndpoint(String token) => '/referrals/resolve/';
+  static String shareProductEndpoint(dynamic id) => '/products//share';
 }

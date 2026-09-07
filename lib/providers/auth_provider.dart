@@ -252,21 +252,22 @@ class AuthProvider extends ChangeNotifier {
         'POST',
         Uri.parse(ApiService.avatarEndpoint),
       );
-      request.headers.addAll(ApiService.headers(token: token));
-      request.files.add(await http.MultipartFile.fromPath('profile_image', imageFile.path));
+      request.headers['Accept'] = 'application/json';
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      request.files.add(await http.MultipartFile.fromPath('avatar', imageFile.path));
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = jsonDecode(response.body);
-        // DEBUG: print full response to console
         debugPrint('=== Avatar Upload Response ===');
         debugPrint(response.body);
         debugPrint('==============================');
         
         final data = body['data'] ?? body;
-        // Try all possible field names the backend might use
         final newAvatarUrl = data['avatar_url'] 
             ?? data['profile_image'] 
             ?? data['avatar'] 
@@ -276,19 +277,35 @@ class AuthProvider extends ChangeNotifier {
         if (newAvatarUrl != null) {
           _user = _user?.copyWith(avatarUrl: newAvatarUrl.toString());
         } else {
-          // Reload from API to get updated profile with new avatar
           await _loadUserFromApi();
         }
         _isLoading = false;
         notifyListeners();
         return true;
       } else {
-        _errorMessage = 'Failed to upload image.';
+        debugPrint('=== Avatar Upload Failed ===');
+        debugPrint('Status Code: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
+        debugPrint('============================');
+        try {
+          final body = jsonDecode(response.body);
+          if (body['errors'] != null) {
+            final errors = body['errors'] as Map<String, dynamic>;
+            _errorMessage = errors.values.first is List
+                ? (errors.values.first as List).first.toString()
+                : errors.values.first.toString();
+          } else {
+            _errorMessage = body['message'] ?? body['error'] ?? 'Failed to upload image. Server returned ${response.statusCode}';
+          }
+        } catch (_) {
+          _errorMessage = 'Failed to upload image. Server returned ${response.statusCode}';
+        }
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
+      debugPrint('Avatar upload exception: $e');
       _errorMessage = 'Error uploading image: $e';
       _isLoading = false;
       notifyListeners();

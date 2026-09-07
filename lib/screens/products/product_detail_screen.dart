@@ -1,3 +1,4 @@
+import 'package:buysawa/screens/deals/widgets/share_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -173,32 +174,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       AuthBottomSheet.show(context);
       return;
     }
-    setState(() => _startingGroup = true);
-    context.read<GroupBuyProvider>().startNewGroup(
-      productId: widget.product.id,
-      productName: widget.product.name,
-    );
-    if (!mounted) return;
-    setState(() => _startingGroup = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppLocalizations.of(context).locale.languageCode == 'ar'
-              ? '🎉 تم إنشاء الشراء الجماعي! شارك رمزك من تاب العروض.'
-              : '🎉 Group Deal Created! Share your code from the Deals tab.',
-        ),
-        backgroundColor: AppColors.success,
-      ),
-    );
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const DealsScreen()),
-    );
+    
+    // Instead of creating a new group directly, we let the user choose which group to share to.
+    ShareBottomSheet.show(context, widget.product);
   }
 
-  // ── Build ────────────────────────────────────────────────────
+  // Build 
 
   @override
   Widget build(BuildContext context) {
@@ -1010,7 +991,7 @@ class _BottomBar extends StatelessWidget {
           ),
           SizedBox(width: R.pad(context, 12)),
 
-          // Start group buy
+          // Share to Group
           Expanded(
             child: ElevatedButton.icon(
               onPressed: startingGroup ? null : onGroupBuy,
@@ -1025,7 +1006,7 @@ class _BottomBar extends StatelessWidget {
               icon: startingGroup
                   ? const SizedBox()
                   : Icon(
-                      Icons.flash_on_rounded,
+                      Icons.ios_share_rounded,
                       color: const Color(0xFFF5A623),
                       size: R.icon(context, 18),
                     ),
@@ -1039,7 +1020,7 @@ class _BottomBar extends StatelessWidget {
                       ),
                     )
                   : Text(
-                      AppLocalizations.of(context).startGroupBuy,
+                      AppLocalizations.of(context).locale.languageCode == 'ar' ? 'مشاركة في جروب' : 'Share to Group',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,

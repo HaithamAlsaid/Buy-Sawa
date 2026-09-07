@@ -1,3 +1,4 @@
+import 'package:buysawa/core/services/product_service.dart';
 import 'package:buysawa/providers/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -145,20 +146,30 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
   /// Build a ProductModel from the favourite map (best-effort)
   ProductModel _toProductModel(Map<String, dynamic> item) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>? ?? item;
+    final productMap = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>? ?? item;
+    
+    // Use the robust parsing from ProductService
+    final parsed = ProductService.productFromApi(productMap);
+    if (parsed != null) {
+      return parsed;
+    }
+    
+    // Fallback if parsing fails for some reason
     return ProductModel(
-      id: (product['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString(),
+      id: (productMap['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString(),
       name: _productName(item),
-      arabicName: product['arabic_name'] ?? product['name'] ?? _productName(item),
-      category: product['category'] ?? '',
+      arabicName: productMap['arabic_name'] ?? productMap['name'] ?? _productName(item),
+      category: productMap['category'] ?? '',
       price: _price(item),
       originalPrice: _originalPrice(item),
       rating: _rating(item),
-      reviewCount: (product['review_count'] as int?) ?? 0,
+      reviewCount: productMap['review_count'] is int 
+          ? productMap['review_count'] 
+          : int.tryParse(productMap['review_count']?.toString() ?? '') ?? 0,
       imageUrl: _imageUrl(item),
-      description: product['description'] ?? '',
-      arabicDescription: product['arabic_description'] ?? product['description'] ?? '',
-      hasGroupDeal: product['has_group_deal'] as bool? ?? false,
+      description: productMap['description'] ?? '',
+      arabicDescription: productMap['arabic_description'] ?? productMap['description'] ?? '',
+      hasGroupDeal: productMap['has_group_deal'] as bool? ?? false,
     );
   }
 

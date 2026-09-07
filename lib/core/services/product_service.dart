@@ -38,7 +38,7 @@ class ProductService {
         // Handle both {"data": [...]} and [...] formats
         final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
         final products = rawList
-            .map((e) => _productFromApi(e as Map<String, dynamic>))
+            .map((e) => productFromApi(e as Map<String, dynamic>))
             .whereType<ProductModel>()
             .toList();
 
@@ -56,7 +56,7 @@ class ProductService {
       final cached = await CacheService.getCachedProducts();
       if (cached != null && cached.isNotEmpty) {
         var list = cached
-            .map((e) => _productFromApi(e))
+            .map((e) => productFromApi(e))
             .whereType<ProductModel>()
             .toList();
         if (category != null) {
@@ -85,7 +85,7 @@ class ProductService {
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         final data = body['data'] ?? body;
-        return _productFromApi(data as Map<String, dynamic>);
+        return productFromApi(data as Map<String, dynamic>);
       }
     } catch (_) {}
 
@@ -116,7 +116,7 @@ class ProductService {
   }
 
   // ─── Map API product response to ProductModel ────────────────
-  static ProductModel? _productFromApi(Map<String, dynamic> json) {
+  static ProductModel? productFromApi(Map<String, dynamic> json) {
     try {
       // Handle various field name conventions
       final id = json['id']?.toString() ?? '';
@@ -132,13 +132,13 @@ class ProductService {
       double price = 0.0;
       double? originalPrice;
       if (json['pricing'] is Map) {
-        price = (json['pricing']['price'] as num?)?.toDouble() ?? 0.0;
-        originalPrice = (json['pricing']['compare_price'] as num?)?.toDouble();
+        price = double.tryParse(json['pricing']['price']?.toString() ?? '') ?? 0.0;
+        originalPrice = double.tryParse(json['pricing']['compare_price']?.toString() ?? '');
       } else {
-        price = (json['price'] as num?)?.toDouble() ?? 0.0;
-        originalPrice = (json['original_price'] ?? json['compare_price'] as num?)?.toDouble();
+        price = double.tryParse(json['price']?.toString() ?? '') ?? 0.0;
+        originalPrice = double.tryParse((json['original_price'] ?? json['compare_price'])?.toString() ?? '');
       }
-      final rating = (json['rating'] as num?)?.toDouble() ?? 0.0;
+      final rating = double.tryParse(json['rating']?.toString() ?? '') ?? 0.0;
       final reviewCount = json['review_count'] ?? json['reviews_count'] ?? 0;
 
       // Handle image URL - check for 'avatar' object or standard fields
@@ -175,7 +175,7 @@ class ProductService {
         arabicDescription: arabicDescription.toString(),
         hasGroupDeal: json['has_group_deal'] == true,
         groupDealDiscount: json['group_deal_discount'] as int?,
-        shareEarnPercent: (json['share_earn_percent'] as num?)?.toDouble(),
+        shareEarnPercent: double.tryParse(json['share_earn_percent']?.toString() ?? ''),
       );
     } catch (e) {
       return null;

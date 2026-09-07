@@ -508,7 +508,7 @@ class _InfoEditRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {          
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(R.r(context, 24)),

@@ -39,18 +39,11 @@ class AddressService {
   //  Create Address 
   /// POST /api/v1/profile/addresses
   static Future<AddressModel?> createAddress({
-    required String addressLine1,
-    String? addressLine2,
-    required String city,
-    required String state,
-    required String country,
-    String? postalCode,
-    String? label,
-    String? instructions,
-    String? phoneCode,
-    String? phoneNumber,
-    double? latitude,
-    double? longitude,
+    required String countryKey,
+    required String cityKey,
+    required String governorate,
+    required String details,
+    required String phone,
     bool isDefault = false,
   }) async {
     final token = await SecureStorageService.getToken();
@@ -58,19 +51,12 @@ class AddressService {
 
     try {
       final body = <String, dynamic>{
-        'address_line_1': addressLine1,
-        'city': city,
-        'state': state,
-        'country': country,
+        'country_key': countryKey,
+        'city_key': cityKey,
+        'governorate': governorate,
+        'details': details,
+        'phone': phone,
         'is_default': isDefault,
-        if (addressLine2 != null && addressLine2.isNotEmpty) 'address_line_2': addressLine2,
-        if (postalCode != null && postalCode.isNotEmpty) 'postal_code': postalCode,
-        if (label != null && label.isNotEmpty) 'label': label,
-        if (instructions != null && instructions.isNotEmpty) 'instructions': instructions,
-        if (phoneCode != null) 'phone_code': phoneCode,
-        if (phoneNumber != null) 'phone_number': phoneNumber,
-        if (latitude != null) 'latitude': latitude,
-        if (longitude != null) 'longitude': longitude,
       };
 
       final res = await http.post(

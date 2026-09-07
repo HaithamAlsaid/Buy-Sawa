@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'api_service.dart';
 
@@ -24,5 +25,16 @@ class CountryService {
       debugPrint('CountryService error: $e');
     }
     return [];
+    //getCountriesFromAssets
+  }
+  Future<List<Map<String, dynamic>>> getCountriesFromAssets() async {
+    try {
+      final String jsonString = await rootBundle.loadString('assets/countries.json');
+      final List<dynamic> jsonList = jsonDecode(jsonString);
+      return jsonList.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Error loading countries from assets: $e');
+      return [];
+    }
   }
 }
