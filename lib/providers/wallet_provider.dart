@@ -38,19 +38,15 @@ class WalletProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> topUpWallet(double amount, String provider) async {
-    if (_token == null) return false;
+  Future<String?> topUpWallet(double amount, String provider) async {
+    if (_token == null) return null;
     _isLoading = true;
     notifyListeners();
 
-    final success = await WalletService.topUp(amount: amount, provider: provider);
-    if (success) {
-      // Re-fetch wallet to get updated balance and new transaction
-      await fetchWallet();
-    }
+    final url = await WalletService.topUp(amount: amount, provider: provider);
     
     _isLoading = false;
     notifyListeners();
-    return success;
+    return url;
   }
 }

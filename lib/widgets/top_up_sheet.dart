@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../core/constants/app_colors.dart';
 import '../core/localization/app_localizations.dart';
 import '../providers/wallet_provider.dart';
+import '../screens/checkout/payment_webview_screen.dart';
 
 class TopUpSheet extends StatefulWidget {
   const TopUpSheet({super.key});
@@ -31,29 +32,56 @@ class _TopUpSheetState extends State<TopUpSheet> {
 
     setState(() => _isLoading = true);
 
-    final success = await context.read<WalletProvider>().topUpWallet(amount, _selectedProvider);
+    final paymentUrl = await context.read<WalletProvider>().topUpWallet(amount, _selectedProvider);
 
     if (mounted) {
       setState(() => _isLoading = false);
-      if (success) {
+      
+      if (paymentUrl != null) {
+        // Close the sheet first
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).locale.languageCode == 'ar'
-                  ? 'تم الشحن بنجاح!'
-                  : 'Top-up successful!',
-            ),
-            backgroundColor: AppColors.success,
+        
+        // Open WebView
+        final success = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentWebViewScreen(url: paymentUrl),
           ),
         );
+        
+        if (success == true && mounted) {
+           // Re-fetch wallet since payment succeeded
+           await context.read<WalletProvider>().fetchWallet();
+           
+           ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context).locale.languageCode == 'ar'
+                    ? 'تم الشحن بنجاح!'
+                    : 'Top-up successful!',
+              ),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        } else if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context).locale.languageCode == 'ar'
+                    ? 'تم إلغاء عملية الشحن.'
+                    : 'Top-up cancelled.',
+              ),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               AppLocalizations.of(context).locale.languageCode == 'ar'
-                  ? 'فشل الشحن، حاول مرة أخرى.'
-                  : 'Top-up failed, please try again.',
+                  ? 'فشل الاتصال ببوابة الدفع، حاول مرة أخرى.'
+                  : 'Failed to connect to payment gateway, please try again.',
             ),
             backgroundColor: AppColors.error,
           ),

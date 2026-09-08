@@ -5,10 +5,13 @@ import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/cart_provider.dart';
-import '../../core/services/country_service.dart';
-import '../../core/services/address_service.dart';
 import '../../core/services/order_service.dart';
+import '../../providers/address_provider.dart';
+import '../../models/address_model.dart';
 import '../../widgets/credit_card_sheet.dart';
+import '../profile/profile_address_screen.dart';
+import '../../core/services/wallet_service.dart';
+import 'payment_webview_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -19,115 +22,78 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   // Address State
-  List<Map<String, dynamic>> _countries = [];
-  Map<String, dynamic>? _selectedCountry;
-  String? _selectedGovernorate; 
-  Map<String, dynamic>? _selectedCity;
+  AddressModel? _selectedAddress;
 
-  final TextEditingController _detailsCtrl = TextEditingController();
-  final TextEditingController _phoneCtrl = TextEditingController();
-
-  bool _isLoadingCountries = true;
   bool _isSubmitting = false;
-
-  // Validation state
-  bool _showValidation = false;
 
   // Payment Method
   String _selectedPaymentMethod = 'wallet'; // wallet, cod, card
 
-  // Governorates Mock (Since API doesn't provide them, we mock based on country or just leave it generic)
-  final List<String> _uaeEmirates = ['Abu Dhabi', 'Dubai', 'Sharjah', 'Ajman', 'Umm Al Quwain', 'Ras Al Khaimah', 'Fujairah'];
-  final List<String> _ksaRegions = ['Riyadh', 'Makkah', 'Madinah', 'Eastern Province', 'Asir', 'Tabuk', 'Hail', 'Northern Borders', 'Jazan', 'Najran', 'Al Baha', 'Al Jouf'];
-  final List<String> _egyptGovs = ['Cairo', 'Alexandria', 'Giza', 'Dakahlia', 'Red Sea', 'Beheira', 'Fayoum', 'Gharbia', 'Ismailia', 'Menofia', 'Minya', 'Qaliubiya', 'New Valley', 'Suez', 'Aswan', 'Assiut', 'Beni Suef', 'Port Said', 'Damietta', 'Sharkia', 'South Sinai', 'Kafr El Sheikh', 'Matrouh', 'Luxor', 'Qena', 'North Sinai', 'Sohag'];
-
   @override
   void initState() {
     super.initState();
-    _fetchCountries();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAddresses();
+    });
   }
 
-  @override
-  void dispose() {
-    _detailsCtrl.dispose();
-    _phoneCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchCountries() async {
-    final list = await CountryService.getCountries();
-    if (mounted) {
+  Future<void> _loadAddresses() async {
+    final provider = context.read<AddressProvider>();
+    if (provider.addresses.isEmpty) {
+      await provider.fetchAddresses();
+    }
+    if (mounted && provider.addresses.isNotEmpty) {
       setState(() {
-        _countries = list;
-        _isLoadingCountries = false;
-        
-        // Auto-select UAE or SA if available
-        try {
-          _selectedCountry = _countries.firstWhere((c) => c['code'] == 'AE' || c['code'] == 'SA' || c['code'] == 'EG');
-          _phoneCtrl.text = _selectedCountry?['phone_code'] ?? '';
-        } catch (_) {}
+        _selectedAddress = provider.defaultAddress ?? provider.addresses.first;
       });
     }
   }
 
-  List<String> get _currentGovernorates {
-    if (_selectedCountry == null) return [];
-    if (_selectedCountry!['code'] == 'AE') return _uaeEmirates;
-    if (_selectedCountry!['code'] == 'SA') return _ksaRegions;
-    if (_selectedCountry!['code'] == 'EG') return _egyptGovs;
-    return ['Main Region', 'Other Region']; // Fallback
-  }
-
-  List<dynamic> get _currentCities {
-    if (_selectedCountry == null) return [];
-    return _selectedCountry!['cities'] as List? ?? [];
-  }
-
-  bool get _isAddressValid {
-    return _selectedCountry != null &&
-        _selectedGovernorate != null &&
-        _selectedCity != null &&
-        _detailsCtrl.text.trim().isNotEmpty &&
-        _phoneCtrl.text.trim().isNotEmpty;
-  }
-
-  List<String> get _missingFields {
-    final List<String> missing = [];
+  void _submitOrder() async {
     final l10n = AppLocalizations.of(context);
     final isAr = l10n.locale.languageCode == 'ar';
-    
-    if (_selectedCountry == null) missing.add(isAr ? 'الدولة' : 'Country');
-    if (_selectedGovernorate == null) missing.add(isAr ? 'المحافظة' : 'Governorate');
-    if (_selectedCity == null) missing.add(isAr ? 'المدينة' : 'City');
-    if (_detailsCtrl.text.trim().isEmpty) missing.add(isAr ? 'العنوان التفصيلي' : 'Address Details');
-    if (_phoneCtrl.text.trim().isEmpty) missing.add(isAr ? 'رقم الهاتف' : 'Phone');
-    return missing;
-  }
 
-  void _submitOrder() async {
-    setState(() => _showValidation = true);
-    if (!_isAddressValid) return;
+    if (_selectedAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isAr ? 'برجاء اختيار عنوان التوصيل أولاً' : 'Please select a delivery address first')),
+      );
+      return;
+    }
 
     setState(() => _isSubmitting = true);
 
     try {
-      // 1. Create Address
-      final address = await AddressService.createAddress(
-        countryKey: _selectedCountry!['key'],
-        cityKey: _selectedCity!['key'],
-        governorate: _selectedGovernorate!,
-        details: _detailsCtrl.text.trim(),
-        phone: '${_selectedCountry!['phone_code']} ${_phoneCtrl.text.trim()}',
-      );
+      String finalPaymentMethod = _selectedPaymentMethod;
 
-      if (address == null) {
-        throw Exception("Failed to create address");
+      if (_selectedPaymentMethod == 'card') {
+        final total = context.read<CartProvider>().total;
+        // 1. Top up wallet
+        final paymentUrl = await WalletService.topUp(amount: total, provider: 'paymob');
+        
+        if (paymentUrl == null) {
+          throw Exception(isAr ? 'فشل في الاتصال ببوابة الدفع' : 'Failed to connect to payment gateway');
+        }
+
+        // 2. Open WebView
+        final success = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentWebViewScreen(url: paymentUrl),
+          ),
+        );
+
+        if (success != true) {
+          throw Exception(isAr ? 'تم إلغاء عملية الدفع' : 'Payment was cancelled');
+        }
+
+        // 3. If success, we change payment method to wallet to complete the order
+        finalPaymentMethod = 'wallet';
       }
 
-      // 2. Checkout
+      // Checkout directly with selected address and finalized payment method
       final result = await OrderService.checkout(
-        shippingAddressId: address.id,
-        paymentMethod: _selectedPaymentMethod, 
+        shippingAddressId: _selectedAddress!.id,
+        paymentMethod: finalPaymentMethod, 
       );
 
       if (result.order != null && mounted) {
@@ -221,6 +187,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   // ─── Address Section ────────────────────────────────────────────────────────
   Widget _buildAddressSection(bool isAr) {
+    final provider = context.watch<AddressProvider>();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -244,197 +212,58 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           
-          if (_isLoadingCountries)
+          if (provider.isLoading && provider.addresses.isEmpty)
             const Center(child: CircularProgressIndicator())
-          else ...[
-            // Country and Governorate
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _buildDropdown<Map<String, dynamic>>(
-                    label: isAr ? 'الدولة *' : 'Country *',
-                    hint: isAr ? 'اختر الدولة' : 'Select Country',
-                    value: _selectedCountry,
-                    items: _countries,
-                    itemLabel: (c) => isAr && c['arabic_name'] != null ? c['arabic_name'] : c['name'],
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedCountry = val;
-                        _selectedGovernorate = null;
-                        _selectedCity = null;
-                      });
-                    },
-                    isError: _showValidation && _selectedCountry == null,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildDropdown<String>(
-                    label: isAr ? 'المحافظة *' : 'Governorate *',
-                    hint: isAr ? 'اختر المحافظة / الإمارة' : 'Select State',
-                    value: _selectedGovernorate,
-                    items: _currentGovernorates,
-                    itemLabel: (g) => g,
-                    onChanged: (val) => setState(() {
-                      _selectedGovernorate = val;
-                      _selectedCity = null;
-                    }),
-                    isError: _showValidation && _selectedGovernorate == null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            
-            // City
-            _buildDropdown<Map<String, dynamic>>(
-              label: isAr ? 'المدينة *' : 'City *',
-              hint: isAr ? 'اختر المدينة' : 'Select City',
-              value: _selectedCity,
-              items: _currentCities.cast<Map<String, dynamic>>(),
-              itemLabel: (c) => isAr && c['arabic_name'] != null ? c['arabic_name'] : c['name'],
-              onChanged: (val) => setState(() => _selectedCity = val),
-              isError: _showValidation && _selectedCity == null,
-            ),
-            const SizedBox(height: 16),
-
-            // Detailed Address
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isAr ? 'العنوان التفصيلي (الشارع، المبنى، الشقة) *' : 'Detailed Address *',
-                  style: TextStyle(
-                    fontSize: R.sp(context, 12),
-                    color: (_showValidation && _detailsCtrl.text.trim().isEmpty) ? Colors.red : AppColors.textDark,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: (_showValidation && _detailsCtrl.text.trim().isEmpty) 
-                          ? Colors.red 
-                          : AppColors.border,
-                    ),
-                  ),
-                  child: TextField(
-                    controller: _detailsCtrl,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: isAr ? 'العنوان التفصيلي (الشارع، المبنى، الشقة)' : 'Street, Building, Flat',
-                      hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 13)),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    ),
-                  ),
-                ),
-                if (_showValidation && _detailsCtrl.text.trim().isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      isAr ? 'العنوان التفصيلي مطلوب' : 'Detailed address is required',
-                      style: TextStyle(color: Colors.red, fontSize: R.sp(context, 11)),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Phone Number
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isAr ? 'رقم الهاتف *' : 'Phone Number *',
-                  style: TextStyle(
-                    fontSize: R.sp(context, 12),
-                    color: AppColors.textDark,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Icon(Icons.phone_outlined, color: AppColors.textLight, size: 20),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: _phoneCtrl,
-                          keyboardType: TextInputType.phone,
-                          onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                            prefixText: _selectedCountry != null ? '${_selectedCountry!['phone_code']}  ' : '+971  ',
-                            prefixStyle: TextStyle(color: AppColors.textDark, fontSize: R.sp(context, 14), fontWeight: FontWeight.w600),
-                            hintText: '50 123 4567',
-                            hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 14)),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            
-            // Warning Box
-            if (_showValidation && !_isAddressValid)
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBEB), // Light yellow
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFDE68A)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          else if (_selectedAddress == null)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
                   children: [
-                    const Icon(Icons.info_outline_rounded, color: Color(0xFFD97706), size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isAr ? 'بيانات الشحن المطلوبة غير مكتملة:' : 'Required shipping data incomplete:',
-                            style: TextStyle(
-                              color: const Color(0xFFD97706),
-                              fontWeight: FontWeight.w700,
-                              fontSize: R.sp(context, 13),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _missingFields.join(' • '),
-                            style: TextStyle(
-                              color: const Color(0xFFD97706),
-                              fontSize: R.sp(context, 12),
-                            ),
-                          ),
-                        ],
-                      ),
+                    Text(
+                      isAr ? 'لم تقم بإضافة أي عنوان بعد' : 'You haven\'t added any address yet',
+                      style: const TextStyle(color: AppColors.textLight),
                     ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ProfileAddressScreen()),
+                        ).then((_) => _loadAddresses());
+                      },
+                      icon: const Icon(Icons.add_rounded),
+                      label: Text(isAr ? 'إضافة عنوان' : 'Add Address'),
+                    )
                   ],
                 ),
-              ).animate().fadeIn().slideY(begin: 0.1),
-          ],
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _selectedAddress!.fullAddress,
+                    style: const TextStyle(fontSize: 14, color: AppColors.textDark, height: 1.5, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _selectedAddress!.phone,
+                    style: const TextStyle(fontSize: 13, color: AppColors.textLight),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -626,18 +455,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     final isSelected = _selectedPaymentMethod == id;
     return GestureDetector(
-      onTap: () async {
+      onTap: () {
         setState(() => _selectedPaymentMethod = id);
-        if (id == 'card') {
-          // Calculate subtotal for the sheet
-          final cart = context.read<CartProvider>();
-          await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => CreditCardSheet(totalAmount: cart.total),
-          );
-        }
       },
       behavior: HitTestBehavior.opaque,
       child: Row(
@@ -734,8 +553,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   // ─── Footer ─────────────────────────────────────────────────────────────────
   Widget _buildFooter(double total, bool isAr) {
-    final valid = _isAddressValid;
-
     return Container(
       padding: EdgeInsets.fromLTRB(
         R.pad(context, 20),
@@ -799,11 +616,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: double.infinity,
             height: R.pad(context, 54),
             child: ElevatedButton(
-              onPressed: _isSubmitting 
+              onPressed: _isSubmitting || _selectedAddress == null
                   ? null 
-                  : (valid ? _submitOrder : () => setState(() => _showValidation = true)),
+                  : _submitOrder,
               style: ElevatedButton.styleFrom(
-                backgroundColor: valid ? AppColors.primary : const Color(0xFFD3D8E0),
+                backgroundColor: _selectedAddress != null ? AppColors.primary : const Color(0xFFD3D8E0),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -828,25 +645,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
             ),
           ),
-          if (_showValidation && !valid)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.info_outline_rounded, color: Colors.red, size: 16),
-                  const SizedBox(width: 6),
-                  Text(
-                    isAr ? 'أكمل عنوان الشحن بالأعلى لتفعيل زر الدفع' : 'Complete shipping address to enable payment',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: R.sp(context, 12),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );

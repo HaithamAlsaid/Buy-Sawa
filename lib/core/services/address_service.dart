@@ -51,10 +51,16 @@ class AddressService {
 
     try {
       final body = <String, dynamic>{
+        'country': countryKey,
         'country_key': countryKey,
+        'city': cityKey, // sending city name or key
         'city_key': cityKey,
+        'state': governorate,
         'governorate': governorate,
+        'address_line_1': details,
+        'address': details,
         'details': details,
+        'phone_number': phone,
         'phone': phone,
         'is_default': isDefault,
       };
@@ -67,9 +73,12 @@ class AddressService {
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         return AddressModel.fromJson(jsonDecode(res.body));
+      } else {
+        throw Exception("API Error ${res.statusCode}: ${res.body}");
       }
-    } catch (_) {}
-    return null;
+    } catch (e) {
+      throw Exception("Network or Parsing Error: $e");
+    }
   }
 
   // ─── Update Address ──────────────────────────────────────────

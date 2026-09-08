@@ -15,6 +15,7 @@ import '../orders/my_orders_screen.dart';
 import '../../core/localization/app_localizations.dart';
 import '../auth/change_password_screen.dart';
 import '../auth/mfa_setup_screen.dart';
+import 'profile_address_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -554,6 +555,22 @@ class _LoggedInProfileView extends StatelessWidget {
                             iconBgColor: Colors.transparent,
                             label: AppLocalizations.of(context).language,
                             onTap: () => LanguagePickerSheet.show(context),
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // My Address
+                          _GuestMenuItem(
+                            icon: Icons.location_on_outlined,
+                            iconColor: const Color(0xFF10B981),
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'عنواني' : 'My Address',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfileAddressScreen(),
+                                ),
+                              );
+                            },
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
                           // Delete Account

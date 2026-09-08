@@ -5,7 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/address_provider.dart';
 import '../../core/localization/app_localizations.dart';
+import 'profile_address_screen.dart';
 
 class ProfileDetailsScreen extends StatefulWidget {
   const ProfileDetailsScreen({super.key});
@@ -27,6 +29,16 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     final user = context.read<AuthProvider>().user;
     _nameCtrl = TextEditingController(text: user?.fullName ?? '');
     _birthdate = user?.birthdate ?? '';
+    
+    // Fetch addresses if empty
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final addressProv = context.read<AddressProvider>();
+        if (addressProv.addresses.isEmpty) {
+          addressProv.fetchAddresses();
+        }
+      }
+    });
   }
 
   @override
@@ -404,21 +416,35 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
               SizedBox(height: R.pad(context, 16)),
 
               // ── 4. Address ─────────────────────────────────────────────────
-              _buildSingleCard(
-                context,
-                child: _InfoEditRow(
-                  icon: Icons.location_on_outlined,
-                  iconColor: AppColors.primary,
-                  iconBgColor: const Color(0xFFE8F7F6),
-                  label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'العنوان' : 'ADDRESS',
-                  value: 'Manage your addresses',
-                  onTap: () {
-                    // Navigate to address screen later
-                  },
-                  trailingIcon: Icons.arrow_forward_ios_rounded,
-                  trailingColor: const Color(0xFFCBD5E1),
-                ),
+              Consumer<AddressProvider>(
+                builder: (context, addressProv, child) {
+                  final address = addressProv.defaultAddress ?? 
+                                  (addressProv.addresses.isNotEmpty ? addressProv.addresses.first : null);
+                  final addressText = address != null 
+                      ? '${address.city} - ${address.addressLine1}' 
+                      : (l10n.locale.languageCode == 'ar' ? 'أضف عنوانك' : 'Add your address');
+                  
+                  return _buildSingleCard(
+                    context,
+                    child: _InfoEditRow(
+                      icon: Icons.location_on_outlined,
+                      iconColor: AppColors.primary,
+                      iconBgColor: const Color(0xFFE8F7F6),
+                      label: l10n.locale.languageCode == 'ar' ? 'العنوان' : 'ADDRESS',
+                      value: addressText,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ProfileAddressScreen()),
+                        );
+                      },
+                      trailingIcon: Icons.edit_rounded,
+                      trailingColor: AppColors.primary,
+                    ),
+                  );
+                },
               ),
+
               // (End of single cards)
 
               SizedBox(height: R.pad(context, 40)),

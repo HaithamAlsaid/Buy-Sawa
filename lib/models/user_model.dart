@@ -52,6 +52,7 @@ class UserModel {
 
   UserModel copyWith({
     String? fullName,
+    String? phone,
     String? birthdate,
     String? avatarUrl,
     double? walletBalance,
@@ -61,7 +62,7 @@ class UserModel {
       id: id,
       fullName: fullName ?? this.fullName,
       email: email,
-      phone: phone,
+      phone: phone ?? this.phone,
       birthdate: birthdate ?? this.birthdate,
       referralCode: referralCode,
       avatarUrl: avatarUrl ?? this.avatarUrl,

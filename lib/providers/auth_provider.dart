@@ -199,7 +199,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ─── Update Profile ──────────────────────────────────────────
-  Future<bool> updateProfile(String fullName, String birthdate) async {
+  Future<bool> updateProfile(String fullName, String birthdate, {String? phone}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -213,7 +213,7 @@ class AuthProvider extends ChangeNotifier {
           'name': fullName,
           if (birthdate.isNotEmpty) 'date_of_birth': birthdate,
           if (_user != null) 'email': _user!.email,
-          if (_user != null) 'phone': _user!.phone,
+          if (_user != null || phone != null) 'phone': phone ?? _user?.phone ?? '',
         }),
       ).timeout(const Duration(seconds: 15));
 
@@ -221,7 +221,11 @@ class AuthProvider extends ChangeNotifier {
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         if (_user != null) {
-          _user = _user!.copyWith(fullName: fullName, birthdate: birthdate);
+          _user = _user!.copyWith(
+            fullName: fullName, 
+            birthdate: birthdate,
+            phone: phone ?? _user!.phone,
+          );
         }
         _isLoading = false;
         notifyListeners();
@@ -240,7 +244,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── Upload Avatar ───────────────────────────────────────────
+  // Upload Avatar
   Future<bool> uploadAvatar(File imageFile) async {
     _isLoading = true;
     _errorMessage = null;

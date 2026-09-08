@@ -15,7 +15,9 @@ import '../../widgets/auth_bottom_sheet.dart';
 import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
+import '../../core/services/secure_storage_service.dart';
 import '../../core/services/favourite_service.dart';
+import '../../core/services/referral_service.dart';
 
 //Mock specs per product category
 Map<String, String> _specsFor(ProductModel p) {
@@ -85,7 +87,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final favs = await FavouriteService.getFavourites();
     if (mounted) {
       final isFav = favs.any((f) {
-        final id = (f['favoritable_id'] ?? f['product_id'] ?? f['model_id'] ?? f['id'] ?? '').toString();
+        final id =
+            (f['favoritable_id'] ??
+                    f['product_id'] ??
+                    f['model_id'] ??
+                    f['id'] ??
+                    '')
+                .toString();
         return id == widget.product.id;
       });
       setState(() {
@@ -158,12 +166,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  void _shareProduct() {
+  bool _isSharing = false;
+
+  Future<void> _shareProduct() async {
+    final auth = context.read<AuthProvider>();
+    if (auth.isGuest) {
+      AuthBottomSheet.show(context);
+      return;
+    }
+
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+
+    final token = await SecureStorageService.getToken();
+    final service = ReferralService();
+    final tokenOrUrl = await service.shareProduct(
+      widget.product.id,
+      token ?? '',
+    );
+
+    if (mounted) {
+      setState(() => _isSharing = false);
+    }
+
     final p = widget.product;
+    String shareUrl = 'https://buysawa.com/p/${p.id}';
+
+    if (tokenOrUrl != null && tokenOrUrl != 'success') {
+      if (tokenOrUrl.startsWith('http')) {
+        shareUrl = tokenOrUrl;
+      } else {
+        shareUrl = 'https://buysawa.com/share/$tokenOrUrl';
+      }
+    }
+
     Share.share(
       'Check out ${p.name} on BuySawa for just ${p.price.toInt()} AED! 🛍️\n'
-      'Use my referral code HAITHAM25 to get 15 AED bonus!\n'
-      'Shop now: https://buysawa.com/p/${p.id}',
+      'Shop now: $shareUrl',
       subject: 'Check out ${p.name} on BuySawa!',
     );
   }
@@ -174,12 +213,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       AuthBottomSheet.show(context);
       return;
     }
-    
+
     // Instead of creating a new group directly, we let the user choose which group to share to.
     ShareBottomSheet.show(context, widget.product);
   }
 
-  // Build 
+  // Build
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +292,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         // Product name
                         Text(
-                          AppLocalizations.of(context).locale.languageCode == 'ar'
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
                               ? product.arabicName
                               : product.name,
                           style: TextStyle(
@@ -299,7 +339,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   SizedBox(width: R.pad(context, 6)),
                                   Expanded(
                                     child: Text(
-                                      AppLocalizations.of(context).shareProductDesc,
+                                      AppLocalizations.of(
+                                        context,
+                                      ).shareProductDesc,
                                       style: TextStyle(
                                         fontSize: R.sp(context, 12),
                                         fontWeight: FontWeight.w700,
@@ -319,7 +361,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   SizedBox(width: R.pad(context, 6)),
                                   Expanded(
                                     child: Text(
-                                      AppLocalizations.of(context).startGroupBuyDesc,
+                                      AppLocalizations.of(
+                                        context,
+                                      ).startGroupBuyDesc,
                                       style: TextStyle(
                                         fontSize: R.sp(context, 12),
                                         fontWeight: FontWeight.w700,
@@ -348,9 +392,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         _SectionTitle(title: l10n.productDetails),
                         SizedBox(height: R.pad(context, 10)),
                         Text(
-                          AppLocalizations.of(context).locale.languageCode == 'ar'
-                              ? (product.arabicDescription.isNotEmpty ? product.arabicDescription : 'لا يوجد وصف متاح لهذا المنتج.')
-                              : (product.description.isNotEmpty ? product.description : 'No description available for this product.'),
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
+                              ? (product.arabicDescription.isNotEmpty
+                                    ? product.arabicDescription
+                                    : 'لا يوجد وصف متاح لهذا المنتج.')
+                              : (product.description.isNotEmpty
+                                    ? product.description
+                                    : 'No description available for this product.'),
                           style: TextStyle(
                             fontSize: R.sp(context, 13),
                             height: 1.65,
@@ -502,8 +551,8 @@ class _HeroSectionState extends State<_HeroSection> {
                       color: const Color(0xFF94A3B8),
                     )
                   : Image.network(
-                      imageUrl.startsWith('http') 
-                          ? imageUrl 
+                      imageUrl.startsWith('http')
+                          ? imageUrl
                           : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
                       fit: BoxFit.contain,
                       color: filter,
@@ -645,7 +694,9 @@ class _BadgeRatingRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(R.r(context, 20)),
           ),
           child: Text(
-            AppLocalizations.of(context).locale.languageCode == 'ar' ? 'مميّز' : 'Featured',
+            AppLocalizations.of(context).locale.languageCode == 'ar'
+                ? 'مميّز'
+                : 'Featured',
             style: TextStyle(
               color: AppColors.primary,
               fontSize: R.sp(context, 11),
@@ -774,7 +825,9 @@ class _SizeSelector extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              AppLocalizations.of(context).locale.languageCode == 'ar' ? 'المقاس' : 'Size',
+              AppLocalizations.of(context).locale.languageCode == 'ar'
+                  ? 'المقاس'
+                  : 'Size',
               style: TextStyle(
                 fontSize: R.sp(context, 14),
                 fontWeight: FontWeight.w800,
@@ -782,7 +835,9 @@ class _SizeSelector extends StatelessWidget {
               ),
             ),
             Text(
-              AppLocalizations.of(context).locale.languageCode == 'ar' ? 'دليل المقاسات' : 'Size Guide',
+              AppLocalizations.of(context).locale.languageCode == 'ar'
+                  ? 'دليل المقاسات'
+                  : 'Size Guide',
               style: TextStyle(
                 fontSize: R.sp(context, 12),
                 color: AppColors.primary,
@@ -966,9 +1021,7 @@ class _BottomBar extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: R.pad(context, 15)),
                 side: BorderSide(
-                  color: addedToCart
-                      ? AppColors.success
-                      : AppColors.primary,
+                  color: addedToCart ? AppColors.success : AppColors.primary,
                   width: 1.5,
                 ),
                 shape: RoundedRectangleBorder(
@@ -980,9 +1033,7 @@ class _BottomBar extends StatelessWidget {
                     ? '✓ ${AppLocalizations.of(context).addedToCart}'
                     : AppLocalizations.of(context).addToCart,
                 style: TextStyle(
-                  color: addedToCart
-                      ? AppColors.success
-                      : AppColors.primary,
+                  color: addedToCart ? AppColors.success : AppColors.primary,
                   fontWeight: FontWeight.w800,
                   fontSize: R.sp(context, 14),
                 ),
@@ -1020,7 +1071,9 @@ class _BottomBar extends StatelessWidget {
                       ),
                     )
                   : Text(
-                      AppLocalizations.of(context).locale.languageCode == 'ar' ? 'مشاركة في جروب' : 'Share to Group',
+                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                          ? 'مشاركة في جروب'
+                          : 'Share to Group',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
@@ -1091,7 +1144,9 @@ class _ReviewsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _SectionTitle(title: AppLocalizations.of(context).reviewsAndComments),
+            _SectionTitle(
+              title: AppLocalizations.of(context).reviewsAndComments,
+            ),
             Text(
               '${product.rating} ~" (${product.reviewCount})',
               style: TextStyle(
