@@ -11,6 +11,7 @@ import '../../widgets/auth_bottom_sheet.dart';
 import '../../core/localization/app_localizations.dart';
 import 'start_group_screen.dart';
 import 'active_group_screen.dart';
+import 'group_invite_preview_screen.dart';
 
 class DealsScreen extends StatefulWidget {
   const DealsScreen({super.key});
@@ -27,6 +28,12 @@ class _DealsScreenState extends State<DealsScreen> {
   @override
   void initState() {
     super.initState();
+    // Load groups on start
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<GroupBuyProvider>().fetchGroups();
+      }
+    });
     // Rebuild every minute to update countdown timers
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
@@ -40,47 +47,20 @@ class _DealsScreenState extends State<DealsScreen> {
     super.dispose();
   }
 
-  void _joinGroup(BuildContext context) async {
-    final auth = context.read<AuthProvider>();
-    if (auth.isGuest) {
-      Navigator.pop(context);
-      AuthBottomSheet.show(context);
-      return;
-    }
+  void _joinGroup(BuildContext context) {
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.isEmpty) return;
 
-    final groupProvider = context.read<GroupBuyProvider>();
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final invalidMsg = AppLocalizations.of(context).groupCodeInvalid(code);
-
-    final found = await groupProvider.tryJoinGroup(code);
-    if (!mounted) return;
-    navigator.pop();
+    Navigator.pop(context); // Close the bottom sheet dialog where the code was entered
     _codeCtrl.clear();
 
-    if (found) {
-      final joinedGroup = groupProvider.myGroups.firstWhere(
-        (g) => g.code == code,
-      );
-      navigator.push(
-        MaterialPageRoute(
-          builder: (context) => ActiveGroupScreen(group: joinedGroup),
-        ),
-      );
-    } else {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(invalidMsg),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-    }
+    // Show the preview screen for this code
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false, // For bottom sheet effect over current screen
+        pageBuilder: (_, __, ___) => GroupInvitePreviewScreen(groupCode: code),
+      ),
+    );
   }
 
   void _showJoinDialog() {

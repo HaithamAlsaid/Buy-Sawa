@@ -1,11 +1,10 @@
 import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/product_service.dart';
 import '../../core/utils/responsive.dart';
 import '../../models/category_model.dart';
 import '../../models/product_model.dart';
-import '../../providers/product_provider.dart';
 import '../products/product_detail_screen.dart';
 
 class CategoryProductsScreen extends StatefulWidget {
@@ -20,6 +19,33 @@ class CategoryProductsScreen extends StatefulWidget {
 class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
+  List<ProductModel> _products = [];
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    setState(() { _isLoading = true; _hasError = false; });
+    try {
+      final result = await ProductService.getProductsByCategory(widget.category.id);
+      if (mounted) setState(() { _products = result; _isLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+    }
+  }
+
+  List<ProductModel> get _filtered {
+    if (_searchQuery.isEmpty) return _products;
+    return _products.where((p) =>
+      p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+      p.arabicName.toLowerCase().contains(_searchQuery.toLowerCase())
+    ).toList();
+  }
 
   @override
   void dispose() {
@@ -29,22 +55,29 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = context.watch<ProductProvider>();
-    
-    // Filter products by category and search query
-    var products = productProvider.products
-        .where((p) => p.category == widget.category.name)
-        .toList();
-        
-    if (_searchQuery.isNotEmpty) {
-      products = products
-          .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-          .toList();
-    }
+    final products = _filtered;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA), // slightly off-white for contrast with cards
-      body: ResponsiveWrapper(
+      backgroundColor: const Color(0xFFFAFAFA),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : _hasError
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline_rounded, size: 64, color: Colors.grey),
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        onPressed: _loadProducts,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('Retry'),
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                      ),
+                    ],
+                  ),
+                )
+              : ResponsiveWrapper(
         child: SafeArea(
           child: Column(
             children: [

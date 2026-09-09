@@ -51,7 +51,8 @@ class ApiService {
   static const String walletTopUpEndpoint = '$baseUrl/user/wallet/top-up';
 
   // ─── Categories 
-  static const String categoriesEndpoint = '$baseUrl/categories';
+  static const String categoriesEndpoint = '$baseUrl/products/categories/all';
+  static String categoryProductsEndpoint(dynamic id) => '$baseUrl/products/categories/$id/products';
   // ─── Favorites 
   static const String favoritesEndpoint = '$baseUrl/profile/favorites';
   static String removeFavoriteEndpoint(dynamic id) =>
@@ -159,17 +160,17 @@ class ApiService {
   }
 
   // ─── Groups ───
-  static const String publicGroupsEndpoint = '/groups';
-  static const String myGroupsEndpoint = '/user/groups';
-  static String groupEndpoint(dynamic id) => '/groups/';
-  static String joinGroupEndpoint(dynamic id) => '/groups//join';
-  static String leaveGroupEndpoint(dynamic id) => '/groups//leave';
-  static String groupMembersEndpoint(dynamic id) => '/groups//members';
-  static String groupProductsEndpoint(dynamic id) => '/groups//products';
-  static String shareProductInGroupEndpoint(dynamic id) => '/groups//products/share';
+  static const String groupsEndpoint = '$baseUrl/groups';
+  static String groupEndpoint(dynamic id) => '$baseUrl/groups/$id';
+  static String groupInvitationEndpoint(String code) => '$baseUrl/groups/invitation/$code';
+  static String joinGroupEndpoint(dynamic id) => '$baseUrl/groups/$id/join';
+  static String leaveGroupEndpoint(dynamic id) => '$baseUrl/groups/$id/leave';
+  static String groupMembersEndpoint(dynamic id) => '$baseUrl/groups/$id/members';
+  static String groupProductsEndpoint(dynamic id) => '$baseUrl/groups/$id/products';
+  static String shareProductInGroupEndpoint(dynamic id) => '$baseUrl/groups/$id/products/share';
 
   // ─── Referrals ───
-  static const String mySharedLinksEndpoint = '/profile/referrals/shared-links';
-  static String resolveLinkEndpoint(String token) => '/referrals/resolve/';
-  static String shareProductEndpoint(dynamic id) => '/products//share';
+  static const String mySharedLinksEndpoint = '$baseUrl/profile/referrals/shared-links';
+  static String resolveLinkEndpoint(String token) => '$baseUrl/referrals/resolve/$token';
+  static String shareProductEndpoint(dynamic id) => '$baseUrl/products/$id/share';
 }

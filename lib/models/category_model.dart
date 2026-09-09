@@ -21,14 +21,25 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     final nameStr = json['name']?.toString() ?? 'Category';
+    
+    // Handle image: can come as avatar object {id, filename, url} or direct image_url string
+    String? imageUrl;
+    if (json['avatar'] is Map && json['avatar']['url'] != null) {
+      imageUrl = json['avatar']['url'].toString();
+    } else if (json['image'] is Map && json['image']['url'] != null) {
+      imageUrl = json['image']['url'].toString();
+    } else {
+      imageUrl = json['image_url']?.toString() ?? json['image']?.toString();
+    }
+    
     return CategoryModel(
       id: json['id']?.toString() ?? '',
       name: nameStr,
       arabicName: json['name_ar'] ?? json['arabic_name'] ?? nameStr,
-      icon: Icons.category_rounded, // Default icon since API doesn't provide one
-      iconColor: const Color(0xFF277895), // Default color
-      bgColor: const Color(0xFFE8F7F6), // Default bg
-      imagePath: json['image_url'] ?? json['image'],
+      icon: Icons.category_rounded, // Fallback icon when no image from API
+      iconColor: const Color(0xFF277895),
+      bgColor: const Color(0xFFE8F7F6),
+      imagePath: imageUrl,
     );
   }
 }

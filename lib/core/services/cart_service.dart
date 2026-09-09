@@ -44,6 +44,8 @@ class CartService {
     required String productId,
     String? variantId,
     int quantity = 1,
+    String? groupId,
+    String? referralCode,
   }) async {
     final token = await SecureStorageService.getToken();
     if (token == null) return null;
@@ -55,6 +57,12 @@ class CartService {
       };
       if (variantId != null) {
         body['product_variant_id'] = int.tryParse(variantId) ?? variantId;
+      }
+      if (groupId != null) {
+        body['group_id'] = groupId;
+      }
+      if (referralCode != null) {
+        body['referral_code'] = referralCode;
       }
 
       final res = await http.post(

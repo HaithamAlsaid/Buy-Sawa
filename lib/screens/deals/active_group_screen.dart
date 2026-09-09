@@ -1,13 +1,164 @@
 import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/api_service.dart';
+import '../../core/services/secure_storage_service.dart';
 import '../../models/group_buy_model.dart';
+import '../../core/services/product_service.dart';
+import '../products/product_detail_screen.dart';
 import 'group_deal_checkout_screen.dart';
 
-class ActiveGroupScreen extends StatelessWidget {
+class ActiveGroupScreen extends StatefulWidget {
   final GroupBuyModel group;
 
   const ActiveGroupScreen({super.key, required this.group});
+
+  @override
+  State<ActiveGroupScreen> createState() => _ActiveGroupScreenState();
+}
+
+class _ActiveGroupScreenState extends State<ActiveGroupScreen> {
+  bool _isLeaving = false;
+
+  Future<void> _leaveGroup() async {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+
+    // Confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          isAr ? 'مغادرة الجروب' : 'Leave Group',
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          isAr
+              ? 'هل أنت متأكد أنك تريد مغادرة هذا الجروب؟'
+              : 'Are you sure you want to leave this group?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(isAr ? 'إلغاء' : 'Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(isAr ? 'مغادرة' : 'Leave'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isLeaving = true);
+
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.delete(
+        Uri.parse(ApiService.leaveGroupEndpoint(widget.group.id)),
+        headers: ApiService.headers(token: token),
+      ).timeout(const Duration(seconds: 10));
+
+      if (!mounted) return;
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        Navigator.pop(context); // Go back to groups list
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isAr ? 'تم مغادرة الجروب بنجاح' : 'Left the group successfully'),
+            backgroundColor: AppColors.primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      } else {
+        final body = jsonDecode(res.body);
+        final msg = body['message'] ?? (isAr ? 'حدث خطأ، حاول مرة أخرى' : 'Something went wrong, try again');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(msg.toString()),
+            backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isAr ? 'تحقق من الاتصال بالإنترنت' : 'Check your internet connection'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLeaving = false);
+    }
+  }
+
+  Future<void> _openProductDetails() async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final product = await ProductService.getProductById(widget.group.productId);
+    
+    if (!mounted) return;
+    Navigator.pop(context); // hide loading
+
+    if (product != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProductDetailScreen(
+            product: product,
+            groupId: widget.group.id,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Product not found'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+    }
+  }
+
+  void _shareGroup() {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    final group = widget.group;
+
+    // Build the invite link with the group code
+    final inviteLink = 'https://buysawa.com/groups/join?code=${group.code}';
+
+    final shareText = isAr
+        ? 'دعوتك للانضمام لجروب "${group.arabicProductName}" على تطبيق Buy Sawa!\n'
+          'كود الجروب: ${group.code}\n'
+          'اضغط على الرابط للانضمام مباشرة:\n$inviteLink'
+        : 'Join my group "${group.productName}" on Buy Sawa and get a discount!\n'
+          'Group Code: ${group.code}\n'
+          'Tap the link to join:\n$inviteLink';
+
+    Share.share(
+      shareText,
+      subject: isAr ? 'دعوة للانضمام للجروب' : 'Group Invite - Buy Sawa',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +185,9 @@ class ActiveGroupScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          '${AppLocalizations.of(context).locale.languageCode == 'ar' ? 'المجموعة:' : 'Group:'} ${group.code}',
+          AppLocalizations.of(context).locale.languageCode == 'ar'
+              ? 'تفاصيل المجموعة'
+              : 'Group Details',
           style: const TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -42,10 +195,12 @@ class ActiveGroupScreen extends StatelessWidget {
           ),
         ),
         actions: [
+          // Share button
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Center(
-              child: Container(
+            padding: const EdgeInsets.only(right: 12),
+            child: IconButton(
+              onPressed: _shareGroup,
+              icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
                   color: AppColors.background,
@@ -118,8 +273,14 @@ class ActiveGroupScreen extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 children: [
                   // The Product Item
-                  Container(
-                    margin: const EdgeInsets.only(top: 24), // Space for tooltip
+                  GestureDetector(
+                    onTap: _openProductDetails,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 24), // Space for tooltip
+                      padding: const EdgeInsets.all(8), // Make tap target slightly larger
+                      decoration: BoxDecoration(
+                        color: Colors.transparent, // For tap area
+                      ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -142,7 +303,7 @@ class ActiveGroupScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppLocalizations.of(context).locale.languageCode == 'ar' ? group.arabicProductName : group.productName,
+                                AppLocalizations.of(context).locale.languageCode == 'ar' ? widget.group.arabicProductName : widget.group.productName,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
@@ -178,6 +339,7 @@ class ActiveGroupScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  ), // Close GestureDetector
                   // The Tooltip
                   Positioned(
                     top: -12,
@@ -214,6 +376,40 @@ class ActiveGroupScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 32),
+            // Leave Button at the bottom
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: _isLeaving ? null : _leaveGroup,
+                  icon: _isLeaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEF4444)),
+                        )
+                      : const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+                  label: Text(
+                    AppLocalizations.of(context).locale.languageCode == 'ar' ? 'مغادرة المجموعة' : 'Leave Group',
+                    style: const TextStyle(
+                      color: Color(0xFFEF4444),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
           ],
         ),
       ),

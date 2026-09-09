@@ -51,7 +51,7 @@ class ProductService {
       // No internet → try cache
     }
 
-    // Fallback to cache
+    // Fallback to cache only (no mock)
     try {
       final cached = await CacheService.getCachedProducts();
       if (cached != null && cached.isNotEmpty) {
@@ -69,8 +69,7 @@ class ProductService {
       }
     } catch (_) {}
 
-    // Fallback to mock if API and cache both fail
-    return mockProducts;
+    return []; // No mock — show real empty state
   }
 
   // ─── Get Product By ID ───────────────────────────────────────
@@ -94,6 +93,30 @@ class ProductService {
     return null;
   }
 
+  // ─── Get Products By Category ─────────────────────────────────
+  /// GET /api/v1/products/categories/{id}/products
+  static Future<List<ProductModel>> getProductsByCategory(String categoryId) async {
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.get(
+        Uri.parse(ApiService.categoryProductsEndpoint(categoryId)),
+        headers: ApiService.headers(token: token),
+      ).timeout(const Duration(seconds: 15));
+
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
+        return rawList
+            .map((e) => productFromApi(e as Map<String, dynamic>))
+            .whereType<ProductModel>()
+            .toList();
+      }
+    } catch (_) {}
+
+    // Fallback: filter mock products by category name
+    return []; // No mock — show real empty state
+  }
+
   // ─── Get Categories ──────────────────────────────────────────
   static Future<List<CategoryModel>> getCategories() async {
     try {
@@ -112,7 +135,7 @@ class ProductService {
       }
     } catch (_) {}
 
-    return mockCategories; // Fallback
+    return []; // No mock — show real empty state
   }
 
   // ─── Map API product response to ProductModel ────────────────

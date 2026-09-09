@@ -410,11 +410,41 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: CircularProgressIndicator(color: AppColors.primary),
                           ),
                         )
-                      : productProvider.hasError && productProvider.trending.isEmpty
-                          ? const Center(
+                      : productProvider.trending.isEmpty
+                          ? Center(
                               child: Padding(
-                                padding: EdgeInsets.all(32.0),
-                                child: Text('Failed to load products. Pull to refresh.'),
+                                padding: const EdgeInsets.symmetric(vertical: 48),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.inventory_2_outlined,
+                                      size: 72,
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                          ? 'لا توجد منتجات بعد'
+                                          : 'No products yet',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                          ? 'تابعونا قريباً!'
+                                          : 'Stay tuned, products coming soon!',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             )
                           : GridView.builder(

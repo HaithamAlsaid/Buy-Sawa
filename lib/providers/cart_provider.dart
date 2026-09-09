@@ -80,7 +80,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   // ─── إضافة منتج ──────────────────────────────────────────────
-  Future<void> add(ProductModel product, {String? variantId}) async {
+  Future<void> add(ProductModel product, {String? variantId, String? groupId, String? referralCode}) async {
     // تحديث فوري في الـ UI
     final idx = _items.indexWhere((i) => i.product.id == product.id);
     if (idx >= 0) {
@@ -97,6 +97,8 @@ class CartProvider extends ChangeNotifier {
         productId: product.id,
         variantId: variantId,
         quantity: 1,
+        groupId: groupId,
+        referralCode: referralCode,
       );
       // تحديث الـ ID لو جاء من السيرفر
       if (newId != null) {

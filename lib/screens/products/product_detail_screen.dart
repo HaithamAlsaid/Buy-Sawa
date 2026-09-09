@@ -57,7 +57,15 @@ const List<String> _sizes = ['XS', 'S', 'M', 'L', 'XL'];
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
-  const ProductDetailScreen({super.key, required this.product});
+  final String? groupId;
+  final String? referralCode;
+
+  const ProductDetailScreen({
+    super.key,
+    required this.product,
+    this.groupId,
+    this.referralCode,
+  });
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -112,7 +120,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _addToCart() {
     HapticFeedback.lightImpact();
-    context.read<CartProvider>().add(widget.product);
+    context.read<CartProvider>().add(
+      widget.product,
+      groupId: widget.groupId,
+      referralCode: widget.referralCode,
+    );
     setState(() => _addedToCart = true);
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
