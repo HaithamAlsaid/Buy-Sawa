@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/utils/responsive.dart';
+import '../../models/cart_item_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/cached_image.dart';
 import '../../widgets/auth_bottom_sheet.dart';
 import '../../core/localization/app_localizations.dart';
 import '../checkout/checkout_screen.dart';
@@ -239,18 +242,13 @@ class _CartItemCard extends StatelessWidget {
           // Image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              item.product.imageUrl,
+            child: CachedImage(
+              imageUrl: item.product.imageUrl.startsWith('http')
+                  ? item.product.imageUrl
+                  : 'https://buysawa.com${item.product.imageUrl.startsWith('/') ? '' : '/'}${item.product.imageUrl}',
               width: 78,
               height: 78,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                width: 78,
-                height: 78,
-                color: const Color(0xFFF7F8FA),
-                child: const Icon(Icons.image_rounded,
-                    color: AppColors.textLight, size: 30),
-              ),
             ),
           ),
           const SizedBox(width: 14),

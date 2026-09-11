@@ -15,6 +15,9 @@ class ProductModel {
   final int? groupDealDiscount;
   final double? shareEarnPercent;
   final List<ProductReview> reviews;
+  final Map<String, String>? attributes;
+  final bool isVariable;
+  final List<ProductVariationModel> variations;
 
   ProductModel({
     required this.id,
@@ -33,6 +36,9 @@ class ProductModel {
     this.groupDealDiscount,
     this.shareEarnPercent,
     this.reviews = const [],
+    this.attributes,
+    this.isVariable = false,
+    this.variations = const [],
   });
 
   double get discount {
@@ -40,29 +46,80 @@ class ProductModel {
     return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
   }
 
+  static Map<String, String>? _parseAttributes(dynamic data) {
+    if (data == null) return null;
+    if (data is Map) {
+      return data.map((k, v) => MapEntry(k.toString(), v.toString()));
+    }
+    if (data is List) {
+      final map = <String, String>{};
+      for (var item in data) {
+        if (item is Map) {
+          final key = item['name']?.toString() ?? item['key']?.toString();
+          final val = item['value']?.toString();
+          if (key != null && val != null) {
+            map[key] = val;
+          }
+        }
+      }
+      return map.isNotEmpty ? map : null;
+    }
+    return null;
+  }
+
   factory ProductModel.fromJson(Map<String, dynamic> json) {
-    return ProductModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      arabicName: json['arabic_name'] as String? ?? json['name'] as String,
-      category: json['category'] as String,
-      price: (json['price'] as num).toDouble(),
-      originalPrice: (json['original_price'] as num?)?.toDouble(),
-      rating: (json['rating'] as num).toDouble(),
-      reviewCount: json['review_count'] as int? ?? 0,
-      imageUrl: json['image_url'] as String,
-      alternateImages: (json['alternate_images'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      description: json['description'] as String,
-      arabicDescription: json['arabic_description'] as String? ?? json['description'] as String,
-      hasGroupDeal: json['has_group_deal'] as bool? ?? false,
-      groupDealDiscount: json['group_deal_discount'] as int?,
-      shareEarnPercent: (json['share_earn_percent'] as num?)?.toDouble(),
-      reviews: (json['reviews'] as List<dynamic>?)
-          ?.map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
-          .toList() ?? [],
-    );
+    try {
+      final parsedVariations = (json['variations'] as List<dynamic>?)
+          ?.map((e) => ProductVariationModel.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+
+      String extractedUrl = '';
+      if (json['avatar'] is Map && json['avatar']['url'] != null) {
+        extractedUrl = json['avatar']['url'].toString();
+      } else {
+        extractedUrl = json['image_url']?.toString() ?? json['image']?.toString() ?? '';
+      }
+
+      return ProductModel(
+        id: json['id']?.toString() ?? '',
+        name: json['name']?.toString() ?? '',
+        arabicName: json['arabic_name']?.toString() ?? json['name']?.toString() ?? '',
+        category: json['category']?.toString() ?? '',
+        price: (json['price'] as num?)?.toDouble() ?? 0.0,
+        originalPrice: (json['original_price'] as num?)?.toDouble(),
+        rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+        reviewCount: json['review_count'] as int? ?? 0,
+        imageUrl: extractedUrl,
+        alternateImages: (json['alternate_images'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList(),
+        description: json['description']?.toString() ?? '',
+        arabicDescription: json['arabic_description']?.toString() ?? json['description']?.toString() ?? '',
+        hasGroupDeal: json['has_group_deal'] as bool? ?? false,
+        groupDealDiscount: json['group_deal_discount'] as int?,
+        shareEarnPercent: (json['share_earn_percent'] as num?)?.toDouble(),
+        reviews: (json['reviews'] as List<dynamic>?)
+            ?.map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
+            .toList() ?? [],
+        attributes: _parseAttributes(json['attributes']),
+        isVariable: parsedVariations.isNotEmpty || (json['type'] != null && (json['type'] is Map) && json['type']['value'] == 2),
+        variations: parsedVariations,
+      );
+    } catch (e) {
+      // Return a safe default or rethrow if you want to handle it higher up
+      return ProductModel(
+        id: '',
+        name: 'Error loading product',
+        arabicName: 'خطأ في تحميل المنتج',
+        category: '',
+        price: 0,
+        rating: 0,
+        reviewCount: 0,
+        imageUrl: '',
+        description: '',
+        arabicDescription: '',
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -83,6 +140,7 @@ class ProductModel {
       'group_deal_discount': groupDealDiscount,
       'share_earn_percent': shareEarnPercent,
       'reviews': reviews.map((r) => r.toJson()).toList(),
+      'attributes': attributes,
     };
   }
 }
@@ -126,6 +184,44 @@ class ProductReview {
     };
   }
 }
+
+class ProductVariationModel {
+  final String id;
+  final String name;
+  final double price;
+  final double? comparePrice;
+  final String? imageUrl;
+
+  ProductVariationModel({
+    required this.id,
+    required this.name,
+    required this.price,
+    this.comparePrice,
+    this.imageUrl,
+  });
+
+  factory ProductVariationModel.fromJson(Map<String, dynamic> json) {
+    // Extract pricing
+    final pricing = json['pricing'] as Map<String, dynamic>? ?? {};
+    final price = (pricing['price'] as num?)?.toDouble() ?? 0.0;
+    final comparePrice = (pricing['compare_price'] as num?)?.toDouble();
+
+    // Extract avatar
+    String? imageUrl;
+    if (json['avatar'] is Map && json['avatar']['url'] != null) {
+      imageUrl = json['avatar']['url'].toString();
+    }
+
+    return ProductVariationModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      price: price,
+      comparePrice: comparePrice,
+      imageUrl: imageUrl,
+    );
+  }
+}
+
 
 // ──── Mock Data ────────────────────────────────────────────────
 final List<ProductModel> mockProducts = [

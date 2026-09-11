@@ -1,8 +1,14 @@
+import 'dart:convert';
 import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../core/constants/app_colors.dart';
-import 'widgets/add_products_bottom_sheet.dart';
-import 'group_detail_screen.dart';
+import '../../core/services/api_service.dart';
+import '../../core/services/secure_storage_service.dart';
+import 'package:provider/provider.dart';
+import '../../providers/group_buy_provider.dart';
+import '../../models/group_buy_model.dart';
+import 'active_group_screen.dart';
 
 class StartGroupScreen extends StatefulWidget {
   const StartGroupScreen({super.key});
@@ -13,12 +19,7 @@ class StartGroupScreen extends StatefulWidget {
 
 class _StartGroupScreenState extends State<StartGroupScreen> {
   final _nameCtrl = TextEditingController();
-  List<Map<String, dynamic>> _selectedProducts = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool _isCreating = false;
 
   @override
   void dispose() {
@@ -26,8 +27,64 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
     super.dispose();
   }
 
+  // ─── POST /api/v1/groups ─────────────────────────────────────
+  Future<void> _createGroup() async {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    setState(() => _isCreating = true);
+    try {
+      final token = await SecureStorageService.getToken();
+      final res = await http.post(
+        Uri.parse(ApiService.groupsEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({'name': _nameCtrl.text.trim()}),
+      ).timeout(const Duration(seconds: 15));
+
+      if (!mounted) return;
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final respBody = jsonDecode(res.body);
+        final data = respBody['data'] ?? respBody;
+        final group = GroupBuyModel.fromJson(data as Map<String, dynamic>);
+        
+        // Refresh the provider so it shows up in DealsScreen right away
+        if (mounted) {
+          Provider.of<GroupBuyProvider>(context, listen: false).fetchGroups();
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => ActiveGroupScreen(group: group)),
+        );
+      } else {
+        final respBody = jsonDecode(res.body);
+        final msg = respBody['message']?.toString() ??
+            (isAr ? 'فشل إنشاء الجروب' : 'Failed to create group');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: const Color(0xFFEF4444)),
+        );
+      }
+    } catch (e, stack) {
+      debugPrint('❌ Create group error: $e');
+      debugPrint('Stack: $stack');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+            duration: const Duration(seconds: 6),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCreating = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    final hasName = _nameCtrl.text.trim().isNotEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -39,55 +96,70 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.keyboard_arrow_left_rounded,
-                color: AppColors.textDark,
-              ),
+              decoration: const BoxDecoration(color: AppColors.background, shape: BoxShape.circle),
+              child: const Icon(Icons.keyboard_arrow_left_rounded, color: AppColors.textDark),
             ),
           ),
         ),
         title: Text(
           AppLocalizations.of(context).startGroupBuy,
-          style: const TextStyle(
-            color: AppColors.textDark,
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
+          style: const TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.w800),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
+            // Description
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.group_add_rounded, color: AppColors.primary, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      isAr
+                          ? 'أنشئ مجموعة شراء جماعي واحصل على كاش باك أكبر مع أصدقائك!'
+                          : 'Create a group buy and get more cashback with your friends!',
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+            // Group name label
             Text(
               AppLocalizations.of(context).groupName,
               style: const TextStyle(
-                color: Color(0xFF94A3B8), // Slate 400
+                color: Color(0xFF94A3B8),
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             TextField(
               controller: _nameCtrl,
-              onChanged: (val) => setState(() {}),
+              onChanged: (_) => setState(() {}),
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
-                hintText: 'Enter Group Name (e.g., Gaming Setup)',
-                hintStyle: const TextStyle(
-                  color: Color(0xFF94A3B8),
-                  fontSize: 14,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
+                hintText: isAr ? 'مثال: جروب الأجهزة' : 'e.g. Gaming Setup Group',
+                hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: const BorderSide(color: AppColors.border),
@@ -98,195 +170,39 @@ class _StartGroupScreenState extends State<StartGroupScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: AppColors.primary),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: OutlinedButton(
-                onPressed: () async {
-                  final products = await AddProductsBottomSheet.show(context);
-                  if (products != null) {
-                    setState(() {
-                      _selectedProducts = products;
-                    });
-                  }
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.primary, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add, color: AppColors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      AppLocalizations.of(context).addProductsBtn,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (_selectedProducts.isNotEmpty) ...[
-              const SizedBox(height: 32),
-              Text(
-                AppLocalizations.of(context).selectedProducts,
-                style: const TextStyle(
-                  color: Color(0xFF94A3B8),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (int i = 0; i < _selectedProducts.length; i++) ...[
-                _buildProductItem(_selectedProducts[i], i),
-                const SizedBox(height: 12),
-              ],
-            ],
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20),
           child: SizedBox(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {
-                if (_nameCtrl.text.isEmpty || _selectedProducts.isEmpty) return;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GroupDetailScreen(
-                      groupName: _nameCtrl.text,
-                      products: _selectedProducts,
-                    ),
-                  ),
-                );
-              },
+              onPressed: (!hasName || _isCreating) ? null : _createGroup,
               style: ElevatedButton.styleFrom(
-                backgroundColor: (_nameCtrl.text.isNotEmpty && _selectedProducts.isNotEmpty)
-                    ? const Color(0xFFF5A623) // Solid Orange
-                    : const Color(0xFFF6D8A6), // Soft yellowish orange
+                backgroundColor: hasName ? const Color(0xFFF5A623) : const Color(0xFFF6D8A6),
                 elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: Text(
-                AppLocalizations.of(context).createGroupInvite,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              child: _isCreating
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : Text(
+                      AppLocalizations.of(context).createGroupInvite,
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                    ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildProductItem(Map<String, dynamic> product, int index) {
-    return Container(
-      key: ValueKey(product['code']),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              product['icon'] as IconData,
-              color: const Color(0xFF94A3B8),
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product['name'] as String,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                    color: AppColors.textDark,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${product['price']} ',
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                      TextSpan(
-                        text: AppLocalizations.of(context).aed,
-                        style: const TextStyle(
-                          color: Color(0xFF94A3B8),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedProducts.removeAt(index);
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: AppColors.errorLight,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.close_rounded,
-                color: AppColors.error,
-                size: 16,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

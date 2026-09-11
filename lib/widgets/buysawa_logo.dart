@@ -11,6 +11,7 @@ import 'package:buysawa/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_settings_provider.dart';
+import 'cached_image.dart';
 
 class AppLogo extends StatelessWidget {
   final double size;
@@ -35,16 +36,12 @@ class AppLogo extends StatelessWidget {
         height: size,
         child: settings.hasRemoteLogo
             // ── 1. Logo من الـ Backend (يتحكم فيه الأدمن) ──────────
-            ? Image.network(
-                settings.logoUrl!,
+            ? CachedImage(
+                imageUrl: settings.logoUrl!,
                 width: size,
                 height: size,
                 fit: fit,
-                loadingBuilder: (_, child, progress) {
-                  if (progress == null) return child;
-                  return _FallbackLogo(size: size);
-                },
-                errorBuilder: (_, __, ___) => _LocalAssetLogo(size: size, fit: fit),
+                errorWidget: _LocalAssetLogo(size: size, fit: fit),
               )
             // ── 2. Logo من ملف محلي (fallback) ──────────────────────
             : _LocalAssetLogo(size: size, fit: fit),

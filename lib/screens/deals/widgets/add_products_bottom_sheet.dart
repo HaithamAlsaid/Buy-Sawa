@@ -24,14 +24,8 @@ class AddProductsBottomSheet extends StatefulWidget {
 }
 
 class _AddProductsBottomSheetState extends State<AddProductsBottomSheet> {
-  int _selectedFilter = 2; 
-  final List<Map<String, dynamic>> _dummyProducts = [
-    {'name': 'PowerBank 20k mAh', 'price': '99', 'code': 'PB20K', 'icon': Icons.image_outlined, 'isAdded': false},
-    {'name': 'Sony WH-1000XM5', 'price': '1299', 'code': 'SONYXM5', 'icon': Icons.headphones_rounded, 'isAdded': false},
-    {'name': 'Glow Serum Set', 'price': '189', 'code': 'GLOW01', 'icon': Icons.spa_outlined, 'isAdded': false},
-    {'name': 'Nike Air Max \'24', 'price': '549', 'code': 'AIRMAX24', 'icon': Icons.directions_run_rounded, 'isAdded': false},
-    {'name': 'Apple Watch Series 9', 'price': '1899', 'code': 'AW9-45', 'icon': Icons.watch_rounded, 'isAdded': false},
-  ];
+  int _selectedFilter = 0;
+  final List<Map<String, dynamic>> _dummyProducts = [];
 
   @override
   Widget build(BuildContext context) {

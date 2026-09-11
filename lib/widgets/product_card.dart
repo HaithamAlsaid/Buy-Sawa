@@ -4,6 +4,7 @@ import '../core/localization/app_localizations.dart';
 import '../core/utils/responsive.dart';
 import '../models/product_model.dart';
 import '../screens/products/product_detail_screen.dart';
+import 'cached_image.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -53,23 +54,13 @@ class ProductCard extends StatelessWidget {
                               ),
                             ),
                           )
-                        : Image.network(
-                            product.imageUrl.startsWith('http') 
+                        : CachedImage(
+                            imageUrl: product.imageUrl.startsWith('http') 
                                 ? product.imageUrl 
                                 : 'https://buysawa.com${product.imageUrl.startsWith('/') ? '' : '/'}${product.imageUrl}',
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              color: AppColors.background,
-                              child: Center(
-                                child: Icon(
-                                  Icons.image_rounded,
-                                  color: AppColors.textLight,
-                                  size: R.icon(context, 40),
-                                ),
-                              ),
-                            ),
                           ),
                   ),
                 ],

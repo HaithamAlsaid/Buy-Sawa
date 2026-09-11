@@ -7,6 +7,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../core/services/favourite_service.dart';
 import '../../models/product_model.dart';
+import '../../widgets/cached_image.dart';
 import '../products/product_detail_screen.dart';
 
 class FavouritesScreen extends StatefulWidget {
@@ -396,23 +397,20 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                   top: Radius.circular(R.r(context, 20)),
                                                 ),
                                                 child: imageUrl.isNotEmpty
-                                                    ? Image.network(
-                                                        imageUrl.startsWith('http') 
+                                                    ? CachedImage(
+                                                        imageUrl: imageUrl.startsWith('http') 
                                                             ? imageUrl 
                                                             : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
                                                         height: R.pad(context, 130),
                                                         width: double.infinity,
                                                         fit: BoxFit.cover,
-                                                        errorBuilder: (_, __, ___) => Container(
-                                                          height: R.pad(context, 130),
-                                                          color: const Color(0xFFF1F5F9),
-                                                          child: const Icon(Icons.image_not_supported_outlined),
-                                                        ),
                                                       )
                                                     : Container(
                                                         height: R.pad(context, 130),
-                                                        color: const Color(0xFFF1F5F9),
-                                                        child: const Icon(Icons.image_not_supported_outlined),
+                                                        color: AppColors.background,
+                                                        child: Center(
+                                                          child: Icon(Icons.image_rounded, color: AppColors.textLight, size: R.icon(context, 40)),
+                                                        ),
                                                       ),
                                               ),
                                               // Remove heart button

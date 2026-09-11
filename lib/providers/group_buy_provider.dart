@@ -27,28 +27,7 @@ class GroupBuyProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
-        
-        if (rawList.isEmpty) {
-          // ⚠️ Fallback for testing UI changes while backend is empty
-          _groups = [
-            GroupBuyModel(
-              id: 'gb_mock_1',
-              code: 'GB-X72A',
-              ownerName: 'Haitham Alsaid',
-              arabicOwnerName: 'هيثم الصياد',
-              memberCount: 5,
-              maxMembers: 10,
-              isActive: true,
-              productId: 'p_1',
-              productName: 'Sony WH-1000XM5',
-              arabicProductName: 'سوني سماعات بلوتوث',
-              discountPercent: 20,
-              expiresAt: DateTime.now().add(const Duration(hours: 47)),
-            ),
-          ];
-        } else {
-          _groups = rawList.map((e) => GroupBuyModel.fromJson(e as Map<String, dynamic>)).toList();
-        }
+        _groups = rawList.map((e) => GroupBuyModel.fromJson(e as Map<String, dynamic>)).toList();
       }
     } catch (_) {
       // Keep existing groups on error
@@ -73,25 +52,6 @@ class GroupBuyProvider extends ChangeNotifier {
         return GroupBuyModel.fromJson(data as Map<String, dynamic>);
       }
     } catch (_) {}
-    
-    // ⚠️ Mock fallback for UI testing
-    if (code == 'GB-X72A') {
-      return GroupBuyModel(
-        id: 'gb_mock_1',
-        code: 'GB-X72A',
-        ownerName: 'Haitham Alsaid',
-        arabicOwnerName: 'هيثم الصياد',
-        memberCount: 5,
-        maxMembers: 10,
-        isActive: true,
-        productId: 'p_1',
-        productName: 'Sony WH-1000XM5',
-        arabicProductName: 'سوني سماعات بلوتوث',
-        discountPercent: 20,
-        expiresAt: DateTime.now().add(const Duration(hours: 47)),
-      );
-    }
-    
     return null;
   }
 

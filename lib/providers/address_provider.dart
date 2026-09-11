@@ -111,6 +111,33 @@ class AddressProvider extends ChangeNotifier {
     }
   }
 
+  // ─── تحديث عنوان ─────────────────────────────────────────────
+  Future<AddressModel?> updateAddress({
+    required String id,
+    required String countryKey,
+    required String cityKey,
+    required String governorate,
+    required String details,
+    required String phone,
+  }) async {
+    final updatedAddress = await AddressService.updateAddress(id, {
+      'country_id': countryKey,
+      'city_id': cityKey,
+      'state': governorate,
+      'address_line_1': details,
+      'phone_number': phone,
+    });
+
+    if (updatedAddress != null) {
+      final index = _addresses.indexWhere((a) => a.id == id);
+      if (index != -1) {
+        _addresses[index] = updatedAddress;
+        notifyListeners();
+      }
+    }
+    return updatedAddress;
+  }
+
   // ─── حذف عنوان ───────────────────────────────────────────────
   Future<void> deleteAddress(String id) async {
     final success = await AddressService.deleteAddress(id);

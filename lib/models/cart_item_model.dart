@@ -1,3 +1,5 @@
+import 'package:buysawa/models/product_model.dart';
+
 import 'product_model.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -7,11 +9,15 @@ import 'product_model.dart';
 class CartItemModel {
   final String? cartItemId; // ID الـ Item في السيرفر (null لو local بس)
   final ProductModel product;
+  final String? variantId;
+  final ProductVariationModel? variation;
   int quantity;
 
   CartItemModel({
     this.cartItemId,
     required this.product,
+    this.variantId,
+    this.variation,
     this.quantity = 1,
   });
 
@@ -50,9 +56,16 @@ class CartItemModel {
       arabicDescription: productData['description_ar'] ?? productData['description'] ?? '',
     );
 
+    ProductVariationModel? variation;
+    if (variantData != null) {
+      variation = ProductVariationModel.fromJson(variantData);
+    }
+
     return CartItemModel(
       cartItemId: json['id']?.toString(),
       product: product,
+      variantId: variantData?['id']?.toString() ?? json['product_variant_id']?.toString(),
+      variation: variation,
       quantity: json['quantity'] as int? ?? 1,
     );
   }
@@ -61,6 +74,12 @@ class CartItemModel {
     return {
       'id': cartItemId,
       'product': product.toJson(),
+      'variant_id': variantId,
+      if (variation != null) 'variant': {
+        'id': variation!.id,
+        'name': variation!.name,
+        'pricing': { 'price': variation!.price },
+      },
       'quantity': quantity,
     };
   }

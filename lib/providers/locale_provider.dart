@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../core/services/api_service.dart';
+import '../core/services/secure_storage_service.dart';
 
 class LocaleProvider extends ChangeNotifier {
   static const _key = 'locale';
@@ -18,6 +22,22 @@ class LocaleProvider extends ChangeNotifier {
     _prefs.setString(_key, code);
     _prefs.setBool('launched', true);
     notifyListeners();
+    _syncLocaleWithServer(code);
+  }
+
+  Future<void> _syncLocaleWithServer(String code) async {
+    try {
+      final token = await SecureStorageService.getToken();
+      if (token == null) return; // User not logged in, no need to sync
+
+      await http.post(
+        Uri.parse(ApiService.langSwitchEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({'locale': code}),
+      ).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('Failed to sync locale with server: $e');
+    }
   }
 
   void markLaunched() {

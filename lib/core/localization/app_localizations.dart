@@ -264,6 +264,27 @@ class AppLocalizations {
   String get aed => _t('aed');
   String get colorDefaultSizeStandard => _t('colorDefaultSizeStandard');
 
+  // ─── Donations ───────────────────────────────────────────────
+  String get donateNow => _t('donateNow');
+  String get selectDonationAmount => _t('selectDonationAmount');
+  String get customAmountHint => _t('customAmountHint');
+  String get donorInfo => _t('donorInfo');
+  String get fullNameHint => _t('fullNameHint');
+  String get phoneHint => _t('phoneHint');
+  String get donateAnonymously => _t('donateAnonymously');
+  String get anonymousNote => _t('anonymousNote');
+  String get paymentMethod => _t('paymentMethod');
+  String get myWalletBalance => _t('myWalletBalance');
+  String get tabbySubtitle => _t('tabbySubtitle');
+  String get tamaraSubtitle => _t('tamaraSubtitle');
+  String donateBtn(int amount) => _t('donateBtn').replaceAll('{amount}', amount.toString());
+  String get donationSuccess => _t('donationSuccess');
+  String get enterValidAmount => _t('enterValidAmount');
+  String get enterNameAndPhone => _t('enterNameAndPhone');
+  String get daysLeft => _t('daysLeft');
+  String get collected => _t('collected');
+  String get target => _t('target');
+
   // ════════════════════════════════════════════════════════════
   // TRANSLATIONS MAP
   // ════════════════════════════════════════════════════════════
@@ -417,6 +438,25 @@ class AppLocalizations {
       'loginToSend': 'Login to send a message',
       'aed': 'AED',
       'colorDefaultSizeStandard': 'Color: Default | Size: Standard',
+      'donateNow': 'Donate Now',
+      'selectDonationAmount': 'Select Donation Amount',
+      'customAmountHint': 'Or enter a custom amount...',
+      'donorInfo': 'Donor Information',
+      'fullNameHint': 'Full Name',
+      'phoneHint': 'Phone Number',
+      'donateAnonymously': 'Donate Anonymously',
+      'anonymousNote': 'Your donation will be sent as "Anonymous"',
+      'paymentMethod': 'Payment Method',
+      'myWalletBalance': 'Balance: 1,250 AED',
+      'tabbySubtitle': 'Split into 4 payments. No interest.',
+      'tamaraSubtitle': 'Buy now, pay later',
+      'donateBtn': 'Donate {amount} AED Now',
+      'donationSuccess': 'Donation successful! Thank you.',
+      'enterValidAmount': 'Please select a valid amount.',
+      'enterNameAndPhone': 'Please enter your name and phone number.',
+      'daysLeft': 'days left',
+      'collected': 'Collected',
+      'target': 'Target',
       'accountTitle': 'ACCOUNT',
 
       'shareProductDesc': 'Share this product and get cashback on purchases!',
@@ -631,6 +671,25 @@ class AppLocalizations {
       'loginToSend': 'سجّل دخولك لإرسال رسالة',
       'aed': 'درهم',
       'colorDefaultSizeStandard': 'اللون: افتراضي | المقاس: قياسي',
+      'donateNow': 'تبرع الآن',
+      'selectDonationAmount': 'اختر مبلغ التبرع',
+      'customAmountHint': 'أو أدخل مبلغاً مخصصاً...',
+      'donorInfo': 'بيانات المتبرع',
+      'fullNameHint': 'الاسم الكامل',
+      'phoneHint': 'رقم الهاتف',
+      'donateAnonymously': 'التبرع كفاعل خير (في السر)',
+      'anonymousNote': 'ستُرسَل تبرعاتك باسم "فاعل خير"',
+      'paymentMethod': 'وسيلة الدفع',
+      'myWalletBalance': 'الرصيد: 1,250 درهم',
+      'tabbySubtitle': 'قسّم على 4 دفعات بدون فوائد',
+      'tamaraSubtitle': 'اشتر الآن وادفع لاحقاً',
+      'donateBtn': 'تبرع الآن بـ {amount} درهم',
+      'donationSuccess': 'تم التبرع بنجاح! شكراً لك.',
+      'enterValidAmount': 'الرجاء اختيار مبلغ صحيح.',
+      'enterNameAndPhone': 'الرجاء إدخال الاسم ورقم الهاتف.',
+      'daysLeft': 'يوم متبقي',
+      'collected': 'المحصّل',
+      'target': 'الهدف',
       'accountTitle': 'الحساب',
       'shareProductDesc': 'شارك هذا المنتج واحصل على كاش باك عند الشراء!',
       'startGroupBuyDesc': 'ابدأ شراء جماعي مع أصدقائك للحصول على خصم أكبر.',

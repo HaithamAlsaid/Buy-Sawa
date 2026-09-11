@@ -86,7 +86,6 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
           // Defaults if no address
           try {
             _selectedCountry = _countries.firstWhere((c) => c['code'] == 'AE' || c['code'] == 'SA' || c['code'] == 'EG');
-            _phoneCtrl.text = _selectedCountry?['phone_code'] ?? '';
           } catch (_) {}
         }
       });

@@ -168,8 +168,9 @@ class ApiService {
   static String groupMembersEndpoint(dynamic id) => '$baseUrl/groups/$id/members';
   static String groupProductsEndpoint(dynamic id) => '$baseUrl/groups/$id/products';
   static String shareProductInGroupEndpoint(dynamic id) => '$baseUrl/groups/$id/products/share';
+  static String removeGroupProductEndpoint(dynamic groupId, dynamic productId) => '$baseUrl/groups/$groupId/products/$productId';
 
-  // ─── Referrals ───
+  // ─── Referrals ───────────────────────────────────────────────
   static const String mySharedLinksEndpoint = '$baseUrl/profile/referrals/shared-links';
   static String resolveLinkEndpoint(String token) => '$baseUrl/referrals/resolve/$token';
   static String shareProductEndpoint(dynamic id) => '$baseUrl/products/$id/share';

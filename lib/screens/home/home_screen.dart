@@ -13,6 +13,9 @@ import '../../widgets/product_card.dart';
 import '../notifications/notifications_screen.dart';
 import '../products/cart_screen.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../core/services/donation_service.dart';
+import '../../models/donation_campaign_model.dart';
+import 'widgets/campaign_detail_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,57 +27,32 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _bannerCtrl = PageController();
   int _bannerIndex = 0;
-
-  List<_BannerData> _getBanners(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return [
-      _BannerData(
-        tag: l10n.featured,
-        title: l10n.groupDeal,
-        subtitle: l10n.startGroupSubtitle,
-        color1: AppColors.primary,
-        color2: AppColors.primary,
-      ),
-      _BannerData(
-        tag: l10n.newBadge,
-        title: l10n.shareAndEarn,
-        subtitle: l10n.shareEarnSubtitle,
-        color1: AppColors.primary,
-        color2: AppColors.primary,
-      ),
-      _BannerData(
-        tag: l10n.hotBadge,
-        title: l10n.flashSale,
-        subtitle: l10n.flashSaleDesc,
-        color1: AppColors.primary,
-        color2: AppColors.primary,
-      ),
-      _BannerData(
-        tag: l10n.cashbackBadge,
-        title: l10n.earnCashback,
-        subtitle: l10n.earnCashbackDesc,
-        color1: AppColors.primary,
-        color2: AppColors.primary,
-      ),
-    ];
-  }
+  late Future<List<CategoryModel>> _categoriesFuture;
+  late Future<List<DonationCampaignModel>> _campaignsFuture;
+  List<DonationCampaignModel> _campaigns = [];
 
   @override
   void initState() {
     super.initState();
+    _categoriesFuture = ProductService.getCategories();
+    _campaignsFuture = DonationService.getActiveCampaigns().then((val) {
+      if (mounted) setState(() => _campaigns = val);
+      return val;
+    });
     _startAutoScroll();
   }
 
   void _startAutoScroll() {
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
-      final banners = _getBanners(context);
-      final next = (_bannerIndex + 1) % banners.length;
+      if (_campaigns.isNotEmpty) {
+        final next = (_bannerIndex + 1) % _campaigns.length;
       _bannerCtrl.animateToPage(
         next,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
+      }
       _startAutoScroll();
     });
   }
@@ -96,6 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.primary,
         backgroundColor: Colors.white,
         onRefresh: () async {
+          setState(() {
+            _categoriesFuture = ProductService.getCategories();
+            _campaignsFuture = DonationService.getActiveCampaigns().then((val) {
+              if (mounted) setState(() => _campaigns = val);
+              return val;
+            });
+          });
           await context.read<ProductProvider>().refreshProducts();
         },
         child: CustomScrollView(
@@ -268,13 +253,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: SizedBox(
-                      height: 160,
-                      child: PageView.builder(
-                        controller: _bannerCtrl,
-                        itemCount: _getBanners(context).length,
-                        onPageChanged: (i) => setState(() => _bannerIndex = i),
-                        itemBuilder: (_, i) =>
-                            _BannerCard(data: _getBanners(context)[i]),
+                      height: 190, // slightly taller to fit all info
+                      child: _campaigns.isEmpty 
+                        ? const Center(child: CircularProgressIndicator())
+                        : PageView.builder(
+                          controller: _bannerCtrl,
+                          itemCount: _campaigns.length,
+                          onPageChanged: (i) => setState(() => _bannerIndex = i),
+                          itemBuilder: (_, i) =>
+                              _DonationBannerCard(campaign: _campaigns[i]),
                       ),
                     ),
                   ),
@@ -282,24 +269,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // Dot indicators
                 const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_getBanners(context).length, (i) {
-                    final active = i == _bannerIndex;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      width: active ? 20 : 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        color: active
-                            ? AppColors.primary
-                            : AppColors.primary.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    );
-                  }),
-                ),
+                if (_campaigns.isNotEmpty)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(_campaigns.length, (i) {
+                      final active = i == _bannerIndex;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: active ? 20 : 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: active
+                              ? AppColors.primary
+                              : AppColors.primary.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  ),
 
                 // ── Categories ──────────────────────────────────
                 const SizedBox(height: 24),
@@ -341,14 +329,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   height: 90,
                   child: FutureBuilder<List<CategoryModel>>(
-                    future: ProductService.getCategories(),
+                    future: _categoriesFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary));
                       }
                       final categories = snapshot.data ?? [];
                       if (categories.isEmpty) {
-                        return const SizedBox();
+                        return Center(
+                          child: Text(
+                            AppLocalizations.of(context).locale.languageCode == 'ar'
+                                ? 'لا توجد فئات بعد'
+                                : 'No categories yet',
+                            style: const TextStyle(
+                              color: Color(0xFF94A3B8),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        );
                       }
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -479,114 +477,157 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // ── Banner Data Model
-class _BannerData {
-  final String tag;
-  final String title;
-  final String subtitle;
-  final Color color1;
-  final Color color2;
-  const _BannerData({
-    required this.tag,
-    required this.title,
-    required this.subtitle,
-    required this.color1,
-    required this.color2,
-  });
-}
-
-//Banner Card
-class _BannerCard extends StatelessWidget {
-  final _BannerData data;
-  const _BannerCard({required this.data});
+//Banner Card for Donations
+class _DonationBannerCard extends StatelessWidget {
+  final DonationCampaignModel campaign;
+  const _DonationBannerCard({required this.campaign});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        CampaignDetailSheet.show(context, campaign);
+      },
+      child: Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [data.color1, data.color2],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: AppColors.primary.withValues(alpha: 0.9), // fallback color
+        borderRadius: BorderRadius.circular(20),
+        image: DecorationImage(
+          image: NetworkImage(campaign.imageUrl),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.6), // Dark overlay for text readability
+            BlendMode.darken,
+          ),
         ),
       ),
-      child: Stack(
-        children: [
-          // Decorative circles
-          Positioned(
-            right: -30,
-            top: -30,
-            child: Container(
-              width: 160,
-              height: 160,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 30,
-            bottom: -40,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
-              ),
-            ),
-          ),
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Top row: Foundation & Time left
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    data.tag,
+                    campaign.foundationName,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                if (campaign.remainingDays != null)
+                  Row(
+                    children: [
+                      const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${campaign.remainingDays} ${AppLocalizations.of(context).daysLeft}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            
+            // Campaign Title & Description
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  data.title,
+                  campaign.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 26,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    height: 1.1,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
-                  data.subtitle,
+                  campaign.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.85),
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            
+            // Progress Bar and Amounts
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${AppLocalizations.of(context).collected}: ${campaign.collectedAmount.toInt()}',
+                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '${AppLocalizations.of(context).target}: ${campaign.targetAmount.toInt()}',
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: campaign.progressPercentage,
+                          backgroundColor: Colors.white.withValues(alpha: 0.3),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
+                          minHeight: 6,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context).donateNow,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    );
+    ), // Close GestureDetector
+    ); // Close return statement
   }
 }
 

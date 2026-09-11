@@ -462,17 +462,21 @@ class _DealsScreenState extends State<DealsScreen> {
                             // Top row
                             Row(
                               children: [
-                                Text(
-                                  AppLocalizations.of(
-                                            context,
-                                          ).locale.languageCode ==
-                                          'ar'
-                                      ? g.arabicOwnerName
-                                      : g.ownerName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    color: Color(0xFF0F172A),
+                                Flexible(
+                                  child: Text(
+                                    AppLocalizations.of(
+                                              context,
+                                            ).locale.languageCode ==
+                                            'ar'
+                                        ? g.arabicOwnerName
+                                        : g.ownerName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 15,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const SizedBox(width: 8),

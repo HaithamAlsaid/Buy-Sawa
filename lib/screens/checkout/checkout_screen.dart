@@ -8,10 +8,14 @@ import '../../providers/cart_provider.dart';
 import '../../core/services/order_service.dart';
 import '../../providers/address_provider.dart';
 import '../../models/address_model.dart';
+import '../../widgets/buysawa_logo.dart';
+import '../../widgets/cached_image.dart';
 import '../../widgets/credit_card_sheet.dart';
 import '../profile/profile_address_screen.dart';
 import '../../core/services/wallet_service.dart';
 import 'payment_webview_screen.dart';
+import '../../core/services/country_service.dart';
+import '../../providers/auth_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -23,6 +27,17 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   // Address State
   AddressModel? _selectedAddress;
+  bool _isAddingNewAddress = false;
+
+  // Inline Form State
+  final TextEditingController _cityCtrl = TextEditingController();
+  final TextEditingController _detailsCtrl = TextEditingController();
+  final TextEditingController _phoneCtrl = TextEditingController();
+  List<Map<String, dynamic>> _countries = [];
+  Map<String, dynamic>? _selectedCountry;
+  Map<String, dynamic>? _selectedGovernorate;
+  bool _isLoadingCountries = true;
+  bool _showValidation = false;
 
   bool _isSubmitting = false;
 
@@ -33,27 +48,96 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadAddresses();
+      _fetchData();
     });
   }
 
-  Future<void> _loadAddresses() async {
+  @override
+  void dispose() {
+    _cityCtrl.dispose();
+    _detailsCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchData() async {
     final provider = context.read<AddressProvider>();
-    if (provider.addresses.isEmpty) {
-      await provider.fetchAddresses();
+    
+    List<Map<String, dynamic>> list = [];
+    
+    try {
+      // Fetch countries and addresses in parallel for speed safely
+      await Future.wait([
+        CountryService.getCountries().then((v) => list = v),
+        if (provider.addresses.isEmpty) provider.fetchAddresses(),
+      ]);
+    } catch (e) {
+      debugPrint('Checkout fetchData error: $e');
     }
-    if (mounted && provider.addresses.isNotEmpty) {
+
+    if (!mounted) return;
+    
+    if (mounted) {
       setState(() {
-        _selectedAddress = provider.defaultAddress ?? provider.addresses.first;
+        _countries = list;
+        _isLoadingCountries = false;
+
+        if (provider.addresses.isNotEmpty) {
+          _selectedAddress = provider.defaultAddress ?? provider.addresses.first;
+          _isAddingNewAddress = true; // Always show form
+          
+          // Prefill form
+          _cityCtrl.text = _selectedAddress!.city;
+          _detailsCtrl.text = _selectedAddress!.addressLine1;
+          _phoneCtrl.text = _selectedAddress!.phoneNumber ?? '';
+          
+          try {
+            _selectedCountry = _countries.firstWhere((c) => c['name'].toString().toLowerCase() == _selectedAddress!.country.toLowerCase());
+          } catch (_) {}
+          
+          try {
+            if (_selectedCountry != null) {
+              _selectedGovernorate = _currentGovernorates.firstWhere((g) => g['name'].toString().toLowerCase() == _selectedAddress!.state.toLowerCase());
+            }
+          } catch (_) {}
+
+        } else {
+          _isAddingNewAddress = true;
+          // Defaults if no address
+          try {
+            _selectedCountry = _countries.firstWhere((c) => c['code'] == 'AE' || c['code'] == 'SA' || c['code'] == 'EG');
+          } catch (_) {}
+        }
       });
     }
+  }
+
+  List<dynamic> get _currentGovernorates {
+    if (_selectedCountry == null) return [];
+    return _selectedCountry!['cities'] as List? ?? [];
+  }
+
+  bool get _isInlineFormValid {
+    return _selectedCountry != null &&
+        _selectedGovernorate != null &&
+        _cityCtrl.text.trim().isNotEmpty &&
+        _detailsCtrl.text.trim().isNotEmpty &&
+        _phoneCtrl.text.trim().isNotEmpty;
   }
 
   void _submitOrder() async {
     final l10n = AppLocalizations.of(context);
     final isAr = l10n.locale.languageCode == 'ar';
 
-    if (_selectedAddress == null) {
+    if (_isAddingNewAddress) {
+      setState(() => _showValidation = true);
+      if (!_isInlineFormValid) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(isAr ? 'يرجى إكمال جميع بيانات العنوان' : 'Please complete all address details')),
+        );
+        return;
+      }
+    } else if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(isAr ? 'برجاء اختيار عنوان التوصيل أولاً' : 'Please select a delivery address first')),
       );
@@ -64,6 +148,47 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     try {
       String finalPaymentMethod = _selectedPaymentMethod;
+      String? targetAddressId = _selectedAddress?.id;
+
+      if (_isAddingNewAddress) {
+        final phoneCode = _selectedCountry!['phone_code'];
+        String fullPhone = _phoneCtrl.text.trim();
+        if (!fullPhone.startsWith('+')) {
+          fullPhone = '$phoneCode $fullPhone';
+        }
+
+        AddressModel? result;
+        if (_selectedAddress != null) {
+          result = await context.read<AddressProvider>().updateAddress(
+            id: _selectedAddress!.id,
+            countryKey: _selectedCountry!['key'],
+            cityKey: _cityCtrl.text.trim(),
+            governorate: _selectedGovernorate!['name'],
+            details: _detailsCtrl.text.trim(),
+            phone: fullPhone,
+          );
+        } else {
+          result = await context.read<AddressProvider>().addAddress(
+            countryKey: _selectedCountry!['key'],
+            cityKey: _cityCtrl.text.trim(), // City text as key since we have no cities API
+            governorate: _selectedGovernorate!['name'],
+            details: _detailsCtrl.text.trim(),
+            phone: fullPhone,
+            isDefault: true,
+          );
+        }
+
+        if (result != null) {
+          targetAddressId = result.id;
+          // Update profile phone
+          final auth = context.read<AuthProvider>();
+          if (auth.user != null) {
+            await auth.updateProfile(auth.user!.fullName, auth.user!.birthdate ?? '', phone: fullPhone);
+          }
+        } else {
+          throw Exception(isAr ? 'فشل في حفظ العنوان الجديد' : 'Failed to save new address');
+        }
+      }
 
       if (_selectedPaymentMethod == 'card') {
         final total = context.read<CartProvider>().total;
@@ -92,7 +217,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       // Checkout directly with selected address and finalized payment method
       final result = await OrderService.checkout(
-        shippingAddressId: _selectedAddress!.id,
+        shippingAddressId: targetAddressId!,
         paymentMethod: finalPaymentMethod, 
       );
 
@@ -199,73 +324,184 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.location_on_outlined, color: AppColors.primary, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                isAr ? 'عنوان الشحن' : 'Shipping Address',
-                style: TextStyle(
-                  fontSize: R.sp(context, 16),
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, color: AppColors.primary, size: 22),
+                  const SizedBox(width: 8),
+                  Text(
+                    isAr ? 'عنوان الشحن' : 'Shipping Address',
+                    style: TextStyle(
+                      fontSize: R.sp(context, 16),
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           const SizedBox(height: 16),
           
-          if (provider.isLoading && provider.addresses.isEmpty)
+          if (provider.isLoading && provider.addresses.isEmpty && !_isAddingNewAddress)
             const Center(child: CircularProgressIndicator())
-          else if (_selectedAddress == null)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  children: [
-                    Text(
-                      isAr ? 'لم تقم بإضافة أي عنوان بعد' : 'You haven\'t added any address yet',
-                      style: const TextStyle(color: AppColors.textLight),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ProfileAddressScreen()),
-                        ).then((_) => _loadAddresses());
-                      },
-                      icon: const Icon(Icons.add_rounded),
-                      label: Text(isAr ? 'إضافة عنوان' : 'Add Address'),
-                    )
-                  ],
-                ),
-              ),
-            )
           else
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _selectedAddress!.fullAddress,
-                    style: const TextStyle(fontSize: 14, color: AppColors.textDark, height: 1.5, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _selectedAddress!.phone,
-                    style: const TextStyle(fontSize: 13, color: AppColors.textLight),
-                  ),
-                ],
-              ),
-            ),
+            _buildInlineAddressForm(isAr),
         ],
       ),
+    );
+  }
+
+  Widget _buildInlineAddressForm(bool isAr) {
+    if (_isLoadingCountries) {
+      return const Center(child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: CircularProgressIndicator(),
+      ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildDropdown(
+                label: isAr ? 'الدولة *' : 'Country *',
+                hint: isAr ? 'اختر الدولة' : 'Select Country',
+                value: _selectedCountry,
+                items: _countries,
+                itemLabel: (c) => c['name'],
+                isError: _showValidation && _selectedCountry == null,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedCountry = val;
+                    _selectedGovernorate = null;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildDropdown(
+                label: isAr ? 'المحافظة *' : 'Governorate *',
+                hint: isAr ? 'اختر المحافظة' : 'Select Governorate',
+                value: _selectedGovernorate,
+                items: _currentGovernorates,
+                itemLabel: (c) => c['name'],
+                isError: _showValidation && _selectedGovernorate == null,
+                onChanged: (val) {
+                  setState(() => _selectedGovernorate = val);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        
+        Text(
+          isAr ? 'المدينة *' : 'City *',
+          style: TextStyle(fontSize: R.sp(context, 12), color: _showValidation && _cityCtrl.text.trim().isEmpty ? Colors.red : AppColors.textDark, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: _showValidation && _cityCtrl.text.trim().isEmpty ? Colors.red : AppColors.border),
+          ),
+          child: TextField(
+            controller: _cityCtrl,
+            decoration: InputDecoration(
+              hintText: isAr ? 'اسم المدينة (مثال: الدقي)' : 'City Name (e.g. Dokki)',
+              hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 13)),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+          ),
+        ),
+        if (_showValidation && _cityCtrl.text.trim().isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 4),
+            child: Text(isAr ? 'المدينة مطلوبة' : 'City is required', style: const TextStyle(color: Colors.red, fontSize: 10)),
+          ),
+        
+        const SizedBox(height: 16),
+        
+        Text(
+          isAr ? 'العنوان التفصيلي (الشارع، المبنى، الشقة) *' : 'Detailed Address (Street, Building, Apartment) *',
+          style: TextStyle(fontSize: R.sp(context, 12), color: _showValidation && _detailsCtrl.text.trim().isEmpty ? Colors.red : AppColors.textDark, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: _showValidation && _detailsCtrl.text.trim().isEmpty ? Colors.red : AppColors.border),
+          ),
+          child: TextField(
+            controller: _detailsCtrl,
+            decoration: InputDecoration(
+              hintText: isAr ? 'تفاصيل العنوان' : 'Detailed Address',
+              hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 13)),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        Text(
+          isAr ? 'رقم الهاتف *' : 'Phone Number *',
+          style: TextStyle(fontSize: R.sp(context, 12), color: _showValidation && _phoneCtrl.text.trim().isEmpty ? Colors.red : AppColors.textDark, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: _showValidation && _phoneCtrl.text.trim().isEmpty ? Colors.red : AppColors.border),
+          ),
+          child: TextField(
+            controller: _phoneCtrl,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              hintText: '50 123 4567',
+              prefixText: _selectedCountry != null ? '${_selectedCountry!['phone_code']}  ' : null,
+              prefixStyle: const TextStyle(color: AppColors.textDark, fontSize: 14, fontWeight: FontWeight.bold),
+              hintStyle: TextStyle(color: AppColors.textLight, fontSize: R.sp(context, 13)),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+          ),
+        ),
+        
+        if (_showValidation && !_isInlineFormValid)
+          Container(
+            margin: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF7ED),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFFDBA74)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline, color: Color(0xFFF97316), size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isAr ? 'بيانات الشحن المطلوبة غير مكتملة' : 'Required shipping information missing',
+                    style: const TextStyle(color: Color(0xFF9A3412), fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -323,7 +559,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: item.product.imageUrl.isNotEmpty
-                            ? Image.network(item.product.imageUrl, fit: BoxFit.contain)
+                            ? CachedImage(
+                                imageUrl: item.product.imageUrl.startsWith('http')
+                                    ? item.product.imageUrl
+                                    : 'https://buysawa.com${item.product.imageUrl.startsWith('/') ? '' : '/'}${item.product.imageUrl}',
+                                fit: BoxFit.contain,
+                              )
                             : const Icon(Icons.image_rounded, color: Colors.grey),
                       ),
                     ),

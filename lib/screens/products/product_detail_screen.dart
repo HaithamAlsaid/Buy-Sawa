@@ -12,48 +12,15 @@ import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/group_buy_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
-import '../../widgets/write_review_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
 import '../../core/services/secure_storage_service.dart';
 import '../../core/services/favourite_service.dart';
 import '../../core/services/referral_service.dart';
-
-//Mock specs per product category
-Map<String, String> _specsFor(ProductModel p) {
-  if (p.category == 'Electronics' && p.name.contains('Sony')) {
-    return {
-      'Battery Life': '30 Hours',
-      'Noise Cancellation': 'Adaptive ANC',
-      'Connectivity': 'Bluetooth 5.2',
-      'Quick Charge': '3 min = 3 hrs',
-    };
-  } else if (p.category == 'Shoes') {
-    return {
-      'Material': 'Mesh + Rubber',
-      'Sole': 'Air/Boost Unit',
-      'Weight': '~310g',
-      'Origin': 'Vietnam',
-    };
-  } else if (p.name.contains('Watch')) {
-    return {
-      'Display': '45mm OLED',
-      'Chip': 'S9 SiP',
-      'Water Resistance': '50 meters',
-      'Battery': '18 Hours',
-    };
-  }
-  return {
-    'Condition': 'Brand New',
-    'Warranty': '1 Year',
-    'Availability': 'In Stock',
-    'Shipping': 'Free',
-  };
-}
-
-const List<String> _sizes = ['XS', 'S', 'M', 'L', 'XL'];
+import '../../widgets/cached_image.dart';
 
 // ───────────────────────────────────────────────────────────────
+
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
@@ -79,14 +46,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isWishlisted = false;
   String? _selectedSize;
   bool _specsExpanded = false;
-  late List<ProductReview> _localReviews;
+  ProductVariationModel? _selectedVariation;
   late final PageController _pageCtrl;
   int _currentImageIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _localReviews = List.from(widget.product.reviews);
     _pageCtrl = PageController();
     _checkIfFavourite();
   }
@@ -119,14 +85,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // Actions
 
   void _addToCart() {
+    final l10n = AppLocalizations.of(context);
+    if (widget.product.isVariable && _selectedVariation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.locale.languageCode == 'ar'
+                ? 'برجاء اختيار تفاصيل المنتج أولاً'
+                : 'Please select an option first',
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     HapticFeedback.lightImpact();
     context.read<CartProvider>().add(
       widget.product,
+      variantId: _selectedVariation?.id,
+      variation: _selectedVariation,
       groupId: widget.groupId,
       referralCode: widget.referralCode,
     );
     setState(() => _addedToCart = true);
-    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -235,13 +217,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
-    final specs = _specsFor(product);
+    final specs = product.attributes;
     final l10n = AppLocalizations.of(context);
-    final discountPct = product.originalPrice != null
-        ? (((product.originalPrice! - product.price) / product.originalPrice!) *
-                  100)
-              .toInt()
-        : 0;
+    final discountPct = (_selectedVariation != null && _selectedVariation!.comparePrice != null)
+        ? (((_selectedVariation!.comparePrice! - _selectedVariation!.price) / _selectedVariation!.comparePrice!) * 100).toInt()
+        : (product.originalPrice != null
+            ? (((product.originalPrice! - product.price) / product.originalPrice!) * 100).toInt()
+            : 0);
 
     // Sizes only for relevant categories
 
@@ -264,6 +246,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 flexibleSpace: FlexibleSpaceBar(
                   background: _HeroSection(
                     product: product,
+                    variation: _selectedVariation,
                     isWishlisted: _isWishlisted,
                     onBack: () => Navigator.pop(context),
                     onWishlist: _toggleWishlist,
@@ -321,6 +304,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Price row
                         _PriceRow(
                           product: product,
+                          variation: _selectedVariation,
                           discountPct: discountPct,
                         ).animate().fadeIn(delay: 140.ms).slideY(begin: 0.15),
 
@@ -391,14 +375,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         SizedBox(height: R.pad(context, 22)),
 
-                        // Size selector
-                        _SizeSelector(
-                          selected: _selectedSize,
-                          onSelect: (s) => setState(() => _selectedSize = s),
-                        ).animate().fadeIn(delay: 180.ms).slideY(begin: 0.15),
-                        SizedBox(height: R.pad(context, 22)),
-
-                        SizedBox(height: R.pad(context, 22)),
+                        // Variation selector (if variable)
+                        if (product.isVariable && product.variations.isNotEmpty) ...[
+                          _VariationSelector(
+                            variations: product.variations,
+                            selected: _selectedVariation,
+                            onSelect: (v) => setState(() => _selectedVariation = v),
+                          ).animate().fadeIn(delay: 180.ms).slideY(begin: 0.15),
+                          SizedBox(height: R.pad(context, 22)),
+                        ],
 
                         // Product Details
                         _SectionTitle(title: l10n.productDetails),
@@ -422,40 +407,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         SizedBox(height: R.pad(context, 24)),
 
                         // Specifications
-                        _SectionTitle(title: l10n.specifications),
-                        SizedBox(height: R.pad(context, 10)),
-                        _SpecsTable(
-                          specs: specs,
-                        ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.15),
+                        if (specs != null && specs.isNotEmpty) ...[
+                          _SectionTitle(title: l10n.specifications),
+                          SizedBox(height: R.pad(context, 10)),
+                          _SpecsTable(
+                            specs: specs,
+                          ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.15),
 
-                        // View all specs
-                        if (!_specsExpanded) ...[
-                          SizedBox(height: R.pad(context, 8)),
-                          GestureDetector(
-                            onTap: () => setState(() => _specsExpanded = true),
-                            child: Text(
-                              l10n.viewAllSpecs,
-                              style: TextStyle(
-                                fontSize: R.sp(context, 12),
-                                color: _teal,
-                                fontWeight: FontWeight.w700,
+                          // View all specs
+                          if (!_specsExpanded) ...[
+                            SizedBox(height: R.pad(context, 8)),
+                            GestureDetector(
+                              onTap: () => setState(() => _specsExpanded = true),
+                              child: Text(
+                                l10n.viewAllSpecs,
+                                style: TextStyle(
+                                  fontSize: R.sp(context, 12),
+                                  color: _teal,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
+                          SizedBox(height: R.pad(context, 24)),
                         ],
 
-                        SizedBox(height: R.pad(context, 24)),
 
-                        // Reviews & Comments
-                        _ReviewsSection(
-                          product: product,
-                          reviews: _localReviews,
-                          onReviewAdded: (review) {
-                            setState(() {
-                              _localReviews.insert(0, review);
-                            });
-                          },
-                        ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.15),
 
                         SizedBox(height: R.pad(context, 24)),
                       ],
@@ -491,6 +468,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 // ── Hero Section with Color Carousel ────────────────────────────
 class _HeroSection extends StatefulWidget {
   final ProductModel product;
+  final ProductVariationModel? variation;
   final bool isWishlisted;
   final VoidCallback onBack;
   final VoidCallback onWishlist;
@@ -498,6 +476,7 @@ class _HeroSection extends StatefulWidget {
 
   const _HeroSection({
     required this.product,
+    this.variation,
     required this.isWishlisted,
     required this.onBack,
     required this.onWishlist,
@@ -555,25 +534,23 @@ class _HeroSectionState extends State<_HeroSection> {
             itemCount: _colorFilters.length,
             itemBuilder: (context, index) {
               final filter = _colorFilters[index];
-              final String imageUrl = widget.product.imageUrl.trim();
+              final String imageUrl = widget.variation?.imageUrl?.trim().isNotEmpty == true 
+                  ? widget.variation!.imageUrl!.trim() 
+                  : widget.product.imageUrl.trim();
+                  
               final Widget imageWidget = imageUrl.isEmpty
                   ? Icon(
                       Icons.image_outlined,
                       size: R.icon(context, 80),
                       color: const Color(0xFF94A3B8),
                     )
-                  : Image.network(
-                      imageUrl.startsWith('http')
+                  : CachedImage(
+                      imageUrl: imageUrl.startsWith('http')
                           ? imageUrl
                           : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
                       fit: BoxFit.contain,
-                      color: filter,
-                      colorBlendMode: filter != null ? BlendMode.srcATop : null,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.image_outlined,
-                        size: R.icon(context, 80),
-                        color: const Color(0xFF94A3B8),
-                      ),
+                      width: double.infinity,
+                      height: double.infinity,
                     );
 
               return Center(
@@ -752,16 +729,20 @@ class _BadgeRatingRow extends StatelessWidget {
 // ── Price row ───────────────────────────────────────────────────
 class _PriceRow extends StatelessWidget {
   final ProductModel product;
+  final ProductVariationModel? variation;
   final int discountPct;
-  const _PriceRow({required this.product, required this.discountPct});
+  const _PriceRow({required this.product, this.variation, required this.discountPct});
 
   @override
   Widget build(BuildContext context) {
+    final displayPrice = variation != null ? variation!.price : product.price;
+    final displayOriginalPrice = variation != null ? variation!.comparePrice : product.originalPrice;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          '${product.price.toInt()}',
+          '${displayPrice.toInt()}',
           style: TextStyle(
             fontSize: R.sp(context, 28),
             fontWeight: FontWeight.w900,
@@ -782,12 +763,12 @@ class _PriceRow extends StatelessWidget {
             ),
           ),
         ),
-        if (product.originalPrice != null) ...[
+        if (displayOriginalPrice != null) ...[
           SizedBox(width: R.pad(context, 10)),
           Padding(
             padding: EdgeInsets.only(bottom: R.pad(context, 4)),
             child: Text(
-              '${product.originalPrice!.toInt()}',
+              '${displayOriginalPrice.toInt()}',
               style: TextStyle(
                 fontSize: R.sp(context, 14),
                 decoration: TextDecoration.lineThrough,
@@ -822,11 +803,12 @@ class _PriceRow extends StatelessWidget {
   }
 }
 
-// ── Size selector ───────────────────────────────────────────────
-class _SizeSelector extends StatelessWidget {
-  final String? selected;
-  final ValueChanged<String> onSelect;
-  const _SizeSelector({required this.selected, required this.onSelect});
+// ── Variation selector ───────────────────────────────────────────────
+class _VariationSelector extends StatelessWidget {
+  final List<ProductVariationModel> variations;
+  final ProductVariationModel? selected;
+  final ValueChanged<ProductVariationModel> onSelect;
+  const _VariationSelector({required this.variations, required this.selected, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
@@ -838,61 +820,47 @@ class _SizeSelector extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).locale.languageCode == 'ar'
-                  ? 'المقاس'
-                  : 'Size',
+                  ? 'اختر النسخة'
+                  : 'Select Option',
               style: TextStyle(
                 fontSize: R.sp(context, 14),
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0F172A),
               ),
             ),
-            Text(
-              AppLocalizations.of(context).locale.languageCode == 'ar'
-                  ? 'دليل المقاسات'
-                  : 'Size Guide',
-              style: TextStyle(
-                fontSize: R.sp(context, 12),
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
           ],
         ),
         SizedBox(height: R.pad(context, 10)),
-        Row(
-          children: _sizes.map((s) {
-            final isSelected = selected == s;
-            return Padding(
-              padding: EdgeInsets.only(right: R.pad(context, 8)),
-              child: GestureDetector(
-                onTap: () => onSelect(s),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: R.pad(context, 48),
-                  height: R.pad(context, 40),
-                  decoration: BoxDecoration(
+        Wrap(
+          spacing: R.pad(context, 8),
+          runSpacing: R.pad(context, 8),
+          children: variations.map((v) {
+            final isSelected = selected?.id == v.id;
+            return GestureDetector(
+              onTap: () => onSelect(v),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.symmetric(horizontal: R.pad(context, 12), vertical: R.pad(context, 10)),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(R.r(context, 12)),
+                  border: Border.all(
                     color: isSelected
                         ? AppColors.primary
-                        : const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(R.r(context, 12)),
-                    border: Border.all(
-                      color: isSelected
-                          ? AppColors.primary
-                          : const Color(0xFFE2E8F0),
-                      width: 1.5,
-                    ),
+                        : const Color(0xFFE2E8F0),
+                    width: 1.5,
                   ),
-                  child: Center(
-                    child: Text(
-                      s,
-                      style: TextStyle(
-                        fontSize: R.sp(context, 13),
-                        fontWeight: FontWeight.w700,
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFF0F172A),
-                      ),
-                    ),
+                ),
+                child: Text(
+                  v.name,
+                  style: TextStyle(
+                    fontSize: R.sp(context, 13),
+                    fontWeight: FontWeight.w700,
+                    color: isSelected
+                        ? Colors.white
+                        : const Color(0xFF0F172A),
                   ),
                 ),
               ),
@@ -1137,175 +1105,3 @@ class _CircleBtn extends StatelessWidget {
 }
 
 //Reviews Section
-class _ReviewsSection extends StatelessWidget {
-  final ProductModel product;
-  final List<ProductReview> reviews;
-  final Function(ProductReview) onReviewAdded;
-
-  const _ReviewsSection({
-    required this.product,
-    required this.reviews,
-    required this.onReviewAdded,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _SectionTitle(
-              title: AppLocalizations.of(context).reviewsAndComments,
-            ),
-            Text(
-              '${product.rating} ~" (${product.reviewCount})',
-              style: TextStyle(
-                fontSize: R.sp(context, 14),
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFFF5A623),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: R.pad(context, 16)),
-        if (reviews.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: R.pad(context, 20)),
-              child: Text(
-                AppLocalizations.of(context).locale.languageCode == 'ar'
-                    ? 'لا توجد تقييمات بعد. كن أول من يقيّم!'
-                    : 'No reviews yet. Be the first to review!',
-                style: TextStyle(
-                  color: const Color(0xFF94A3B8),
-                  fontSize: R.sp(context, 14),
-                ),
-              ),
-            ),
-          )
-        else
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemCount: reviews.length,
-            separatorBuilder: (_, __) => Padding(
-              padding: EdgeInsets.symmetric(vertical: R.pad(context, 16)),
-              child: const Divider(color: Color(0xFFF1F5F9), height: 1),
-            ),
-            itemBuilder: (context, index) {
-              final r = reviews[index];
-              return _ReviewCard(review: r);
-            },
-          ),
-        SizedBox(height: R.pad(context, 16)),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () async {
-              final newReview = await WriteReviewSheet.show(context);
-              if (newReview != null) {
-                onReviewAdded(newReview);
-              }
-            },
-            style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: R.pad(context, 12)),
-              side: const BorderSide(color: Color(0xFFE2E8F0)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(R.r(context, 12)),
-              ),
-            ),
-            child: Text(
-              AppLocalizations.of(context).writeReview,
-              style: TextStyle(
-                color: const Color(0xFF0F172A),
-                fontWeight: FontWeight.w700,
-                fontSize: R.sp(context, 13),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ReviewCard extends StatelessWidget {
-  final ProductReview review;
-
-  const _ReviewCard({required this.review});
-
-  String _timeAgo(DateTime d) {
-    final diff = DateTime.now().difference(d);
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'Just now';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            CircleAvatar(
-              radius: R.r(context, 16),
-              backgroundImage: NetworkImage(review.userAvatarUrl),
-            ),
-            SizedBox(width: R.pad(context, 10)),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    review.userName,
-                    style: TextStyle(
-                      fontSize: R.sp(context, 14),
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF0F172A),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      ...List.generate(
-                        5,
-                        (index) => Icon(
-                          index < review.rating.round()
-                              ? Icons.star_rounded
-                              : Icons.star_outline_rounded,
-                          color: const Color(0xFFF5A623),
-                          size: R.icon(context, 14),
-                        ),
-                      ),
-                      SizedBox(width: R.pad(context, 8)),
-                      Text(
-                        _timeAgo(review.date),
-                        style: TextStyle(
-                          fontSize: R.sp(context, 11),
-                          color: const Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: R.pad(context, 10)),
-        Text(
-          review.comment,
-          style: TextStyle(
-            fontSize: R.sp(context, 13),
-            color: const Color(0xFF475569),
-            height: 1.5,
-          ),
-        ),
-      ],
-    );
-  }
-}

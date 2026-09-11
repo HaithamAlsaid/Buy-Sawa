@@ -80,13 +80,13 @@ class CartProvider extends ChangeNotifier {
   }
 
   // ─── إضافة منتج ──────────────────────────────────────────────
-  Future<void> add(ProductModel product, {String? variantId, String? groupId, String? referralCode}) async {
+  Future<void> add(ProductModel product, {String? variantId, ProductVariationModel? variation, String? groupId, String? referralCode}) async {
     // تحديث فوري في الـ UI
-    final idx = _items.indexWhere((i) => i.product.id == product.id);
+    final idx = _items.indexWhere((i) => i.product.id == product.id && i.variantId == variantId);
     if (idx >= 0) {
       _items[idx].quantity++;
     } else {
-      _items.add(CartItemModel(product: product));
+      _items.add(CartItemModel(product: product, variantId: variantId, variation: variation));
     }
     notifyListeners();
     _saveLocalCart();
@@ -102,11 +102,13 @@ class CartProvider extends ChangeNotifier {
       );
       // تحديث الـ ID لو جاء من السيرفر
       if (newId != null) {
-        final i = _items.indexWhere((e) => e.product.id == product.id);
+        final i = _items.indexWhere((e) => e.product.id == product.id && e.variantId == variantId);
         if (i >= 0 && _items[i].cartItemId == null) {
           _items[i] = CartItemModel(
             cartItemId: newId,
             product: _items[i].product,
+            variantId: _items[i].variantId,
+            variation: _items[i].variation,
             quantity: _items[i].quantity,
           );
         }
