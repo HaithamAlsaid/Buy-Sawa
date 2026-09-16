@@ -5,11 +5,17 @@ import '../../../providers/auth_provider.dart';
 import '../../../widgets/cached_image.dart';
 import '../../../screens/auth/login_screen.dart';
 import 'donation_bottom_sheet.dart';
+import '../../../core/services/donation_service.dart';
+import '../../../models/donor_model.dart';
 import 'package:provider/provider.dart';
+import '../foundation_detail_screen.dart';
 
-class CampaignDetailSheet extends StatelessWidget {
+class CampaignDetailSheet extends StatefulWidget {
   final DonationCampaignModel campaign;
   const CampaignDetailSheet({super.key, required this.campaign});
+
+  @override
+  State<CampaignDetailSheet> createState() => _CampaignDetailSheetState();
 
   static void show(BuildContext context, DonationCampaignModel campaign) {
     showModalBottomSheet(
@@ -19,11 +25,21 @@ class CampaignDetailSheet extends StatelessWidget {
       builder: (_) => CampaignDetailSheet(campaign: campaign),
     );
   }
+}
 
+class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
   static const _teal = Color(0xFF008982);
+  late Future<List<DonorModel>> _donorsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _donorsFuture = DonationService.getCampaignDonors(widget.campaign.slug);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final campaign = widget.campaign;
     final l = AppLocalizations.of(context);
     final screenH = MediaQuery.of(context).size.height;
     final progress = campaign.progressPercentage;
@@ -73,19 +89,39 @@ class CampaignDetailSheet extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: _teal.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          campaign.foundationName,
-                          style: const TextStyle(
-                            color: _teal,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
+                      GestureDetector(
+                        onTap: () async {
+                          // Show a brief loading indicator or just fetch silently
+                          // Since the list is small, it should be fast
+                          final foundations = await DonationService.getFoundations();
+                          final f = foundations.where((e) => e.name == campaign.foundationName).firstOrNull;
+                          if (f != null && context.mounted) {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => FoundationDetailScreen(foundation: f),
+                            ));
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: _teal.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                campaign.foundationName,
+                                style: const TextStyle(
+                                  color: _teal,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward_ios, size: 10, color: _teal),
+                            ],
                           ),
                         ),
                       ),
@@ -227,6 +263,75 @@ class CampaignDetailSheet extends StatelessWidget {
                     ),
                   ),
 
+                  const SizedBox(height: 24),
+
+                  // Recent Donors Feed (Mocked for now)
+                  Text(
+                    l.recentDonors,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F2D3A),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 60,
+                    child: FutureBuilder<List<DonorModel>>(
+                      future: _donorsFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator(color: _teal));
+                        }
+                        final donors = snapshot.data ?? [];
+                        if (donors.isEmpty) {
+                          return Center(
+                            child: Text(
+                              l.locale.languageCode == 'ar' ? 'كن أول المتبرعين!' : 'Be the first to donate!',
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        }
+                        return ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: donors.length,
+                          separatorBuilder: (context, index) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            final donor = donors[index];
+                            final name = donor.isAnonymous ? l.donateAnonymously.split(' (')[0] : donor.name;
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                border: Border.all(color: Colors.grey[200]!),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(donor.isAnonymous ? Icons.favorite_border_rounded : Icons.person_outline_rounded, size: 18, color: _teal),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        name,
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F2D3A)),
+                                      ),
+                                      Text(
+                                        l.donatedAmount(donor.amount.toInt().toString()),
+                                        style: const TextStyle(fontSize: 11, color: _teal, fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    ),
+                  ),
                   const SizedBox(height: 24),
                 ],
               ),

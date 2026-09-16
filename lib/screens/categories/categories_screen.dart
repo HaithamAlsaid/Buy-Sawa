@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../models/category_model.dart';
@@ -21,7 +22,28 @@ class CategoriesScreen extends StatelessWidget {
             future: ProductService.getCategories(),
             builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                      return Padding(
+                        padding: EdgeInsets.all(R.pad(context, 24)),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: GridView.builder(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              childAspectRatio: 0.70,
+                              crossAxisSpacing: R.pad(context, 16),
+                              mainAxisSpacing: R.pad(context, 24),
+                            ),
+                            itemCount: 8,
+                            itemBuilder: (_, __) => Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(R.r(context, 18)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
                     }
                     final categories = snapshot.data ?? [];
                     

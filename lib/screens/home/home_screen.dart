@@ -4,16 +4,17 @@ import 'package:buysawa/screens/categories/category_products_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/category_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/product_provider.dart';
-import '../../widgets/buysawa_logo.dart';
 import '../../widgets/product_card.dart';
 import '../notifications/notifications_screen.dart';
 import '../products/cart_screen.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/services/donation_service.dart';
+import 'donations_hub_screen.dart';
 import '../../models/donation_campaign_model.dart';
 import 'widgets/campaign_detail_sheet.dart';
 
@@ -99,8 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(top: 8.0, left: 4.0),
               child: Row(
                 children: [
-                  AppLogo(size: 40, borderRadius: 10),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: Container(
                       height: 42,
@@ -246,22 +245,85 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Hero Banner 
+                // Donations Header
                 const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).locale.languageCode == 'ar' ? 'التبرعات والحملات' : 'Donations & Campaigns',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const DonationsHubScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppLocalizations.of(context).seeAll,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Hero Banner 
+                const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: SizedBox(
                       height: 190, // slightly taller to fit all info
-                      child: _campaigns.isEmpty 
-                        ? const Center(child: CircularProgressIndicator())
-                        : PageView.builder(
-                          controller: _bannerCtrl,
-                          itemCount: _campaigns.length,
-                          onPageChanged: (i) => setState(() => _bannerIndex = i),
-                          itemBuilder: (_, i) =>
-                              _DonationBannerCard(campaign: _campaigns[i]),
+                      child: FutureBuilder<List<DonationCampaignModel>>(
+                        future: _campaignsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                height: 190,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            );
+                          }
+                          final campaigns = snapshot.data ?? [];
+                          if (campaigns.isEmpty) {
+                            return Center(
+                              child: Text(
+                                AppLocalizations.of(context).locale.languageCode == 'ar'
+                                    ? 'لا توجد حملات تبرع حالياً'
+                                    : 'No donation campaigns available',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            );
+                          }
+                          return PageView.builder(
+                            controller: _bannerCtrl,
+                            itemCount: campaigns.length,
+                            onPageChanged: (i) => setState(() => _bannerIndex = i),
+                            itemBuilder: (_, i) =>
+                                _DonationBannerCard(campaign: campaigns[i]),
+                          );
+                        }
                       ),
                     ),
                   ),
@@ -332,7 +394,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     future: _categoriesFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary));
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            itemCount: 5,
+                            itemBuilder: (_, __) => Container(
+                              width: 80,
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                          ),
+                        );
                       }
                       final categories = snapshot.data ?? [];
                       if (categories.isEmpty) {
@@ -402,10 +480,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: productProvider.isLoading && productProvider.trending.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(32.0),
-                            child: CircularProgressIndicator(color: AppColors.primary),
+                      ? Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 0.62,
+                            ),
+                            itemCount: 4,
+                            itemBuilder: (_, __) => Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
                           ),
                         )
                       : productProvider.trending.isEmpty

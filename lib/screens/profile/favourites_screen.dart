@@ -124,25 +124,43 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     return url;
   }
 
+  double _extractDeep(Map<String, dynamic> map, List<String> keys) {
+    double? foundVal;
+    void search(Map<String, dynamic> current) {
+      if (foundVal != null) return;
+      for (final key in keys) {
+        if (current.containsKey(key) && current[key] != null) {
+          final val = current[key];
+          if (val is num) foundVal = val.toDouble();
+          else if (val is String) {
+            final match = RegExp(r'\d+(\.\d+)?').firstMatch(val);
+            if (match != null) foundVal = double.tryParse(match.group(0)!);
+          }
+        }
+      }
+      if (foundVal != null) return;
+      for (var value in current.values) {
+        if (value is Map<String, dynamic>) search(value);
+      }
+    }
+    search(map);
+    return foundVal ?? 0.0;
+  }
+
   /// Safely extract price
   double _price(Map<String, dynamic> item) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
-    final raw = product?['price'] ?? item['price'];
-    return (raw as num?)?.toDouble() ?? 0.0;
+    return _extractDeep(item, ['price', 'product_price', 'item_price']);
   }
 
   /// Safely extract original price
   double? _originalPrice(Map<String, dynamic> item) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
-    final raw = product?['original_price'] ?? item['original_price'];
-    return (raw as num?)?.toDouble();
+    final val = _extractDeep(item, ['original_price', 'compare_price', 'old_price']);
+    return val > 0 ? val : null;
   }
 
   /// Safely extract rating
   double _rating(Map<String, dynamic> item) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
-    final raw = product?['rating'] ?? product?['average_rating'] ?? item['rating'];
-    return (raw as num?)?.toDouble() ?? 0.0;
+    return _extractDeep(item, ['rating', 'average_rating', 'product_rating']);
   }
 
   /// Build a ProductModel from the favourite map (best-effort)
@@ -152,6 +170,14 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     // Use the robust parsing from ProductService
     final parsed = ProductService.productFromApi(productMap);
     if (parsed != null) {
+      if (parsed.price == 0.0) {
+        return parsed.copyWith(
+          price: _price(item),
+          originalPrice: _originalPrice(item) ?? parsed.originalPrice,
+          rating: _rating(item) > 0 ? _rating(item) : parsed.rating,
+          imageUrl: _imageUrl(item).isNotEmpty ? _imageUrl(item) : parsed.imageUrl,
+        );
+      }
       return parsed;
     }
     

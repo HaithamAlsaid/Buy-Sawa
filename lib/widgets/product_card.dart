@@ -120,7 +120,7 @@ class ProductCard extends StatelessWidget {
                           color: AppColors.primary,
                         ),
                       ),
-                      if (product.originalPrice != null) ...[
+                      if (product.originalPrice != null && product.originalPrice! > product.price) ...[
                         SizedBox(width: R.pad(context, 6)),
                         Text(
                           '${product.originalPrice!.toInt()}',

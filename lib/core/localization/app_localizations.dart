@@ -181,6 +181,10 @@ class AppLocalizations {
   String get faq5q => _t('faq5q');
   String get faq6q => _t('faq6q');
 
+  String get donationNotes => _t('donationNotes');
+  String get recentDonors => _t('recentDonors');
+  String donatedAmount(String amount) => _t('donatedAmount').replaceAll('{amount}', amount);
+
 
   String get chooseLanguage => _t('chooseLanguage');
   String get languageSubtitle => _t('languageSubtitle');
@@ -460,7 +464,7 @@ class AppLocalizations {
       'accountTitle': 'ACCOUNT',
 
       'shareProductDesc': 'Share this product and get cashback on purchases!',
-      'startGroupBuyDesc': 'Start a Group Buy with friends for a bigger discount.',
+      'startGroupBuyDesc': 'Start a Group Buy with friends to get bigger cashback.',
       'newBadge': 'NEW',
       'hotBadge': 'HOT',
       'flashSale': 'Flash Sale',
@@ -468,6 +472,9 @@ class AppLocalizations {
       'cashbackBadge': 'CASHBACK',
       'earnCashback': 'Earn Cashback',
       'earnCashbackDesc': 'Get cashback on every group purchase',
+      'donationNotes': 'Notes (Optional)',
+      'recentDonors': 'Recent Donors',
+      'donatedAmount': 'Donated {amount} AED',
       'groupName': 'GROUP NAME',
       'addProductsBtn': 'Add Products +',
       'selectedProducts': 'SELECTED PRODUCTS',
@@ -692,7 +699,7 @@ class AppLocalizations {
       'target': 'الهدف',
       'accountTitle': 'الحساب',
       'shareProductDesc': 'شارك هذا المنتج واحصل على كاش باك عند الشراء!',
-      'startGroupBuyDesc': 'ابدأ شراء جماعي مع أصدقائك للحصول على خصم أكبر.',
+      'startGroupBuyDesc': 'ابدأ شراء جماعي مع أصدقائك للحصول على كاش باك أكبر.',
       'newBadge': 'جديد',
       'hotBadge': 'رائج',
       'flashSale': 'تخفيضات سريعة',
@@ -700,6 +707,9 @@ class AppLocalizations {
       'cashbackBadge': 'كاش باك',
       'earnCashback': 'اكسب كاش باك',
       'earnCashbackDesc': 'احصل على كاش باك على كل عملية شراء جماعية',
+      'donationNotes': 'رسالة أو ملاحظات (اختياري)',
+      'recentDonors': 'فاعلي الخير مؤخراً',
+      'donatedAmount': 'تبرع بمبلغ {amount} درهم',
       'groupName': 'اسم المجموعة',
       'addProductsBtn': 'إضافة منتجات +',
       'selectedProducts': 'المنتجات المحددة',

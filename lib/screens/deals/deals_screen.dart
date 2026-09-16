@@ -3,11 +3,10 @@ import 'package:buysawa/models/group_buy_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:dotted_border/dotted_border.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/group_buy_provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../widgets/auth_bottom_sheet.dart';
 import '../../core/localization/app_localizations.dart';
 import 'start_group_screen.dart';
 import 'active_group_screen.dart';
@@ -349,13 +348,54 @@ class _DealsScreenState extends State<DealsScreen> {
 
           // ── Filtered Groups List ────────────────────────────
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 100),
-              itemCount: displayedGroups.length,
-              itemBuilder: (context, index) {
-                return _buildGroupCard(displayedGroups[index]);
-              },
-            ),
+            child: groupProvider.isLoading && allGroups.isEmpty
+                ? Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: 4,
+                      itemBuilder: (_, __) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  )
+                : displayedGroups.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.groups_outlined,
+                              size: 64,
+                              color: Color(0xFFCBD5E1),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              AppLocalizations.of(context).locale.languageCode == 'ar'
+                                  ? 'لا توجد مجموعات حتى الآن'
+                                  : 'No groups found',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 100),
+                        itemCount: displayedGroups.length,
+                        itemBuilder: (context, index) {
+                          return _buildGroupCard(displayedGroups[index]);
+                        },
+                      ),
           ),
         ],
       ),

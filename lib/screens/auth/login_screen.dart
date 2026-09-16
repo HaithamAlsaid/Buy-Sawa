@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/group_buy_provider.dart';
 import 'register_screen.dart';
 import 'mfa_verify_screen.dart';
 
@@ -41,6 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (ok) {
+      if (mounted) {
+        context.read<GroupBuyProvider>().fetchGroups();
+      }
       Navigator.pop(context);
     } else {
       // Check if MFA is required

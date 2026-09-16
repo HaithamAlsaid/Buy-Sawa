@@ -4,30 +4,52 @@ import 'package:http/http.dart' as http;
 import '../models/group_buy_model.dart';
 import '../core/services/api_service.dart';
 import '../core/services/secure_storage_service.dart';
+import '../core/services/cache_service.dart';
 
 class GroupBuyProvider extends ChangeNotifier {
   List<GroupBuyModel> _groups = [];
   bool _isLoading = false;
 
+  GroupBuyProvider() {
+    loadCachedGroups();
+  }
+
   List<GroupBuyModel> get myGroups => _groups;
   List<GroupBuyModel> get activeGroups => _groups.where((g) => g.isActive).toList();
   bool get isLoading => _isLoading;
 
+  Future<void> loadCachedGroups() async {
+    try {
+      final cached = await CacheService.getCachedAllGroups();
+      if (cached != null && cached.isNotEmpty) {
+        _groups = cached.map((e) => GroupBuyModel.fromJson(e as Map<String, dynamic>)).toList();
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
   Future<void> fetchGroups() async {
     _isLoading = true;
     notifyListeners();
+
+    if (_groups.isEmpty) {
+      await loadCachedGroups();
+    }
 
     try {
       final token = await SecureStorageService.getToken();
       final res = await http.get(
         Uri.parse(ApiService.groupsEndpoint),
         headers: ApiService.headers(token: token),
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(const Duration(seconds: 8));
 
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
         _groups = rawList.map((e) => GroupBuyModel.fromJson(e as Map<String, dynamic>)).toList();
+        try {
+          await CacheService.saveAllGroups(rawList);
+        } catch (_) {}
       }
     } catch (_) {
       // Keep existing groups on error

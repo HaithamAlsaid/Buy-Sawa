@@ -1,5 +1,6 @@
 import 'package:buysawa/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/product_service.dart';
 import '../../core/utils/responsive.dart';
@@ -53,6 +54,68 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     super.dispose();
   }
 
+  Widget _buildShimmerLoading(BuildContext context) {
+    return ResponsiveWrapper(
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: R.pad(context, 20),
+            vertical: R.pad(context, 16),
+          ),
+          child: Column(
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: R.pad(context, 44),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(R.r(context, 22)),
+                  ),
+                ),
+              ),
+              SizedBox(height: R.pad(context, 16)),
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: R.pad(context, 120),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(R.r(context, 24)),
+                  ),
+                ),
+              ),
+              SizedBox(height: R.pad(context, 24)),
+              Expanded(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.65,
+                      crossAxisSpacing: R.pad(context, 16),
+                      mainAxisSpacing: R.pad(context, 16),
+                    ),
+                    itemCount: 4,
+                    itemBuilder: (_, __) => Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(R.r(context, 16)),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final products = _filtered;
@@ -60,7 +123,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? _buildShimmerLoading(context)
           : _hasError
               ? Center(
                   child: Column(

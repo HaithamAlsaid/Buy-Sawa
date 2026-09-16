@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../models/donation_campaign_model.dart';
+import '../../../core/services/donation_service.dart';
 import '../../../widgets/cached_image.dart';
+import '../donation_success_screen.dart';
 
 class DonationBottomSheet extends StatefulWidget {
   final DonationCampaignModel campaign;
@@ -19,6 +21,7 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
 
   String _selectedPaymentMethod = 'credit_card';
   bool _isAnonymous = false;
@@ -64,16 +67,38 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
     }
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
+    
+    final result = await DonationService.checkoutDonation(
+      campaignId: widget.campaign.id,
+      amount: _selectedAmount,
+      isAnonymous: _isAnonymous,
+      donorName: _nameController.text.trim(),
+      donorPhone: _phoneController.text.trim(),
+      donorEmail: _emailController.text.trim(),
+      notes: _notesController.text.trim(),
+    );
+
     setState(() => _isLoading = false);
 
     if (mounted) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(l.donationSuccess),
-            backgroundColor: Colors.green),
-      );
+      if (result['success'] == true) {
+        // Parse donation ID if returned from API
+        final data = result['data'];
+        final donationId = data['donation_id']?.toString() ?? data['id']?.toString() ?? 'DON-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+        
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => DonationSuccessScreen(
+              campaign: widget.campaign,
+              amount: _selectedAmount,
+              donationId: donationId,
+            ),
+          ),
+        );
+      } else {
+        final errorMsg = result['error'] ?? l.locale.languageCode == 'ar' ? 'فشلت عملية الدفع' : 'Payment failed';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMsg.toString())));
+      }
     }
   }
 
@@ -83,6 +108,7 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -416,6 +442,15 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
                       activeColor: _teal,
                     ),
                   ],
+                ),
+                const SizedBox(height: 12),
+
+                // Notes Field
+                _buildTextField(
+                  controller: _notesController,
+                  hint: l.donationNotes, // We will add this to localization
+                  icon: Icons.edit_note_rounded,
+                  keyboard: TextInputType.multiline,
                 ),
 
                 const Padding(

@@ -174,4 +174,13 @@ class ApiService {
   static const String mySharedLinksEndpoint = '$baseUrl/profile/referrals/shared-links';
   static String resolveLinkEndpoint(String token) => '$baseUrl/referrals/resolve/$token';
   static String shareProductEndpoint(dynamic id) => '$baseUrl/products/$id/share';
+
+  // ─── Donations ───────────────────────────────────────────────
+  static const String donationCampaignsEndpoint = '$baseUrl/donations/campaigns';
+  static String donationCampaignDetailEndpoint(String slug) => '$baseUrl/donations/campaigns/$slug';
+  static String donationCampaignDonorsEndpoint(String slug) => '$baseUrl/donations/campaigns/$slug/donors';
+  static const String donationFoundationsEndpoint = '$baseUrl/donations/foundations';
+  static const String donationCheckoutEndpoint = '$baseUrl/donations/checkout';
+  static String donationStatusEndpoint(dynamic id) => '$baseUrl/donations/$id/status';
+  static const String myDonationsEndpoint = '$baseUrl/profile/donations';
 }

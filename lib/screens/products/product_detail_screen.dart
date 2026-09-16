@@ -1,3 +1,4 @@
+import 'package:buysawa/core/services/product_service.dart';
 import 'package:buysawa/screens/deals/widgets/share_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,12 +50,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   ProductVariationModel? _selectedVariation;
   late final PageController _pageCtrl;
   int _currentImageIndex = 0;
+  ProductModel? _fullProduct;
 
   @override
   void initState() {
     super.initState();
     _pageCtrl = PageController();
     _checkIfFavourite();
+    _fetchFullDetails();
+  }
+
+  Future<void> _fetchFullDetails() async {
+    try {
+      final p = await ProductService.getProductById(widget.product.id);
+      if (mounted && p != null) {
+        setState(() {
+          _fullProduct = p;
+        });
+      }
+    } catch (_) {}
   }
 
   void _checkIfFavourite() async {
@@ -216,12 +230,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final product = widget.product;
+    final product = _fullProduct ?? widget.product;
     final specs = product.attributes;
     final l10n = AppLocalizations.of(context);
-    final discountPct = (_selectedVariation != null && _selectedVariation!.comparePrice != null)
+    final discountPct = (_selectedVariation != null && _selectedVariation!.comparePrice != null && _selectedVariation!.comparePrice! > _selectedVariation!.price)
         ? (((_selectedVariation!.comparePrice! - _selectedVariation!.price) / _selectedVariation!.comparePrice!) * 100).toInt()
-        : (product.originalPrice != null
+        : (product.originalPrice != null && product.originalPrice! > product.price
             ? (((product.originalPrice! - product.price) / product.originalPrice!) * 100).toInt()
             : 0);
 
@@ -763,7 +777,7 @@ class _PriceRow extends StatelessWidget {
             ),
           ),
         ),
-        if (displayOriginalPrice != null) ...[
+        if (displayOriginalPrice != null && displayOriginalPrice > displayPrice) ...[
           SizedBox(width: R.pad(context, 10)),
           Padding(
             padding: EdgeInsets.only(bottom: R.pad(context, 4)),

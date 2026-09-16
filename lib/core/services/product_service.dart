@@ -87,9 +87,6 @@ class ProductService {
         return productFromApi(data as Map<String, dynamic>);
       }
     } catch (_) {}
-
-    // Fallback to mock
-    try { return mockProducts.firstWhere((p) => p.id == id.toString()); } catch (_) {}
     return null;
   }
 

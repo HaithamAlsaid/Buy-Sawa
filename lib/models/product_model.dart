@@ -41,6 +41,50 @@ class ProductModel {
     this.variations = const [],
   });
 
+  ProductModel copyWith({
+    String? id,
+    String? name,
+    String? arabicName,
+    String? category,
+    double? price,
+    double? originalPrice,
+    double? rating,
+    int? reviewCount,
+    String? imageUrl,
+    List<String>? alternateImages,
+    String? description,
+    String? arabicDescription,
+    bool? hasGroupDeal,
+    int? groupDealDiscount,
+    double? shareEarnPercent,
+    List<ProductReview>? reviews,
+    Map<String, String>? attributes,
+    bool? isVariable,
+    List<ProductVariationModel>? variations,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      arabicName: arabicName ?? this.arabicName,
+      category: category ?? this.category,
+      price: price ?? this.price,
+      originalPrice: originalPrice ?? this.originalPrice,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
+      imageUrl: imageUrl ?? this.imageUrl,
+      alternateImages: alternateImages ?? this.alternateImages,
+      description: description ?? this.description,
+      arabicDescription: arabicDescription ?? this.arabicDescription,
+      hasGroupDeal: hasGroupDeal ?? this.hasGroupDeal,
+      groupDealDiscount: groupDealDiscount ?? this.groupDealDiscount,
+      shareEarnPercent: shareEarnPercent ?? this.shareEarnPercent,
+      reviews: reviews ?? this.reviews,
+      attributes: attributes ?? this.attributes,
+      isVariable: isVariable ?? this.isVariable,
+      variations: variations ?? this.variations,
+    );
+  }
+
   double get discount {
     if (originalPrice == null || originalPrice! <= price) return 0;
     return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
@@ -55,7 +99,7 @@ class ProductModel {
       final map = <String, String>{};
       for (var item in data) {
         if (item is Map) {
-          final key = item['name']?.toString() ?? item['key']?.toString();
+          final key = item['attribute_name']?.toString() ?? item['name']?.toString() ?? item['key']?.toString();
           final val = item['value']?.toString();
           if (key != null && val != null) {
             map[key] = val;
@@ -101,7 +145,7 @@ class ProductModel {
         reviews: (json['reviews'] as List<dynamic>?)
             ?.map((e) => ProductReview.fromJson(e as Map<String, dynamic>))
             .toList() ?? [],
-        attributes: _parseAttributes(json['attributes']),
+        attributes: _parseAttributes(json['attributes'] ?? json['specifications'] ?? json['options']),
         isVariable: parsedVariations.isNotEmpty || (json['type'] != null && (json['type'] is Map) && json['type']['value'] == 2),
         variations: parsedVariations,
       );

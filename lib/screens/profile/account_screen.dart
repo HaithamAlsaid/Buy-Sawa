@@ -16,6 +16,7 @@ import '../../core/localization/app_localizations.dart';
 import '../auth/change_password_screen.dart';
 import '../auth/mfa_setup_screen.dart';
 import 'profile_address_screen.dart';
+import '../donations/my_donations_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -495,6 +496,24 @@ class _LoggedInProfileView extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => const MyOrdersScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // My Donations
+                          _GuestMenuItem(
+                            icon: Icons.favorite_rounded,
+                            iconColor: AppColors.primary,
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar'
+                                ? 'تبرعاتي'
+                                : 'My Donations',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MyDonationsScreen(),
                                 ),
                               );
                             },

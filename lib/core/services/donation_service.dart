@@ -1,68 +1,142 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../models/donation_campaign_model.dart';
+import '../../models/foundation_model.dart';
+import '../../models/donor_model.dart';
+import '../../models/donation_record_model.dart';
+import 'api_service.dart';
+import 'secure_storage_service.dart';
 
 class DonationService {
-  // Mock function to return dummy data for UI testing
+  // ─── Campaigns ──────────────────────────────────────────
   static Future<List<DonationCampaignModel>> getActiveCampaigns() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      final res = await http
+          .get(Uri.parse(ApiService.donationCampaignsEndpoint), headers: ApiService.headers())
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+        final items = (decoded is List) ? decoded : (decoded['data'] as List? ?? []);
+        return items.map((e) => DonationCampaignModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print('Error getActiveCampaigns: $e');
+    }
+    return [];
+  }
 
-    // Return mock data
-    return [
-      DonationCampaignModel(
-        id: '1',
-        slug: 'ramadan-iftar',
-        title: 'إفطار صائم - رمضان 2026',
-        description: 'ساهم في توفير وجبات الإفطار للأسر المحتاجة خلال الشهر الكريم.',
-        targetAmount: 50000.0,
-        collectedAmount: 32500.0,
-        endDate: DateTime.now().add(const Duration(days: 14)),
-        foundationName: 'مؤسسة الهلال الأحمر',
-        imageUrl: 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&q=80&w=800&h=400',
-      ),
-      DonationCampaignModel(
-        id: '2',
-        slug: 'build-mosque',
-        title: 'بناء مسجد النور',
-        description: 'صدقة جارية لبناء بيت من بيوت الله وتجهيزه بالكامل.',
-        targetAmount: 120000.0,
-        collectedAmount: 11000.0,
-        endDate: DateTime.now().add(const Duration(days: 45)),
-        foundationName: 'جمعية الإحسان الخيرية',
-        imageUrl: 'https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&q=80&w=800&h=400',
-      ),
-      DonationCampaignModel(
-        id: '3',
-        slug: 'water-well',
-        title: 'حفر بئر مياه ارتوازي',
-        description: 'سقيا الماء هي أفضل الصدقات، ساهم في حفر بئر لتوفير مياه نقية لقرية كاملة.',
-        targetAmount: 15000.0,
-        collectedAmount: 14500.0,
-        endDate: DateTime.now().add(const Duration(days: 3)),
-        foundationName: 'مؤسسة سقيا الأمل',
-        imageUrl: 'https://images.unsplash.com/photo-1504221507732-5246c045949b?auto=format&fit=crop&q=80&w=800&h=400',
-      ),
-      DonationCampaignModel(
-        id: '4',
-        slug: 'orphan-sponsorship',
-        title: 'كفالة أيتام - سنابل الخير',
-        description: 'شاركنا في كفالة 50 يتيم وتوفير الرعاية الصحية والتعليمية لهم.',
-        targetAmount: 100000.0,
-        collectedAmount: 65000.0,
-        endDate: DateTime.now().add(const Duration(days: 20)),
-        foundationName: 'جمعية رسالة',
-        imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&q=80&w=800&h=400',
-      ),
-      DonationCampaignModel(
-        id: '5',
-        slug: 'medical-convoy',
-        title: 'قافلة طبية لعلاج العيون',
-        description: 'تجهيز قافلة طبية لعمل عمليات المياه البيضاء في القرى النائية.',
-        targetAmount: 80000.0,
-        collectedAmount: 12000.0,
-        endDate: DateTime.now().add(const Duration(days: 7)),
-        foundationName: 'مؤسسة مجدي يعقوب',
-        imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=800&h=400',
-      ),
-    ];
+  static Future<DonationCampaignModel?> getCampaignDetails(String slug) async {
+    try {
+      final res = await http.get(Uri.parse(ApiService.donationCampaignDetailEndpoint(slug)), headers: ApiService.headers());
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        return DonationCampaignModel.fromJson(data['data'] ?? data);
+      }
+    } catch (e) {
+      print('Error getCampaignDetails: $e');
+    }
+    return null;
+  }
+
+  static Future<List<DonorModel>> getCampaignDonors(String slug) async {
+    try {
+      final res = await http.get(Uri.parse(ApiService.donationCampaignDonorsEndpoint(slug)), headers: ApiService.headers());
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+        final items = (decoded is List) ? decoded : (decoded['data'] as List? ?? []);
+        return items.map((e) => DonorModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print('Error getCampaignDonors: $e');
+    }
+    return [];
+  }
+
+  // ─── Foundations ──────────────────────────────────────────
+  static Future<List<FoundationModel>> getFoundations() async {
+    try {
+      final res = await http
+          .get(Uri.parse(ApiService.donationFoundationsEndpoint), headers: ApiService.headers())
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+        final items = (decoded is List) ? decoded : (decoded['data'] as List? ?? []);
+        return items.map((e) => FoundationModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print('Error getFoundations: $e');
+    }
+    return [];
+  }
+
+  // ─── Checkout ─────────────────────────────────────────────
+  static Future<Map<String, dynamic>> checkoutDonation({
+    required String campaignId,
+    required double amount,
+    required bool isAnonymous,
+    String? donorName,
+    String? donorPhone,
+    String? donorEmail,
+    String? notes,
+  }) async {
+    try {
+      final token = await SecureStorageService.getToken();
+      final body = {
+        'campaign_id': campaignId,
+        'amount': amount,
+        'payment_gateway': 'paymob',
+        'is_anonymous': isAnonymous ? 1 : 0,
+        if (!isAnonymous && donorName != null && donorName.isNotEmpty) 'donor_name': donorName,
+        if (!isAnonymous && donorPhone != null && donorPhone.isNotEmpty) 'donor_phone': donorPhone,
+        if (!isAnonymous && donorEmail != null && donorEmail.isNotEmpty) 'donor_email': donorEmail,
+        if (notes != null && notes.isNotEmpty) 'notes': notes,
+      };
+
+      final res = await http.post(
+        Uri.parse(ApiService.donationCheckoutEndpoint),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode(body),
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return {'success': true, 'data': jsonDecode(res.body)};
+      } else {
+        return {'success': false, 'error': jsonDecode(res.body)['message'] ?? 'Checkout failed'};
+      }
+    } catch (e) {
+      print('Error checkoutDonation: $e');
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  // ─── Status ─────────────────────────────────────────────
+  static Future<Map<String, dynamic>?> getDonationStatus(dynamic id) async {
+    try {
+      final res = await http.get(Uri.parse(ApiService.donationStatusEndpoint(id)), headers: ApiService.headers());
+      if (res.statusCode == 200) {
+        return jsonDecode(res.body);
+      }
+    } catch (e) {
+      print('Error getDonationStatus: $e');
+    }
+    return null;
+  }
+
+  // ─── Profile Donations ───────────────────────────────────
+  static Future<List<DonationRecordModel>> getMyDonations() async {
+    try {
+      final token = await SecureStorageService.getToken();
+      if (token == null) return [];
+      
+      final res = await http.get(Uri.parse(ApiService.myDonationsEndpoint), headers: ApiService.headers(token: token));
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+        final items = (decoded is List) ? decoded : (decoded['data'] as List? ?? []);
+        return items.map((e) => DonationRecordModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print('Error getMyDonations: $e');
+    }
+    return [];
   }
 }
