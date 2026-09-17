@@ -1,3 +1,4 @@
+import 'dart:ui' as dart_ui;
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/localization/app_localizations.dart';
@@ -127,11 +128,16 @@ class _DonationsHubScreenState extends State<DonationsHubScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                foundation.name,
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : _dark,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 160),
+                                child: Text(
+                                  foundation.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: isSelected ? Colors.white : _dark,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ],
@@ -266,8 +272,8 @@ class _DonationsHubScreenState extends State<DonationsHubScreen> {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                  child: Image.network(
-                    campaign.imageUrl,
+                  child: CachedImage(
+                    imageUrl: campaign.imageUrl,
                     height: 180,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -304,18 +310,39 @@ class _DonationsHubScreenState extends State<DonationsHubScreen> {
                 Positioned(
                   bottom: 12,
                   right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _teal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      campaign.foundationName,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: _teal,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: dart_ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 0.5),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.verified_user_rounded, color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 200),
+                                child: Text(
+                                  campaign.foundationName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -89,42 +89,49 @@ class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () async {
-                          // Show a brief loading indicator or just fetch silently
-                          // Since the list is small, it should be fast
-                          final foundations = await DonationService.getFoundations();
-                          final f = foundations.where((e) => e.name == campaign.foundationName).firstOrNull;
-                          if (f != null && context.mounted) {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (_) => FoundationDetailScreen(foundation: f),
-                            ));
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: _teal.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                campaign.foundationName,
-                                style: const TextStyle(
-                                  color: _teal,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: GestureDetector(
+                          onTap: () async {
+                            // Show a brief loading indicator or just fetch silently
+                            // Since the list is small, it should be fast
+                            final foundations = await DonationService.getFoundations();
+                            final f = foundations.where((e) => e.name == campaign.foundationName).firstOrNull;
+                            if (f != null && context.mounted) {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (_) => FoundationDetailScreen(foundation: f),
+                              ));
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: _teal.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    campaign.foundationName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: _teal,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.arrow_forward_ios, size: 10, color: _teal),
-                            ],
+                                const SizedBox(width: 4),
+                                const Icon(Icons.arrow_forward_ios, size: 10, color: _teal),
+                              ],
+                            ),
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       if (campaign.remainingDays != null)
                         Row(
                           children: [
@@ -196,7 +203,7 @@ class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
                             // Remaining
                             Expanded(
                               child: _StatBox(
-                                label: 'المتبقي',
+                                label: l.locale.languageCode == 'ar' ? 'المتبقي' : 'Remaining',
                                 value:
                                     '${remaining.toInt()} ${l.aed}',
                                 color: Colors.orange,
@@ -228,7 +235,7 @@ class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
                                   MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${(progress * 100).toInt()}% مكتملة',
+                                  '${(progress * 100).toInt()}% ${l.locale.languageCode == 'ar' ? 'مكتملة' : 'Completed'}',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,

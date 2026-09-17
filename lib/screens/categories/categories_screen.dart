@@ -6,6 +6,7 @@ import '../../core/utils/responsive.dart';
 import '../../models/category_model.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/services/product_service.dart';
+import '../../widgets/cached_image.dart';
 import 'category_products_screen.dart';
 
 class CategoriesScreen extends StatelessWidget {
@@ -167,17 +168,25 @@ class _CategoryGridItem extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(R.r(context, 18)),
                 child: category.imagePath != null
-                    ? Image.asset(
-                        category.imagePath!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            category.icon,
-                            color: category.iconColor,
-                            size: R.icon(context, 30),
-                          ),
-                        ),
-                      )
+                    ? (category.imagePath!.startsWith('http')
+                        ? CachedImage(
+                            imageUrl: category.imagePath!,
+                            fit: BoxFit.cover,
+                            errorWidget: Center(
+                              child: Icon(category.icon, color: category.iconColor, size: R.icon(context, 30)),
+                            ),
+                          )
+                        : Image.asset(
+                            category.imagePath!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Center(
+                              child: Icon(
+                                category.icon,
+                                color: category.iconColor,
+                                size: R.icon(context, 30),
+                              ),
+                            ),
+                          ))
                     : Center(
                         child: Icon(
                           category.icon,

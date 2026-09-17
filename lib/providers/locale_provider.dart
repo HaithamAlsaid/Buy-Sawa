@@ -11,7 +11,9 @@ class LocaleProvider extends ChangeNotifier {
   final SharedPreferences _prefs;
 
   LocaleProvider(this._prefs)
-    : _locale = Locale(_prefs.getString(_key) ?? 'en');
+      : _locale = Locale(_prefs.getString(_key) ?? 'en') {
+    ApiService.currentLocale = _locale.languageCode;
+  }
 
   Locale get locale => _locale;
   String get languageCode => _locale.languageCode;
@@ -21,6 +23,7 @@ class LocaleProvider extends ChangeNotifier {
     _locale = Locale(code);
     _prefs.setString(_key, code);
     _prefs.setBool('launched', true);
+    ApiService.currentLocale = code;
     notifyListeners();
     _syncLocaleWithServer(code);
   }

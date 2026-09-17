@@ -150,11 +150,14 @@ class ApiService {
   static const String langCurrentEndpoint = '$baseUrl/lang/current';
   static const String langSwitchEndpoint = '$baseUrl/lang/switch';
 
+  static String currentLocale = 'en';
+
   // ─── Headers Helper 
   static Map<String, String> headers({String? token}) {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Accept-Language': currentLocale,
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }

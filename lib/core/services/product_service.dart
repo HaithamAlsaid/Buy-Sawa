@@ -98,7 +98,7 @@ class ProductService {
       final res = await http.get(
         Uri.parse(ApiService.categoryProductsEndpoint(categoryId)),
         headers: ApiService.headers(token: token),
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(const Duration(seconds: 5));
 
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
@@ -126,13 +126,14 @@ class ProductService {
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
-        return rawList
+        final list = rawList
             .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
             .toList();
+        if (list.isNotEmpty) return list;
       }
     } catch (_) {}
 
-    return []; // No mock — show real empty state
+    return mockCategories;
   }
 
   // ─── Map API product response to ProductModel ────────────────

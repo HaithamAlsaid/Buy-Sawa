@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/group_buy_provider.dart';
 import '../../widgets/bottom_nav_bar.dart';
 import '../../widgets/auth_bottom_sheet.dart';
 import '../home/home_screen.dart';
@@ -34,10 +35,16 @@ class _MainScreenState extends State<MainScreen> {
       await AuthBottomSheet.show(context);
       if (!mounted) return;
       if (!context.read<AuthProvider>().isGuest) {
+        if (index == 2) context.read<GroupBuyProvider>().fetchGroups();
         setState(() => _currentIndex = index);
       }
       return;
     }
+    
+    if (index == 2) {
+      context.read<GroupBuyProvider>().fetchGroups();
+    }
+    
     setState(() => _currentIndex = index);
   }
 
