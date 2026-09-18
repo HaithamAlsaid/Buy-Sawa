@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:buysawa/core/services/product_service.dart';
+import 'package:http/http.dart' as http;
+import '../../core/services/api_service.dart';
+import '../../core/services/secure_storage_service.dart' as ss;
 import 'package:buysawa/screens/deals/widgets/share_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +19,7 @@ import '../../providers/group_buy_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
 import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
-import '../../core/services/secure_storage_service.dart';
+import '../../core/services/secure_storage_service.dart' as secure_storage;
 import '../../core/services/favourite_service.dart';
 import '../../core/services/referral_service.dart';
 import '../../widgets/cached_image.dart';
@@ -62,10 +66,37 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Future<void> _fetchFullDetails() async {
     try {
-      final p = await ProductService.getProductById(widget.product.id);
-      if (mounted && p != null) {
+      // Fetch product details and variations in parallel
+      final token = await ss.SecureStorageService.getToken();
+      final results = await Future.wait([
+        ProductService.getProductById(widget.product.id),
+        http.get(
+          Uri.parse(ApiService.productVariationsEndpoint(widget.product.id)),
+          headers: ApiService.headers(token: token),
+        ).timeout(const Duration(seconds: 10)),
+      ]);
+
+      if (!mounted) return;
+
+      final p = results[0] as ProductModel?;
+      final variationsRes = results[1] as http.Response;
+
+      List<ProductVariationModel> fetchedVariations = [];
+      if (variationsRes.statusCode == 200) {
+        final body = jsonDecode(variationsRes.body);
+        final rawList = body['data'] is List
+            ? body['data'] as List
+            : (body is List ? body : []);
+        fetchedVariations = rawList
+            .map((e) => ProductVariationModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      if (p != null) {
         setState(() {
-          _fullProduct = p;
+          _fullProduct = fetchedVariations.isNotEmpty
+              ? p.copyWith(variations: fetchedVariations, isVariable: true)
+              : p;
         });
       }
     } catch (_) {}
@@ -186,7 +217,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (_isSharing) return;
     setState(() => _isSharing = true);
 
-    final token = await SecureStorageService.getToken();
+    final token = await secure_storage.SecureStorageService.getToken();
     final service = ReferralService();
     final tokenOrUrl = await service.shareProduct(
       widget.product.id,
@@ -420,28 +451,93 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         SizedBox(height: R.pad(context, 24)),
 
-                        // Specifications
-                        if (specs != null && specs.isNotEmpty) ...[
+                        // Specifications + Product Type
+                        if (specs != null && specs.isNotEmpty || true) ...[ // always show type
                           _SectionTitle(title: l10n.specifications),
                           SizedBox(height: R.pad(context, 10)),
-                          _SpecsTable(
-                            specs: specs,
-                          ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.15),
 
-                          // View all specs
-                          if (!_specsExpanded) ...[
-                            SizedBox(height: R.pad(context, 8)),
-                            GestureDetector(
-                              onTap: () => setState(() => _specsExpanded = true),
-                              child: Text(
-                                l10n.viewAllSpecs,
-                                style: TextStyle(
-                                  fontSize: R.sp(context, 12),
-                                  color: _teal,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                          //Product Type Badge
+                          Container(
+                            padding: EdgeInsets.all(R.pad(context, 14)),
+                            margin: EdgeInsets.only(bottom: R.pad(context, 8)),
+                            decoration: BoxDecoration(
+                              color: product.isVariable
+                                  ? const Color(0xFFF0F4FF)
+                                  : const Color(0xFFF0FDF4),
+                              borderRadius: BorderRadius.circular(R.r(context, 10)),
+                              border: Border.all(
+                                color: product.isVariable
+                                    ? const Color(0xFFBFD0FF)
+                                    : const Color(0xFFBBF7D0),
                               ),
                             ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  product.isVariable
+                                      ? Icons.tune_rounded
+                                      : Icons.inventory_2_outlined,
+                                  size: R.icon(context, 18),
+                                  color: product.isVariable
+                                      ? const Color(0xFF3B5FDD)
+                                      : const Color(0xFF16A34A),
+                                ),
+                                SizedBox(width: R.pad(context, 10)),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                          ? 'نوع المنتج'
+                                          : 'Product Type',
+                                      style: TextStyle(
+                                        fontSize: R.sp(context, 11),
+                                        color: const Color(0xFF94A3B8),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      product.isVariable
+                                          ? (AppLocalizations.of(context).locale.languageCode == 'ar'
+                                              ? 'متعدد الخيارات'
+                                              : 'Variable Product')
+                                          : (AppLocalizations.of(context).locale.languageCode == 'ar'
+                                              ? 'منتج بسيط'
+                                              : 'Simple Product'),
+                                      style: TextStyle(
+                                        fontSize: R.sp(context, 13),
+                                        fontWeight: FontWeight.w800,
+                                        color: product.isVariable
+                                            ? const Color(0xFF3B5FDD)
+                                            : const Color(0xFF16A34A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ).animate().fadeIn(delay: 290.ms).slideY(begin: 0.15),
+
+                          if (specs != null && specs.isNotEmpty) ...[ 
+                            _SpecsTable(
+                              specs: specs,
+                            ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.15),
+
+                            // View all specs
+                            if (!_specsExpanded) ...[
+                              SizedBox(height: R.pad(context, 8)),
+                              GestureDetector(
+                                onTap: () => setState(() => _specsExpanded = true),
+                                child: Text(
+                                  l10n.viewAllSpecs,
+                                  style: TextStyle(
+                                    fontSize: R.sp(context, 12),
+                                    color: _teal,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                           SizedBox(height: R.pad(context, 24)),
                         ],
@@ -505,12 +601,32 @@ class _HeroSectionState extends State<_HeroSection> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  // Color filters to tint the SAME product image
-  final List<Color?> _colorFilters = [
-    null, // Original (White/Light)
-    Colors.black.withValues(alpha: 0.65), // Black tint
-    Colors.grey.shade700.withValues(alpha: 0.65), // Gray tint
-  ];
+  List<String> get _images {
+    // If a variation has its own image, show it first
+    final variationImg = widget.variation?.imageUrl?.trim();
+    final mainImg = widget.product.imageUrl.trim();
+    final alternates = widget.product.alternateImages ?? [];
+
+    final List<String> all = [];
+    if (variationImg != null && variationImg.isNotEmpty) {
+      all.add(variationImg);
+    } else if (mainImg.isNotEmpty) {
+      all.add(mainImg);
+    }
+    for (final img in alternates) {
+      final trimmed = img.trim();
+      if (trimmed.isNotEmpty && !all.contains(trimmed)) {
+        all.add(trimmed);
+      }
+    }
+    return all.isEmpty ? [''] : all;
+  }
+
+  String _resolveUrl(String url) {
+    if (url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    return 'https://buysawa.com${url.startsWith('/') ? '' : '/'}$url';
+  }
 
   @override
   void dispose() {
@@ -518,157 +634,179 @@ class _HeroSectionState extends State<_HeroSection> {
     super.dispose();
   }
 
-  void _nextPage() {
-    if (_currentIndex < _colorFilters.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _prevPage() {
-    if (_currentIndex > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final images = _images;
     return SafeArea(
-      child: Stack(
+      child: Column(
         children: [
-          // Image Carousel
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _currentIndex = index),
-            itemCount: _colorFilters.length,
-            itemBuilder: (context, index) {
-              final filter = _colorFilters[index];
-              final String imageUrl = widget.variation?.imageUrl?.trim().isNotEmpty == true 
-                  ? widget.variation!.imageUrl!.trim() 
-                  : widget.product.imageUrl.trim();
-                  
-              final Widget imageWidget = imageUrl.isEmpty
-                  ? Icon(
-                      Icons.image_outlined,
-                      size: R.icon(context, 80),
-                      color: const Color(0xFF94A3B8),
-                    )
-                  : CachedImage(
-                      imageUrl: imageUrl.startsWith('http')
-                          ? imageUrl
-                          : 'https://buysawa.com${imageUrl.startsWith('/') ? '' : '/'}$imageUrl',
-                      fit: BoxFit.contain,
-                      width: double.infinity,
-                      height: double.infinity,
-                    );
-
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    R.pad(context, 40),
-                    R.pad(context, 16),
-                    R.pad(context, 40),
-                    R.pad(context, 40),
-                  ),
-                  child: index == 0
-                      ? Hero(
-                          tag: 'product_${widget.product.id}',
-                          child: imageWidget,
-                        )
-                      : imageWidget,
-                ),
-              );
-            },
-          ),
-
-          // Left Arrow
-          if (_currentIndex > 0)
-            Positioned(
-              left: R.pad(context, 16),
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: _CircleBtn(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  onTap: _prevPage,
-                ),
-              ),
-            ),
-
-          // Right Arrow
-          if (_currentIndex < _colorFilters.length - 1)
-            Positioned(
-              right: R.pad(context, 16),
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: _CircleBtn(
-                  icon: Icons.arrow_forward_ios_rounded,
-                  onTap: _nextPage,
-                ),
-              ),
-            ),
-
-          // Back button
-          Positioned(
-            top: R.pad(context, 12),
-            left: R.pad(context, 16),
-            child: _CircleBtn(
-              icon: Icons.arrow_back_ios_new_rounded,
-              onTap: widget.onBack,
-            ),
-          ),
-
-          // Wishlist + share
-          Positioned(
-            top: R.pad(context, 12),
-            right: R.pad(context, 16),
-            child: Row(
+          // Main Large Image 
+          Expanded(
+            child: Stack(
               children: [
-                _CircleBtn(
-                  icon: widget.isWishlisted
-                      ? Icons.favorite_rounded
-                      : Icons.favorite_border_rounded,
-                  color: widget.isWishlisted ? Colors.red : null,
-                  onTap: widget.onWishlist,
+                PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) => setState(() => _currentIndex = index),
+                  itemCount: images.length,
+                  itemBuilder: (context, index) {
+                    final url = _resolveUrl(images[index]);
+                    final Widget imageWidget = url.isEmpty
+                        ? Icon(
+                            Icons.image_outlined,
+                            size: R.icon(context, 80),
+                            color: const Color(0xFF94A3B8),
+                          )
+                        : CachedImage(
+                            imageUrl: url,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            height: double.infinity,
+                          );
+
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          R.pad(context, 40),
+                          R.pad(context, 16),
+                          R.pad(context, 40),
+                          R.pad(context, 8),
+                        ),
+                        child: index == 0
+                            ? Hero(
+                                tag: 'product_${widget.product.id}',
+                                child: imageWidget,
+                              )
+                            : imageWidget,
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(width: R.pad(context, 8)),
-                _CircleBtn(icon: Icons.share_outlined, onTap: widget.onShare),
+
+                // Left Arrow
+                if (_currentIndex > 0)
+                  Positioned(
+                    left: R.pad(context, 8),
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: _CircleBtn(
+                        icon: Icons.arrow_back_ios_new_rounded,
+                        onTap: () => _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Right Arrow
+                if (_currentIndex < images.length - 1)
+                  Positioned(
+                    right: R.pad(context, 8),
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: _CircleBtn(
+                        icon: Icons.arrow_forward_ios_rounded,
+                        onTap: () => _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // Back button
+                Positioned(
+                  top: R.pad(context, 12),
+                  left: R.pad(context, 16),
+                  child: _CircleBtn(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    onTap: widget.onBack,
+                  ),
+                ),
+
+                // Wishlist + share
+                Positioned(
+                  top: R.pad(context, 12),
+                  right: R.pad(context, 16),
+                  child: Row(
+                    children: [
+                      _CircleBtn(
+                        icon: widget.isWishlisted
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: widget.isWishlisted ? Colors.red : null,
+                        onTap: widget.onWishlist,
+                      ),
+                      SizedBox(width: R.pad(context, 8)),
+                      _CircleBtn(icon: Icons.share_outlined, onTap: widget.onShare),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
 
-          // Page Indicators
-          Positioned(
-            bottom: R.pad(context, 10),
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _colorFilters.length,
-                (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: EdgeInsets.symmetric(horizontal: R.pad(context, 4)),
-                  height: R.pad(context, 6),
-                  width: _currentIndex == index
-                      ? R.pad(context, 20)
-                      : R.pad(context, 6),
-                  decoration: BoxDecoration(
-                    color: _currentIndex == index
-                        ? AppColors.primary
-                        : const Color(0xFFCBD5E1),
-                    borderRadius: BorderRadius.circular(R.r(context, 3)),
-                  ),
-                ),
+          // ── Thumbnails Strip (like website) ────────────────────
+          if (images.length > 1)
+            Container(
+              height: R.pad(context, 72),
+              padding: EdgeInsets.symmetric(
+                horizontal: R.pad(context, 12),
+                vertical: R.pad(context, 8),
+              ),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: images.length,
+                separatorBuilder: (_, __) => SizedBox(width: R.pad(context, 8)),
+                itemBuilder: (context, index) {
+                  final url = _resolveUrl(images[index]);
+                  final isSelected = _currentIndex == index;
+                  return GestureDetector(
+                    onTap: () {
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: R.pad(context, 56),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(R.r(context, 10)),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primary
+                              : const Color(0xFFE2E8F0),
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(alpha: 0.2),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(R.r(context, 9)),
+                        child: url.isEmpty
+                            ? const Icon(Icons.image_outlined, color: Colors.grey)
+                            : CachedImage(
+                                imageUrl: url,
+                                fit: BoxFit.contain,
+                              ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
         ],
       ),
     );

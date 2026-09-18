@@ -33,6 +33,7 @@ class ApiService {
   // ─── Profile
   static const String profileEndpoint = '$baseUrl/profile/details';
   static const String avatarEndpoint = '$baseUrl/profile/details/avatar';
+  static const String myMonthlySubscriptionEndpoint = '$baseUrl/profile/monthly-subscription';
 
   // ─── Notifications
   static const String notificationsEndpoint = '$baseUrl/profile/notifications';

@@ -182,6 +182,64 @@ class ProductService {
       final description = json['description'] ?? '';
       final arabicDescription = json['arabic_description'] ?? json['description_ar'] ?? description;
 
+      // ─── Alternate Images (Gallery) ──────────────────────────
+      List<String>? alternateImages;
+      // Try multiple field names that APIs commonly use
+      final rawGallery = json['alternate_images']
+          ?? json['gallery']
+          ?? json['images']
+          ?? json['gallery_images']
+          ?? json['media'];
+
+      if (rawGallery is List && rawGallery.isNotEmpty) {
+        final List<String> imgs = [];
+        for (final item in rawGallery) {
+          String? imgUrl;
+          if (item is String) {
+            imgUrl = item.trim();
+          } else if (item is Map) {
+            // Could be { url: '...' } or { original_url: '...' } or { path: '...' }
+            imgUrl = (item['url'] ?? item['original_url'] ?? item['path'] ?? item['src'])?.toString().trim();
+          }
+          if (imgUrl != null && imgUrl.isNotEmpty && imgUrl != imageUrl) {
+            if (!imgUrl.startsWith('http')) {
+              imgUrl = 'https://buysawa.com${imgUrl.startsWith('/') ? '' : '/'}$imgUrl';
+            }
+            imgs.add(imgUrl);
+          }
+        }
+        if (imgs.isNotEmpty) alternateImages = imgs;
+      }
+
+      // ─── Attributes ─────────────────────────────────────────
+      Map<String, String>? attributes;
+      final rawAttrs = json['attributes'] ?? json['specifications'] ?? json['options'];
+      if (rawAttrs is List && (rawAttrs).isNotEmpty) {
+        final map = <String, String>{};
+        for (var item in rawAttrs) {
+          if (item is Map) {
+            final key = item['attribute_name']?.toString()
+                ?? item['name']?.toString()
+                ?? item['key']?.toString();
+            final val = item['value']?.toString()
+                ?? item['attribute_value']?.toString();
+            if (key != null && val != null && key.isNotEmpty && val.isNotEmpty) {
+              map[key] = val;
+            }
+          }
+        }
+        if (map.isNotEmpty) attributes = map;
+      } else if (rawAttrs is Map) {
+        attributes = rawAttrs.map((k, v) => MapEntry(k.toString(), v.toString()));
+        if (attributes.isEmpty) attributes = null;
+      }
+
+      // ─── Variations ──────────────────────────────────────────
+      final rawVariations = json['variations'] as List<dynamic>?;
+      final variations = rawVariations
+          ?.map((e) => ProductVariationModel.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+
       return ProductModel(
         id: id,
         name: name.toString(),
@@ -192,11 +250,15 @@ class ProductService {
         rating: rating,
         reviewCount: reviewCount is int ? reviewCount : int.tryParse(reviewCount.toString()) ?? 0,
         imageUrl: imageUrl.toString(),
+        alternateImages: alternateImages,
         description: description.toString(),
         arabicDescription: arabicDescription.toString(),
         hasGroupDeal: json['has_group_deal'] == true,
         groupDealDiscount: json['group_deal_discount'] as int?,
         shareEarnPercent: double.tryParse(json['share_earn_percent']?.toString() ?? ''),
+        attributes: attributes,
+        isVariable: variations.isNotEmpty || (json['type'] is Map && json['type']['value'] == 2),
+        variations: variations,
       );
     } catch (e) {
       return null;

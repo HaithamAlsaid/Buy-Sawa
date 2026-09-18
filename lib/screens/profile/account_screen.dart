@@ -17,6 +17,7 @@ import '../auth/change_password_screen.dart';
 import '../auth/mfa_setup_screen.dart';
 import 'profile_address_screen.dart';
 import '../donations/my_donations_screen.dart';
+import '../../core/services/plan_service.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -433,6 +434,8 @@ class _LoggedInProfileView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _ActiveSubscriptionCard(),
+                    
                     Padding(
                       padding: EdgeInsets.only(
                         left: R.pad(context, 8),
@@ -769,3 +772,117 @@ class _LoggedInProfileView extends StatelessWidget {
     );
   }
 }
+
+class _ActiveSubscriptionCard extends StatefulWidget {
+  const _ActiveSubscriptionCard();
+
+  @override
+  State<_ActiveSubscriptionCard> createState() => _ActiveSubscriptionCardState();
+}
+
+class _ActiveSubscriptionCardState extends State<_ActiveSubscriptionCard> {
+  Map<String, dynamic>? _subscription;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSubscription();
+  }
+
+  Future<void> _fetchSubscription() async {
+    final sub = await PlanService.getMySubscription();
+    if (mounted) {
+      setState(() {
+        _subscription = sub;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: R.pad(context, 24)),
+        child: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      );
+    }
+    
+    if (_subscription == null || (_subscription is Map && _subscription!.isEmpty)) {
+      return const SizedBox.shrink();
+    }
+
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+    // Handle either nested 'plan' object or direct keys
+    final planObj = _subscription!['plan'] ?? _subscription;
+    final planName = planObj != null ? planObj['name'] ?? 'VIP Plan' : 'VIP Plan';
+    final status = _subscription!['status'] ?? '';
+    
+    return Container(
+      margin: EdgeInsets.only(bottom: R.pad(context, 24)),
+      padding: EdgeInsets.all(R.pad(context, 20)),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F2D3A), AppColors.primary],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(R.r(context, 24)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.25),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
+          ),
+          SizedBox(width: R.pad(context, 16)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isAr ? 'باقتك الحالية' : 'Current Plan',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    fontSize: R.sp(context, 12),
+                  ),
+                ),
+                SizedBox(height: R.pad(context, 4)),
+                Text(
+                  planName,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: R.sp(context, 18),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (status.isNotEmpty)
+                  Text(
+                    status.toString().toUpperCase(),
+                    style: TextStyle(
+                      color: status.toString().toLowerCase() == 'active' ? Colors.greenAccent : Colors.orangeAccent,
+                      fontSize: R.sp(context, 12),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
