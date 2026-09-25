@@ -31,19 +31,10 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
     final List<Map<String, dynamic>> paymentMethods = [
       {
         'name': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'رصيد المحفظة' : 'Wallet Balance',
-        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'خصم فوري' : 'Instant deduction',
+        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'خصم فوري من رصيد محفظتك' : 'Instant deduction from your wallet',
         'logo': null,
         'color': AppColors.primary,
         'icon': Icons.account_balance_wallet_rounded,
-        'url': null,
-        'tag': null,
-      },
-      {
-        'name': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الدفع عند الاستلام' : 'Cash on Delivery',
-        'subtitle': AppLocalizations.of(context).locale.languageCode == 'ar' ? 'الدفع عند الاستلام' : 'Pay when received',
-        'logo': null,
-        'color': const Color(0xFF1D1D1D),
-        'icon': Icons.local_shipping_rounded,
         'url': null,
         'tag': null,
       },

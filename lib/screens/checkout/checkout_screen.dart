@@ -43,6 +43,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   // Payment Method
   String _selectedPaymentMethod = 'wallet'; // wallet, cod, card
+  double? _walletBalance;
+  bool _isLoadingWallet = true;
+  bool _insufficientFunds = false;
 
   @override
   void initState() {
@@ -66,10 +69,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     List<Map<String, dynamic>> list = [];
     
     try {
-      // Fetch countries and addresses in parallel for speed safely
+      // Fetch countries, addresses and wallet in parallel
       await Future.wait([
         CountryService.getCountries().then((v) => list = v),
         if (provider.addresses.isEmpty) provider.fetchAddresses(),
+        WalletService.getWallet().then((w) {
+          if (mounted && w != null) {
+            setState(() {
+              _walletBalance = w.balance;
+              _isLoadingWallet = false;
+            });
+          } else if (mounted) {
+            setState(() => _isLoadingWallet = false);
+          }
+        }),
       ]);
     } catch (e) {
       debugPrint('Checkout fetchData error: $e');
@@ -144,7 +157,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _insufficientFunds = false;
+    });
+
+    // Check wallet balance before proceeding
+    if (_selectedPaymentMethod == 'wallet') {
+      final cart = context.read<CartProvider>();
+      final orderTotal = cart.subtotal + 25.0;
+      if (_walletBalance != null && _walletBalance! < orderTotal) {
+        setState(() {
+          _isSubmitting = false;
+          _insufficientFunds = true;
+        });
+        return;
+      }
+    }
 
     try {
       String finalPaymentMethod = _selectedPaymentMethod;
@@ -660,18 +689,104 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               _buildPaymentOption(
                 id: 'wallet',
                 title: isAr ? 'رصيد المحفظة' : 'Wallet Balance',
-                subtitle: isAr ? 'خصم فوري' : 'Instant deduction',
+                subtitle: _isLoadingWallet
+                    ? (isAr ? 'جاري التحميل...' : 'Loading...')
+                    : (_walletBalance != null
+                        ? (isAr
+                            ? 'رصيدك: ${_walletBalance!.toStringAsFixed(2)} د.إ'
+                            : 'Balance: ${_walletBalance!.toStringAsFixed(2)} AED')
+                        : (isAr ? 'خصم فوري' : 'Instant deduction')),
                 icon: Icons.account_balance_wallet_rounded,
                 isAr: isAr,
               ),
-              const Divider(height: 30, color: AppColors.border),
-              _buildPaymentOption(
-                id: 'cod',
-                title: isAr ? 'الدفع عند الاستلام' : 'Cash on Delivery',
-                subtitle: isAr ? 'الدفع عند المعاينة والاستلام' : 'Pay upon inspection',
-                icon: Icons.local_shipping_outlined,
-                isAr: isAr,
-              ),
+              // Insufficient funds warning
+              if (_insufficientFunds && _selectedPaymentMethod == 'wallet')
+                Padding(
+                  padding: const EdgeInsets.only(top: 12, left: 4, right: 4),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.warning_amber_rounded,
+                                color: AppColors.error, size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                isAr
+                                    ? 'رصيد المحفظة غير كافٍ لإتمام هذا الطلب'
+                                    : 'Wallet balance is insufficient for this order',
+                                style: const TextStyle(
+                                  color: AppColors.error,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () async {
+                            final cart = context.read<CartProvider>();
+                            final needed = (cart.subtotal + 25.0) -
+                                (_walletBalance ?? 0);
+                            final paymentUrl = await WalletService.topUp(
+                              amount: needed,
+                              provider: 'paymob',
+                            );
+                            if (paymentUrl != null && mounted) {
+                              final success =
+                                  await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PaymentWebViewScreen(
+                                      url: paymentUrl),
+                                ),
+                              );
+                              if (success == true && mounted) {
+                                // Refresh wallet balance
+                                final w = await WalletService.getWallet();
+                                if (mounted && w != null) {
+                                  setState(() {
+                                    _walletBalance = w.balance;
+                                    _insufficientFunds = false;
+                                  });
+                                }
+                              }
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              isAr
+                                  ? 'اشحن المحفظة الآن'
+                                  : 'Top Up Wallet Now',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const Divider(height: 30, color: AppColors.border),
               _buildPaymentOption(
                 id: 'card',

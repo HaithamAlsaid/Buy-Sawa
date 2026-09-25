@@ -30,8 +30,11 @@ class ProductProvider extends ChangeNotifier {
       _all.where((p) => p.hasGroupDeal).toList();
 
   /// Call once on app start
-  Future<void> loadProducts() async {
+  Future<void> loadProducts({bool clearExisting = false}) async {
     if (_isLoading) return;
+    if (clearExisting) {
+      _all = [];
+    }
     _isLoading = true;
     _hasError = false;
     notifyListeners();
@@ -68,6 +71,6 @@ class ProductProvider extends ChangeNotifier {
   Future<void> refreshProducts() async {
     _query = '';
     _selectedCategory = null;
-    await loadProducts();
+    await loadProducts(clearExisting: true);
   }
 }

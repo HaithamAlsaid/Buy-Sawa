@@ -9,8 +9,34 @@ import '../../core/services/product_service.dart';
 import '../../widgets/cached_image.dart';
 import 'category_products_screen.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
+
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  late Future<List<CategoryModel>> _categoriesFuture;
+  String? _lastLocale;
+
+  @override
+  void initState() {
+    super.initState();
+    _categoriesFuture = ProductService.getCategories();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocalizations.of(context).locale.languageCode;
+    if (_lastLocale != null && _lastLocale != currentLocale) {
+      setState(() {
+        _categoriesFuture = ProductService.getCategories();
+      });
+    }
+    _lastLocale = currentLocale;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +46,7 @@ class CategoriesScreen extends StatelessWidget {
         child: SafeArea(
           // ── Header & Content 
           child: FutureBuilder<List<CategoryModel>>(
-            future: ProductService.getCategories(),
+            future: _categoriesFuture,
             builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Padding(

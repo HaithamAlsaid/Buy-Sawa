@@ -24,6 +24,8 @@ class _DealsScreenState extends State<DealsScreen> {
   Timer? _timer;
   int _selectedTab = 0;
 
+  String? _lastLocale;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,20 @@ class _DealsScreenState extends State<DealsScreen> {
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocalizations.of(context).locale.languageCode;
+    if (_lastLocale != null && _lastLocale != currentLocale) {
+      Future.microtask(() {
+        if (mounted) {
+          context.read<GroupBuyProvider>().fetchGroups();
+        }
+      });
+    }
+    _lastLocale = currentLocale;
   }
 
   @override

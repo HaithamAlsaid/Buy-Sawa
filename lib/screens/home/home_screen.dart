@@ -37,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<DonationCampaignModel>> _campaignsFuture;
   List<DonationCampaignModel> _campaigns = [];
 
+  String? _lastLocale;
+
   @override
   void initState() {
     super.initState();
@@ -48,10 +50,33 @@ class _HomeScreenState extends State<HomeScreen> {
     _startAutoScroll();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocalizations.of(context).locale.languageCode;
+    // If the language changed after the first load, refetch the data from the server
+    if (_lastLocale != null && _lastLocale != currentLocale) {
+      setState(() {
+        _categoriesFuture = ProductService.getCategories();
+        _campaignsFuture = DonationService.getActiveCampaigns().then((val) {
+          if (mounted) setState(() => _campaigns = val);
+          return val;
+        });
+      });
+      // Also refresh the products to get their translated names
+      Future.microtask(() {
+        if (mounted) {
+          context.read<ProductProvider>().refreshProducts();
+        }
+      });
+    }
+    _lastLocale = currentLocale;
+  }
+
   void _startAutoScroll() {
     Future.delayed(const Duration(seconds: 4), () {
       if (!mounted) return;
-      if (_campaigns.isNotEmpty) {
+      if (_campaigns.isNotEmpty && _bannerCtrl.hasClients) {
         final next = (_bannerIndex + 1) % _campaigns.length;
         _bannerCtrl.animateToPage(
           next,

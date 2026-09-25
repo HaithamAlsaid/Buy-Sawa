@@ -177,18 +177,34 @@ class _PlansListSheetState extends State<PlansListSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    plan.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      plan.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  const Icon(Icons.diamond_outlined, color: Colors.amber, size: 28),
+                  const Icon(Icons.diamond_outlined,
+                      color: Colors.amber, size: 26),
                 ],
               ),
-              const SizedBox(height: 24),
+              if (plan.description.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  plan.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.65),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -197,20 +213,20 @@ class _PlansListSheetState extends State<PlansListSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isAr ? 'القيمة الإجمالية' : 'Total Value',
+                        isAr ? 'رصيد المحفظة' : 'Wallet Credit',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.65),
+                          fontSize: 11,
                         ),
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${plan.totalOrderAmount}',
+                            plan.totalOrderAmount.toStringAsFixed(0),
                             style: const TextStyle(
                               color: Colors.amber,
-                              fontSize: 28,
+                              fontSize: 26,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -218,15 +234,24 @@ class _PlansListSheetState extends State<PlansListSheet> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 4.0),
                             child: Text(
-                              isAr ? 'د.إ / شهر' : 'AED / mo',
+                              isAr ? 'د.إ' : 'AED',
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
+                      ),
+                      Text(
+                        isAr
+                            ? 'مقابل ${plan.price.toStringAsFixed(0)} د.إ فقط'
+                            : 'for only ${plan.price.toStringAsFixed(0)} AED',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.6),
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -236,7 +261,8 @@ class _PlansListSheetState extends State<PlansListSheet> {
                       PlanSubscribeSheet.show(context, plan);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(16),

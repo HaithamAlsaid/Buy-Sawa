@@ -26,21 +26,29 @@ class PlanService {
     }
   }
 
-  static Future<bool> subscribeToPlan(int planId) async {
+  static Future<Map<String, dynamic>> subscribeToPlan(int planId) async {
     try {
       final token = await SecureStorageService.getToken();
       final response = await http.post(
         Uri.parse('${ApiService.baseUrl}/monthly-plans/$planId/subscribe'),
         headers: ApiService.headers(token: token),
       );
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
+        return {'success': true};
       }
-      return false;
+
+      // Parse server error message
+      try {
+        final body = jsonDecode(response.body);
+        final msg = body['message'] ?? body['error'] ?? body['msg'];
+        return {'success': false, 'error': _resolveErrorMessage(msg?.toString())};
+      } catch (_) {
+        return {'success': false};
+      }
     } catch (e) {
       print('Error subscribing to plan: $e');
-      return false;
+      return {'success': false};
     }
   }
 
@@ -64,5 +72,46 @@ class PlanService {
       print('Error fetching my subscription: $e');
       return null;
     }
+  }
+
+  /// Maps raw server error keys to human-readable messages.
+  static String? _resolveErrorMessage(String? raw) {
+    if (raw == null) return null;
+
+    final isAr = ApiService.currentLocale == 'ar';
+
+    // Known error key mappings [ar, en]
+    final Map<String, List<String>> errorMap = {
+      'insufficient_funds': [
+        'رصيد محفظتك غير كافٍ للاشتراك في هذه الباقة. يرجى شحن المحفظة أولاً.',
+        'Your wallet balance is insufficient. Please top up your wallet first.',
+      ],
+      'already_subscribed': [
+        'أنت مشترك بالفعل في باقة نشطة.',
+        'You are already subscribed to an active plan.',
+      ],
+      'plan_not_found': [
+        'الباقة المطلوبة غير موجودة.',
+        'The requested plan was not found.',
+      ],
+      'unauthenticated': [
+        'يرجى تسجيل الدخول أولاً.',
+        'Please login first.',
+      ],
+    };
+
+    // Check if raw message contains any known key
+    for (final entry in errorMap.entries) {
+      if (raw.toLowerCase().contains(entry.key)) {
+        return isAr ? entry.value[0] : entry.value[1];
+      }
+    }
+
+    // If unknown key, clean it up (remove leading numbers and underscores)
+    final cleaned = raw
+        .replaceAll(RegExp(r'^\d+_'), '')
+        .replaceAll('_', ' ')
+        .replaceAll('.', ' ');
+    return cleaned;
   }
 }

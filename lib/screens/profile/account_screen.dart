@@ -6,6 +6,7 @@ import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
 import '../../widgets/language_picker_sheet.dart';
+import 'how_to_benefit_screen.dart';
 import 'faqs_screen.dart';
 import 'contact_us_screen.dart';
 import 'profile_details_screen.dart';
@@ -18,6 +19,7 @@ import '../auth/mfa_setup_screen.dart';
 import 'profile_address_screen.dart';
 import '../donations/my_donations_screen.dart';
 import '../../core/services/plan_service.dart';
+import '../plans/plans_list_sheet.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -210,6 +212,21 @@ class _GuestProfileView extends StatelessWidget {
                       child: Column(
                         children: [
                           _GuestMenuItem(
+                            icon: Icons.lightbulb_outline_rounded,
+                            iconColor: Colors.amber.shade600,
+                            iconBgColor: Colors.amber.shade50,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'كيف تستفيد من التطبيق؟' : 'How to benefit from the app?',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HowToBenefitScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          _GuestMenuItem(
                             icon: Icons.help_outline_rounded,
                             iconColor: const Color(0xFF7C4DFF),
                             iconBgColor: const Color(0xFFF1EEFF),
@@ -350,7 +367,7 @@ class _LoggedInProfileView extends StatelessWidget {
       body: ResponsiveWrapper(
         child: Column(
           children: [
-            // Header (Teal background, orange avatar with initials, and username)
+            //Header (Teal background, orange avatar with initials, and username)
             Container(
               width: double.infinity,
               clipBehavior: Clip.antiAlias,
@@ -434,7 +451,7 @@ class _LoggedInProfileView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ActiveSubscriptionCard(),
+                    _ActiveSubscriptionCard(key: activeSubscriptionCardKey),
                     
                     Padding(
                       padding: EdgeInsets.only(
@@ -522,6 +539,17 @@ class _LoggedInProfileView extends StatelessWidget {
                             },
                           ),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // My Plan
+                          _GuestMenuItem(
+                            icon: Icons.workspace_premium_outlined,
+                            iconColor: Colors.amber.shade700,
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar'
+                                ? 'باقاتي VIP'
+                                : 'My VIP Plan',
+                            onTap: () => PlansListSheet.show(context),
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
                           // Wishlist
                           _GuestMenuItem(
                             icon: Icons.favorite_border_rounded,
@@ -533,6 +561,22 @@ class _LoggedInProfileView extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => const FavouritesScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          // How to benefit
+                          _GuestMenuItem(
+                            icon: Icons.lightbulb_outline_rounded,
+                            iconColor: Colors.amber.shade600,
+                            iconBgColor: Colors.transparent,
+                            label: AppLocalizations.of(context).locale.languageCode == 'ar' ? 'كيف تستفيد من التطبيق؟' : 'How to benefit from the app?',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HowToBenefitScreen(),
                                 ),
                               );
                             },
@@ -773,8 +817,10 @@ class _LoggedInProfileView extends StatelessWidget {
   }
 }
 
+final GlobalKey<_ActiveSubscriptionCardState> activeSubscriptionCardKey = GlobalKey<_ActiveSubscriptionCardState>();
+
 class _ActiveSubscriptionCard extends StatefulWidget {
-  const _ActiveSubscriptionCard();
+  const _ActiveSubscriptionCard({Key? key}) : super(key: key);
 
   @override
   State<_ActiveSubscriptionCard> createState() => _ActiveSubscriptionCardState();
@@ -787,10 +833,13 @@ class _ActiveSubscriptionCardState extends State<_ActiveSubscriptionCard> {
   @override
   void initState() {
     super.initState();
-    _fetchSubscription();
+    fetchSubscription();
   }
 
-  Future<void> _fetchSubscription() async {
+  Future<void> fetchSubscription() async {
+    if (mounted && !_isLoading) {
+      setState(() => _isLoading = true);
+    }
     final sub = await PlanService.getMySubscription();
     if (mounted) {
       setState(() {
@@ -802,85 +851,242 @@ class _ActiveSubscriptionCardState extends State<_ActiveSubscriptionCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
+
     if (_isLoading) {
       return Padding(
         padding: EdgeInsets.only(bottom: R.pad(context, 24)),
-        child: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        child: const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
       );
     }
-    
-    if (_subscription == null || (_subscription is Map && _subscription!.isEmpty)) {
-      return const SizedBox.shrink();
+
+    // Not subscribed — show invite card
+    if (_subscription == null ||
+        (_subscription is Map && _subscription!.isEmpty)) {
+      return GestureDetector(
+        onTap: () => PlansListSheet.show(context),
+        child: Container(
+          margin: EdgeInsets.only(bottom: R.pad(context, 24)),
+          padding: EdgeInsets.all(R.pad(context, 20)),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(R.r(context, 24)),
+            border: Border.all(
+              color: Colors.amber.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+            color: Colors.amber.withValues(alpha: 0.06),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.workspace_premium_outlined,
+                  color: Colors.amber.shade700,
+                  size: 26,
+                ),
+              ),
+              SizedBox(width: R.pad(context, 14)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isAr ? 'اكتشف باقات VIP' : 'Explore VIP Plans',
+                      style: TextStyle(
+                        fontSize: R.sp(context, 15),
+                        fontWeight: FontWeight.w800,
+                        color: Colors.amber.shade800,
+                      ),
+                    ),
+                    SizedBox(height: R.pad(context, 3)),
+                    Text(
+                      isAr
+                          ? 'اشترك واحصل على رصيد للتسوق والتبرع'
+                          : 'Subscribe and get wallet credit for shopping & donations',
+                      style: TextStyle(
+                        fontSize: R.sp(context, 12),
+                        color: Colors.amber.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.amber.shade700,
+                size: R.icon(context, 22),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
-    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
-    // Handle either nested 'plan' object or direct keys
-    final planObj = _subscription!['plan'] ?? _subscription;
-    final planName = planObj != null ? planObj['name'] ?? 'VIP Plan' : 'VIP Plan';
-    final status = _subscription!['status'] ?? '';
-    
-    return Container(
-      margin: EdgeInsets.only(bottom: R.pad(context, 24)),
-      padding: EdgeInsets.all(R.pad(context, 20)),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F2D3A), AppColors.primary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(R.r(context, 24)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.25),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    // Subscribed — show active plan card
+    final planObj = _subscription!['plan'] as Map<String, dynamic>? ?? _subscription!;
+    final planName = planObj['name']?.toString() ?? 'VIP Plan';
+    final planDesc = planObj['description']?.toString() ?? '';
+    final status = _subscription!['status']?.toString() ?? '';
+    final isActive = status.toLowerCase() == 'active';
+
+    return GestureDetector(
+      onTap: () => PlansListSheet.show(context),
+      child: Container(
+        margin: EdgeInsets.only(bottom: R.pad(context, 24)),
+        padding: EdgeInsets.all(R.pad(context, 20)),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F2D3A), AppColors.primary],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(R.r(context, 24)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.25),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
-          ),
-          SizedBox(width: R.pad(context, 16)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isAr ? 'باقتك الحالية' : 'Current Plan',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: R.sp(context, 12),
-                  ),
-                ),
-                SizedBox(height: R.pad(context, 4)),
-                Text(
-                  planName,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: R.sp(context, 18),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (status.isNotEmpty)
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.workspace_premium,
+                color: Colors.amber,
+                size: 28,
+              ),
+            ),
+            SizedBox(width: R.pad(context, 16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    status.toString().toUpperCase(),
+                    isAr ? 'باقتك الحالية' : 'Your Current Plan',
                     style: TextStyle(
-                      color: status.toString().toLowerCase() == 'active' ? Colors.greenAccent : Colors.orangeAccent,
-                      fontSize: R.sp(context, 12),
-                      fontWeight: FontWeight.w600,
+                      color: Colors.white.withValues(alpha: 0.65),
+                      fontSize: R.sp(context, 11),
                     ),
                   ),
-              ],
+                  SizedBox(height: R.pad(context, 3)),
+                  Text(
+                    planName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: R.sp(context, 17),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  if (planDesc.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: R.pad(context, 2)),
+                      child: Text(
+                        planDesc,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.6),
+                          fontSize: R.sp(context, 11),
+                        ),
+                      ),
+                    ),
+                  if (status.isNotEmpty)
+                    Container(
+                      margin: EdgeInsets.only(top: R.pad(context, 6)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: (isActive ? Colors.greenAccent : Colors.orangeAccent)
+                            .withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            status.toUpperCase(),
+                            style: TextStyle(
+                              color: isActive
+                                  ? Colors.greenAccent
+                                  : Colors.orangeAccent,
+                              fontSize: R.sp(context, 10),
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          // Usage Badge logic
+                          Builder(builder: (context) {
+                            final bool isUsed = _subscription!['is_used'] == true ||
+                                _subscription!['is_used'] == 1 ||
+                                _subscription!['is_used'] == '1' ||
+                                _subscription!['order_id'] != null;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: isUsed
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Colors.greenAccent.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: isUsed
+                                        ? Colors.white.withValues(alpha: 0.3)
+                                        : Colors.greenAccent.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isUsed ? Icons.check_circle_outline_rounded : Icons.local_activity_rounded,
+                                      color: isUsed ? Colors.white70 : Colors.greenAccent,
+                                      size: 10,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      isAr
+                                          ? (isUsed ? 'مستخدمة' : 'متاحة للاستخدام')
+                                          : (isUsed ? 'Used' : 'Available'),
+                                      style: TextStyle(
+                                        color: isUsed ? Colors.white70 : Colors.greenAccent,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+            Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white.withValues(alpha: 0.5),
+              size: R.icon(context, 22),
+            ),
+          ],
+        ),
       ),
     );
   }
