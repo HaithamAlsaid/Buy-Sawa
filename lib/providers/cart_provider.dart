@@ -30,15 +30,36 @@ class CartProvider extends ChangeNotifier {
   double get total => subtotal;
 
   // ─── تحديد التوكن وجلب الـ Cart من السيرفر ───────────────────
-  void setToken(String? token) {
+  void setToken(String? token) async {
+    final previousToken = _token;
     _token = token;
-    if (token != null && !_isSynced) {
+
+    if (token != null && previousToken == null) {
+      // User just logged in. Sync local items to server first.
+      await _syncLocalItemsToServer();
       fetchCart();
+    } else if (token != null && !_isSynced) {
       fetchCart();
     } else if (token == null) {
       // Guest mode: load local cart if available
       _isSynced = false;
       _loadLocalCart();
+    }
+  }
+
+  Future<void> _syncLocalItemsToServer() async {
+    if (_items.isEmpty || _token == null) return;
+    
+    // Copy local items to sync
+    final localItems = List<CartItemModel>.from(_items);
+    
+    // Upload each local item to the server
+    for (var item in localItems) {
+      await CartService.addItem(
+        productId: item.product.id,
+        variantId: item.variantId,
+        quantity: item.quantity,
+      );
     }
   }
 

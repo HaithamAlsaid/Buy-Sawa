@@ -358,6 +358,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               );
                             }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 28),
+                                    const SizedBox(height: 8),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _campaignsFuture = DonationService.getActiveCampaigns().then((val) {
+                                            if (mounted) setState(() => _campaigns = val);
+                                            return val;
+                                          });
+                                        });
+                                      },
+                                      child: Text(
+                                        AppLocalizations.of(context).locale.languageCode == 'ar'
+                                            ? 'إعادة المحاولة'
+                                            : 'Retry',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
                             final campaigns = snapshot.data ?? [];
                             if (campaigns.isEmpty) {
                               return Center(
@@ -474,10 +500,32 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         }
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: IconButton(
+                              icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
+                              onPressed: () {
+                                setState(() {
+                                  _categoriesFuture = ProductService.getCategories();
+                                });
+                              },
+                            ),
+                          );
+                        }
                         final apiCategories = snapshot.data ?? [];
                         final categories = apiCategories.isNotEmpty
                             ? apiCategories
-                            : mockCategories;
+                            : [];
+                        if (categories.isEmpty) {
+                          return Center(
+                            child: Text(
+                              AppLocalizations.of(context).locale.languageCode == 'ar'
+                                  ? 'لا توجد أقسام'
+                                  : 'No categories',
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        }
                         return ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -555,6 +603,49 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
+                              ),
+                            ),
+                          )
+                        : productProvider.hasError
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 48),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.wifi_off_rounded,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    AppLocalizations.of(context).locale.languageCode == 'ar'
+                                        ? 'فشل في الاتصال'
+                                        : 'Connection failed',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      context.read<ProductProvider>().refreshProducts();
+                                    },
+                                    icon: const Icon(Icons.refresh, size: 18),
+                                    label: Text(
+                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                          ? 'إعادة المحاولة'
+                                          : 'Retry',
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           )

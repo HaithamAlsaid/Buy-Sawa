@@ -12,7 +12,10 @@ import '../../core/services/product_service.dart';
 import '../../models/group_buy_model.dart';
 import '../../models/product_model.dart';
 import '../products/product_detail_screen.dart';
-import 'group_deal_checkout_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/cart_provider.dart';
+import '../../core/services/cart_service.dart';
+import '../checkout/checkout_screen.dart';
 
 class ActiveGroupScreen extends StatefulWidget {
   final GroupBuyModel group;
@@ -453,7 +456,7 @@ class _ActiveGroupScreenState extends State<ActiveGroupScreen> {
     }
   }
 
-  // ─── Navigate to product details ─────────────────────────────
+  // Navigate to product details 
   Future<void> _openProductDetails() async {
     showDialog(context: context, barrierDismissible: false, builder: (_) => const Center(child: CircularProgressIndicator()));
     final product = await ProductService.getProductById(widget.group.productId);
@@ -773,8 +776,48 @@ class _ActiveGroupScreenState extends State<ActiveGroupScreen> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupDealCheckoutScreen()));
+              onPressed: () async {
+                if (_sharedProducts.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(isAr ? 'لا يوجد منتجات في الجروب لشرائها' : 'No products in group to checkout')),
+                  );
+                  return;
+                }
+                
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                );
+                
+                try {
+                  final cart = Provider.of<CartProvider>(context, listen: false);
+                  for (final p in _sharedProducts) {
+                    final productId = p['product_id'] ?? p['product']?['id'] ?? p['id'];
+                    if (productId != null) {
+                      await CartService.addItem(
+                        productId: productId.toString(), 
+                        quantity: 1,
+                        groupId: widget.group.id.toString(),
+                      );
+                    }
+                  }
+                  await cart.fetchCart();
+                  
+                  if (mounted) {
+                    Navigator.pop(context);
+                    if (cart.items.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? 'فشل إضافة المنتجات للسلة' : 'Failed to add products to cart')));
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckoutScreen()));
+                    }
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF5A623),

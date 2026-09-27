@@ -64,29 +64,37 @@ class OrderService {
 
   // ─── Checkout (Place Order) ───────────────────────────────────
   /// POST /api/v1/orders/checkout
-  /// Returns OrderModel on success or null on failure
-  static Future<({OrderModel? order, String? error})> checkout({
+  /// Supports: wallet, card (ngenius), bnpl (tamara)
+  /// Returns: order, optional redirectionUrl, or error
+  static Future<({OrderModel? order, String? redirectionUrl, String? error})> checkout({
     required String shippingAddressId,
     String? billingAddressId,
-    required String paymentMethod, // 'cod' | 'card' | 'wallet'
+    required String paymentMethod, // 'wallet' | 'card' | 'bnpl'
+    required String provider,      // 'wallet' | 'ngenius' | 'tamara'
     String? phone,
-    String currency = 'EGP',
     String? customerNote,
+    String? couponCode,
+    String returnUrl = 'https://app.buysawa.ae/checkout/success',
   }) async {
     final token = await SecureStorageService.getToken();
-    if (token == null) return (order: null, error: 'Not logged in');
+    if (token == null) return (order: null, redirectionUrl: null, error: 'Not logged in');
 
     try {
       final body = <String, dynamic>{
         'shipping_address_id': int.tryParse(shippingAddressId) ?? shippingAddressId,
         'payment_method': paymentMethod,
-        'target_currency': currency,
+        'provider': provider,
+        'return_url': returnUrl,
       };
       if (billingAddressId != null) {
         body['billing_address_id'] = int.tryParse(billingAddressId) ?? billingAddressId;
       }
       if (phone != null && phone.isNotEmpty) body['phone'] = phone;
       if (customerNote != null && customerNote.isNotEmpty) body['customer_note'] = customerNote;
+      if (couponCode != null && couponCode.isNotEmpty) body['coupon_code'] = couponCode;
+
+      debugPrint('=== Checkout Request ===');
+      debugPrint(jsonEncode(body));
 
       final res = await http.post(
         Uri.parse(ApiService.checkoutEndpoint),
@@ -94,14 +102,39 @@ class OrderService {
         body: jsonEncode(body),
       ).timeout(const Duration(seconds: 20));
 
+      debugPrint('=== Checkout Response [${res.statusCode}] ===');
+      debugPrint(res.body);
+
       final respBody = jsonDecode(res.body);
       if (res.statusCode == 200 || res.statusCode == 201) {
-        return (order: OrderModel.fromJson(respBody), error: null);
+        // Extract redirection URL if payment gateway requires it (supports N-Genius & Tamara formats)
+        String? redirectionUrl;
+        final orderData = respBody['data'] ?? respBody;
+        final paymentAction = orderData['payment_action'] ?? respBody['payment_action'];
+        
+        if (paymentAction is Map) {
+          redirectionUrl = paymentAction['redirection_url']?.toString() ??
+                           paymentAction['checkout_url']?.toString() ??
+                           paymentAction['payment_url']?.toString() ??
+                           paymentAction['url']?.toString();
+        }
+
+        // Fallback for gateways that put it in the root data object
+        if (redirectionUrl == null || redirectionUrl.isEmpty) {
+          redirectionUrl = orderData['redirection_url']?.toString() ??
+                           orderData['checkout_url']?.toString() ??
+                           orderData['payment_url']?.toString();
+        }
+        return (
+          order: OrderModel.fromJson(orderData),
+          redirectionUrl: redirectionUrl,
+          error: null,
+        );
       }
       final errMsg = respBody['message'] ?? respBody['error'] ?? 'Checkout failed';
-      return (order: null, error: errMsg.toString());
+      return (order: null, redirectionUrl: null, error: errMsg.toString());
     } catch (e) {
-      return (order: null, error: e.toString());
+      return (order: null, redirectionUrl: null, error: e.toString());
     }
   }
 

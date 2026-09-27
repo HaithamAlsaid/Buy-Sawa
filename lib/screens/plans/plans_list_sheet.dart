@@ -108,6 +108,40 @@ class _PlansListSheetState extends State<PlansListSheet> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                 }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 48),
+                        const SizedBox(height: 16),
+                        Text(
+                          isAr ? 'فشل في الاتصال' : 'Connection failed',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _plansFuture = PlanService.getMonthlyPlans();
+                            });
+                          },
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: Text(isAr ? 'إعادة المحاولة' : 'Retry'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
                 
                 final plans = snapshot.data ?? [];
                 if (plans.isEmpty) {

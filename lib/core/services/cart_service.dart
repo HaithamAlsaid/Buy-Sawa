@@ -4,6 +4,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../models/cart_item_model.dart';
 import 'api_service.dart';
@@ -24,6 +26,15 @@ class CartService {
 
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
+        
+        try {
+          final f = File(r'C:\Users\Owner\.gemini\antigravity-ide\brain\c768fa9e-6f96-498e-b844-542f0f242689\scratch\cart_dump.json');
+          f.createSync(recursive: true);
+          f.writeAsStringSync(res.body);
+        } catch (e) {
+          debugPrint('Dump error: $e');
+        }
+
         // يدعم {"data": {"items": [...]}} أو {"items": [...]} أو [...]
         final rawCart = body['data'] ?? body;
         final rawItems = rawCart['items'] as List? ??
@@ -75,8 +86,12 @@ class CartService {
         final respBody = jsonDecode(res.body);
         final data = respBody['data'] ?? respBody;
         return data['id']?.toString();
+      } else {
+        debugPrint('❌ CartService.addItem failed: ${res.statusCode} - ${res.body}');
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('❌ CartService.addItem exception: $e');
+    }
     return null;
   }
 

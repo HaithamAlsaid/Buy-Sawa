@@ -20,7 +20,7 @@ class DonationService {
         return items.map((e) => DonationCampaignModel.fromJson(e)).toList();
       }
     } catch (e) {
-      print('Error getActiveCampaigns: $e');
+      throw Exception('Failed to load campaigns: $e');
     }
     return [];
   }

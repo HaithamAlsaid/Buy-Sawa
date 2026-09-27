@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
@@ -8,14 +7,11 @@ import '../../providers/cart_provider.dart';
 import '../../core/services/order_service.dart';
 import '../../providers/address_provider.dart';
 import '../../models/address_model.dart';
-import '../../widgets/buysawa_logo.dart';
 import '../../widgets/cached_image.dart';
-import '../../widgets/credit_card_sheet.dart';
-import '../profile/profile_address_screen.dart';
-import '../../core/services/wallet_service.dart';
 import 'payment_webview_screen.dart';
 import '../../core/services/country_service.dart';
 import '../../providers/auth_provider.dart';
+import '../../core/services/wallet_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -41,8 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   bool _isSubmitting = false;
 
-  // Payment Method
-  String _selectedPaymentMethod = 'wallet'; // wallet, cod, card
+  // Payment Method: 'wallet' | 'card' | 'tamara'
+  String _selectedPaymentMethod = 'wallet';
   double? _walletBalance;
   bool _isLoadingWallet = true;
   bool _insufficientFunds = false;
@@ -165,7 +161,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Check wallet balance before proceeding
     if (_selectedPaymentMethod == 'wallet') {
       final cart = context.read<CartProvider>();
-      final orderTotal = cart.subtotal + 25.0;
+      final orderTotal = cart.subtotal;
       if (_walletBalance != null && _walletBalance! < orderTotal) {
         setState(() {
           _isSubmitting = false;
@@ -176,9 +172,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     try {
-      String finalPaymentMethod = _selectedPaymentMethod;
       String? targetAddressId = _selectedAddress?.id;
 
+      // ── Save / update address if user typed a new one ──────────
       if (_isAddingNewAddress) {
         final phoneCode = _selectedCountry!['phone_code'];
         String fullPhone = _phoneCtrl.text.trim();
@@ -186,9 +182,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           fullPhone = '$phoneCode $fullPhone';
         }
 
-        AddressModel? result;
+        AddressModel? saved;
         if (_selectedAddress != null) {
-          result = await context.read<AddressProvider>().updateAddress(
+          saved = await context.read<AddressProvider>().updateAddress(
             id: _selectedAddress!.id,
             countryKey: _selectedCountry!['key'],
             cityKey: _cityCtrl.text.trim(),
@@ -197,9 +193,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             phone: fullPhone,
           );
         } else {
-          result = await context.read<AddressProvider>().addAddress(
+          saved = await context.read<AddressProvider>().addAddress(
             countryKey: _selectedCountry!['key'],
-            cityKey: _cityCtrl.text.trim(), // City text as key since we have no cities API
+            cityKey: _cityCtrl.text.trim(),
             governorate: _selectedGovernorate!['name'],
             details: _detailsCtrl.text.trim(),
             phone: fullPhone,
@@ -207,58 +203,78 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           );
         }
 
-        if (result != null) {
-          targetAddressId = result.id;
-          // Update profile phone
-          final auth = context.read<AuthProvider>();
-          if (auth.user != null) {
-            await auth.updateProfile(auth.user!.fullName, auth.user!.birthdate ?? '', phone: fullPhone);
+        if (saved != null) {
+          targetAddressId = saved.id;
+          if (mounted) {
+            final auth = context.read<AuthProvider>();
+            final user = auth.user;
+            if (user != null) {
+              await auth.updateProfile(user.fullName, user.birthdate, phone: fullPhone);
+            }
           }
         } else {
           throw Exception(isAr ? 'فشل في حفظ العنوان الجديد' : 'Failed to save new address');
         }
       }
 
-      if (_selectedPaymentMethod == 'card') {
-        final total = context.read<CartProvider>().total;
-        // 1. Top up wallet
-        final paymentUrl = await WalletService.topUp(amount: total, provider: 'paymob');
-        
-        if (paymentUrl == null) {
-          throw Exception(isAr ? 'فشل في الاتصال ببوابة الدفع' : 'Failed to connect to payment gateway');
-        }
+      // ── Map selected method → API fields ──────────────────────
+      // wallet  → payment_method: wallet,  provider: wallet
+      // card    → payment_method: card,    provider: ngenius
+      // tamara  → payment_method: bnpl,    provider: tamara
+      final String apiPaymentMethod;
+      final String apiProvider;
+      switch (_selectedPaymentMethod) {
+        case 'wallet':
+          apiPaymentMethod = 'wallet';
+          apiProvider = 'wallet';
+          break;
+        case 'tamara':
+          apiPaymentMethod = 'bnpl';
+          apiProvider = 'tamara';
+          break;
+        case 'card':
+        default:
+          apiPaymentMethod = 'card';
+          apiProvider = 'ngenius';
+          break;
+      }
 
-        // 2. Open WebView
+      // ── Call Checkout API ─────────────────────────────────────
+      final result = await OrderService.checkout(
+        shippingAddressId: targetAddressId!,
+        paymentMethod: apiPaymentMethod,
+        provider: apiProvider,
+        phone: _phoneCtrl.text.trim().isNotEmpty ? _phoneCtrl.text.trim() : null,
+      );
+
+      if (result.error != null) {
+        throw Exception(result.error);
+      }
+
+      // ── Handle payment gateway redirect (card / tamara) ───────
+      if (result.redirectionUrl != null && result.redirectionUrl!.isNotEmpty) {
+        if (!mounted) return;
         final success = await Navigator.push<bool>(
           context,
           MaterialPageRoute(
-            builder: (_) => PaymentWebViewScreen(url: paymentUrl),
+            builder: (_) => PaymentWebViewScreen(url: result.redirectionUrl!),
           ),
         );
-
         if (success != true) {
           throw Exception(isAr ? 'تم إلغاء عملية الدفع' : 'Payment was cancelled');
         }
-
-        // 3. If success, we change payment method to wallet to complete the order
-        finalPaymentMethod = 'wallet';
       }
 
-      // Checkout directly with selected address and finalized payment method
-      final result = await OrderService.checkout(
-        shippingAddressId: targetAddressId!,
-        paymentMethod: finalPaymentMethod, 
-      );
-
-      if (result.order != null && mounted) {
-        // Clear cart and show success
+      // ── Success ───────────────────────────────────────────────
+      if (mounted) {
         context.read<CartProvider>().clear();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Order placed successfully!')),
+          SnackBar(
+            content: Text(isAr ? 'تم تقديم الطلب بنجاح! 🎉' : 'Order placed successfully! 🎉'),
+            backgroundColor: Colors.green,
+          ),
         );
-        Navigator.pop(context); // Go back to cart (which will be empty) or home
-      } else {
-        throw Exception(result.error ?? "Failed to place order");
+        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
@@ -278,7 +294,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final l10n = AppLocalizations.of(context);
     final isAr = l10n.locale.languageCode == 'ar';
     final cart = context.watch<CartProvider>();
-    final total = cart.subtotal + 25.0; // Assume 25 AED shipping
+    final total = cart.subtotal;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
@@ -561,7 +577,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 100,
+          height: 115,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: cart.items.length,
@@ -737,7 +753,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         GestureDetector(
                           onTap: () async {
                             final cart = context.read<CartProvider>();
-                            final needed = (cart.subtotal + 25.0) -
+                            final needed = cart.subtotal -
                                 (_walletBalance ?? 0);
                             final paymentUrl = await WalletService.topUp(
                               amount: needed,
@@ -791,8 +807,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               _buildPaymentOption(
                 id: 'card',
                 title: isAr ? 'بطاقة ائتمان / خصم مباشر' : 'Credit / Debit Card',
-                subtitle: isAr ? 'بوابة دفع إلكترونية آمنة' : 'Secure payment gateway',
+                subtitle: isAr ? 'بوابة دفع إلكترونية آمنة (N-Genius)' : 'Secure payment gateway (N-Genius)',
                 icon: Icons.credit_card_rounded,
+                isAr: isAr,
+              ),
+              const Divider(height: 30, color: AppColors.border),
+              _buildPaymentOptionWithLogo(
+                id: 'tamara',
+                title: isAr ? 'تمارا — اشتري الآن وادفع لاحقاً' : 'Tamara — Buy Now, Pay Later',
+                subtitle: isAr ? 'قسّم على 3 أشهر بدون فوائد' : 'Split into 3 months, 0% interest',
+                logoAsset: 'assets/images/tamara_logo.png',
+                fallbackIcon: Icons.splitscreen_rounded,
+                color: const Color(0xFF2D9B6F),
                 isAr: isAr,
               ),
             ],
@@ -811,9 +837,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     final isSelected = _selectedPaymentMethod == id;
     return GestureDetector(
-      onTap: () {
-        setState(() => _selectedPaymentMethod = id);
-      },
+      onTap: () => setState(() => _selectedPaymentMethod = id),
       behavior: HitTestBehavior.opaque,
       child: Row(
         children: [
@@ -862,16 +886,78 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  Widget _buildPaymentOptionWithLogo({
+    required String id,
+    required String title,
+    required String subtitle,
+    required String logoAsset,
+    required IconData fallbackIcon,
+    required Color color,
+    required bool isAr,
+  }) {
+    final isSelected = _selectedPaymentMethod == id;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedPaymentMethod = id),
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isSelected ? color.withValues(alpha: 0.12) : const Color(0xFFF1F5F9),
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              logoAsset,
+              width: 24,
+              height: 24,
+              errorBuilder: (_, __, ___) => Icon(
+                fallbackIcon,
+                color: isSelected ? color : AppColors.textLight,
+                size: 24,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: R.sp(context, 14),
+                    fontWeight: FontWeight.w700,
+                    color: isSelected ? color : AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: R.sp(context, 12),
+                    color: AppColors.textGray,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isSelected)
+            Icon(Icons.check_circle_rounded, color: color, size: 24)
+          else
+            const Icon(Icons.circle_outlined, color: AppColors.border, size: 24),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSafeShoppingBanner(bool isAr) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border(
-          right: BorderSide(color: AppColors.primary, width: isAr ? 4 : 0),
-          left: BorderSide(color: AppColors.primary, width: !isAr ? 4 : 0),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         children: [

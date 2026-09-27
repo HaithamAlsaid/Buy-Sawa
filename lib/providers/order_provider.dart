@@ -46,13 +46,14 @@ class OrderProvider extends ChangeNotifier {
   }
 
   // ─── Checkout (تنفيذ الطلب) ───────────────────────────────────
-  Future<({bool success, String? error, OrderModel? order})> checkout({
+  Future<({bool success, String? error, String? redirectionUrl, OrderModel? order})> checkout({
     required String shippingAddressId,
     String? billingAddressId,
-    required String paymentMethod,
+    required String paymentMethod, // 'wallet' | 'card' | 'bnpl'
+    required String provider,      // 'wallet' | 'ngenius' | 'tamara'
     String? phone,
-    String currency = 'EGP',
     String? customerNote,
+    String? couponCode,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -61,20 +62,23 @@ class OrderProvider extends ChangeNotifier {
       shippingAddressId: shippingAddressId,
       billingAddressId: billingAddressId,
       paymentMethod: paymentMethod,
+      provider: provider,
       phone: phone,
-      currency: currency,
       customerNote: customerNote,
+      couponCode: couponCode,
     );
 
     _isLoading = false;
 
-    if (result.order != null) {
-      _orders.insert(0, result.order!);
+    if (result.error == null) {
+      if (result.order != null) {
+        _orders.insert(0, result.order!);
+      }
       notifyListeners();
-      return (success: true, error: null, order: result.order);
+      return (success: true, error: null, redirectionUrl: result.redirectionUrl, order: result.order);
     } else {
       notifyListeners();
-      return (success: false, error: result.error, order: null);
+      return (success: false, error: result.error, redirectionUrl: null, order: null);
     }
   }
 

@@ -3,9 +3,20 @@
 // Base URL: https://buysawa.com/api/v1
 // Source: Buysawa.postman_collection.json (complete)
 // ─────────────────────────────────────────────────────────────────────────────
-//users/auth/register
+// ─── Social Login (Google OAuth) 
+import 'dart:math';
+
 class ApiService {
   static const String baseUrl = 'https://buysawa.com/api/v1';
+
+  // ─── Session ID (For Carts) ───
+  static final String sessionId = _generateSessionId();
+
+  static String _generateSessionId() {
+    final rand = Random();
+    final chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    return List.generate(32, (index) => chars[rand.nextInt(chars.length)]).join();
+  }
 
   // ─── Auth 
   static const String registerEndpoint = '$baseUrl/auth/register';
@@ -159,6 +170,7 @@ class ApiService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Accept-Language': currentLocale,
+      'X-Session-ID': sessionId,
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }

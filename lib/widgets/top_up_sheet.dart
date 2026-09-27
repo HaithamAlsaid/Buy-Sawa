@@ -15,7 +15,7 @@ class TopUpSheet extends StatefulWidget {
 class _TopUpSheetState extends State<TopUpSheet> {
   final TextEditingController _amountCtrl = TextEditingController();
   final List<double> _quickAmounts = [100, 200, 500, 1000];
-  String _selectedProvider = 'paymob';
+  String _selectedProvider = 'ngenius';
   bool _isLoading = false;
 
   @override
@@ -198,6 +198,10 @@ class _TopUpSheetState extends State<TopUpSheet> {
                       DropdownMenuItem(
                         value: 'paymob',
                         child: Text('Credit / Debit Card (Paymob)'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ngenius',
+                        child: Text('Credit / Debit Card (N-Genius)'),
                       ),
                       DropdownMenuItem(
                         value: 'tabby',

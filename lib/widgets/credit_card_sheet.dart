@@ -28,7 +28,7 @@ class _CreditCardSheetState extends State<CreditCardSheet> {
       ),
       child: Column(
         children: [
-          // ── Header ──────────────────────────────────────────
+          // Header 
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Row(

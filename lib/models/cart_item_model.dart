@@ -29,10 +29,13 @@ class CartItemModel {
     final productData = json['product'] as Map<String, dynamic>? ?? {};
     final variantData = json['variant'] as Map<String, dynamic>?;
 
-    // السعر من الـ variant أو المنتج
-    final price = (json['price'] as num?)?.toDouble() ??
-        (variantData?['price'] as num?)?.toDouble() ??
-        (productData['price'] as num?)?.toDouble() ??
+    // السعر من الـ variant أو المنتج أو الكارت
+    final price = double.tryParse(json['price']?.toString() ?? '') ??
+        double.tryParse(json['unit_price']?.toString() ?? '') ??
+        double.tryParse(variantData?['price']?.toString() ?? '') ??
+        double.tryParse(variantData?['pricing']?['price']?.toString() ?? '') ??
+        double.tryParse(productData['price']?.toString() ?? '') ??
+        double.tryParse(productData['pricing']?['price']?.toString() ?? '') ??
         0.0;
 
       var extractedUrl = '';

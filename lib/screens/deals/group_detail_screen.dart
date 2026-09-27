@@ -4,7 +4,10 @@ import 'package:dotted_border/dotted_border.dart';
 import '../../core/constants/app_colors.dart';
 import 'package:flutter/services.dart';
 import '../../core/utils/responsive.dart';
-import 'group_deal_checkout_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/cart_provider.dart';
+import '../../core/services/cart_service.dart';
+import '../checkout/checkout_screen.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final String groupName;
@@ -323,13 +326,39 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                 width: double.infinity,
                 height: R.pad(context, 56),
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const GroupDealCheckoutScreen(),
-                      ),
+                  onPressed: () async {
+                    if (widget.products.isEmpty) return;
+                    
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
                     );
+
+                    try {
+                      final cart = Provider.of<CartProvider>(context, listen: false);
+                      for (final p in widget.products) {
+                        final productId = p['product_id'] ?? p['product']?['id'] ?? p['id'];
+                        if (productId != null) {
+                          await CartService.addItem(productId: productId.toString(), quantity: 1);
+                        }
+                      }
+                      await cart.fetchCart();
+
+                      if (mounted) {
+                        Navigator.pop(context);
+                        if (cart.items.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to add products to cart')));
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckoutScreen()));
+                        }
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,

@@ -131,9 +131,10 @@ class ProductService {
             .toList();
         if (list.isNotEmpty) return list;
       }
-    } catch (_) {}
-
-    return mockCategories;
+    } catch (e) {
+      throw Exception('Failed to load categories: $e');
+    }
+    return [];
   }
 
   // ─── Map API product response to ProductModel ────────────────

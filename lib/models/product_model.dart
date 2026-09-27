@@ -129,9 +129,11 @@ class ProductModel {
         name: json['name']?.toString() ?? '',
         arabicName: json['arabic_name']?.toString() ?? json['name']?.toString() ?? '',
         category: json['category']?.toString() ?? '',
-        price: (json['price'] as num?)?.toDouble() ?? 0.0,
-        originalPrice: (json['original_price'] as num?)?.toDouble(),
-        rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+        price: double.tryParse(json['price']?.toString() ?? '') ?? 
+               double.tryParse(json['pricing']?['price']?.toString() ?? '') ?? 0.0,
+        originalPrice: double.tryParse(json['original_price']?.toString() ?? '') ?? 
+                       double.tryParse(json['pricing']?['compare_price']?.toString() ?? ''),
+        rating: double.tryParse(json['rating']?.toString() ?? '') ?? 0.0,
         reviewCount: json['review_count'] as int? ?? 0,
         imageUrl: extractedUrl,
         alternateImages: (json['alternate_images'] as List<dynamic>?)

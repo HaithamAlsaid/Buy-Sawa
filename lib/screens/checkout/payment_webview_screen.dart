@@ -41,12 +41,21 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
 
   void _checkUrlForCompletion(String url) {
     final lowerUrl = url.toLowerCase();
-    // Paymob success patterns
-    if (lowerUrl.contains('success=true') || lowerUrl.contains('status=success') || lowerUrl.contains('txn_response_code=0')) {
+    
+    // Check BuySawa return URLs
+    if (lowerUrl.contains('app.buysawa.ae/checkout/success') || 
+        lowerUrl.contains('checkout/success') || 
+        lowerUrl.contains('success=true') || 
+        lowerUrl.contains('status=success') || 
+        lowerUrl.contains('txn_response_code=0')) {
       Navigator.pop(context, true); // Success
     } 
     // Failure patterns
-    else if (lowerUrl.contains('success=false') || lowerUrl.contains('status=failed') || lowerUrl.contains('status=declined')) {
+    else if (lowerUrl.contains('app.buysawa.ae/checkout/failed') || 
+             lowerUrl.contains('checkout/cancel') || 
+             lowerUrl.contains('success=false') || 
+             lowerUrl.contains('status=failed') || 
+             lowerUrl.contains('status=declined')) {
       Navigator.pop(context, false); // Failed
     }
   }

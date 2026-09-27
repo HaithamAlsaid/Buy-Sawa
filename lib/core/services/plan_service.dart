@@ -21,8 +21,7 @@ class PlanService {
       }
       return [];
     } catch (e) {
-      print('Error fetching monthly plans: $e');
-      return [];
+      throw Exception('Failed to load plans: $e');
     }
   }
 

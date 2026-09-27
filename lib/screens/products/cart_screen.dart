@@ -44,8 +44,7 @@ class _CartScreenState extends State<CartScreen> {
     final auth = context.watch<AuthProvider>();
     final l10n = AppLocalizations.of(context);
     final subtotal = cart.subtotal;
-    const shipping = 25.0;
-    final finalTotal = subtotal + shipping;
+    final finalTotal = subtotal;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
@@ -133,12 +132,6 @@ class _CartScreenState extends State<CartScreen> {
                         _SummaryRow(
                             label: l10n.subtotal,
                             value: '${subtotal.toInt()} ${l10n.aed}'),
-                        const SizedBox(height: 10),
-                        _SummaryRow(
-                            label: l10n.shipping,
-                            value: '${shipping.toInt()} ${l10n.aed}'),
-
-
 
                         const SizedBox(height: 12),
                         const Divider(color: Color(0xFFEEEFF3)),

@@ -31,11 +31,13 @@ class OrderModel {
 
     return OrderModel(
       id: (data['id'] ?? '').toString(),
-      status: data['status'] ?? 'pending',
+      status: data['status'] is Map 
+          ? (data['status']['label']?.toString() ?? data['status']['value']?.toString() ?? 'pending')
+          : (data['status']?.toString() ?? 'pending'),
       total: (data['total'] as num?)?.toDouble() ??
           (data['grand_total'] as num?)?.toDouble() ?? 0.0,
-      currency: data['currency'] ?? data['target_currency'] ?? 'EGP',
-      createdAt: DateTime.tryParse(data['created_at'] as String? ?? '') ?? DateTime.now(),
+      currency: data['currency'] is Map ? (data['currency']['code']?.toString() ?? 'AED') : (data['currency']?.toString() ?? data['target_currency']?.toString() ?? 'AED'),
+      createdAt: DateTime.tryParse(data['created_at']?.toString() ?? '') ?? DateTime.now(),
       items: rawItems
           .map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
