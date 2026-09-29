@@ -11,6 +11,7 @@ import '../../models/category_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../widgets/product_card.dart';
+import '../../providers/notifications_provider.dart';
 import '../notifications/notifications_screen.dart';
 import '../products/cart_screen.dart';
 import '../../core/localization/app_localizations.dart';
@@ -261,24 +262,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                                 size: 22,
                               ),
-                              Positioned(
-                                top: 2,
-                                right: 2,
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFFF5A623,
-                                    ), // Orange dot
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.primary,
-                                      width: 2,
+                              if (context.watch<NotificationsProvider>().unreadCount > 0)
+                                Positioned(
+                                  top: -2,
+                                  right: -2,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF5A623), // Orange dot
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.primary,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      '${context.watch<NotificationsProvider>().unreadCount}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                        height: 1,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                             ],
                           ),
                         ),

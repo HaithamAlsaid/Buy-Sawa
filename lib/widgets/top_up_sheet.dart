@@ -15,7 +15,6 @@ class TopUpSheet extends StatefulWidget {
 class _TopUpSheetState extends State<TopUpSheet> {
   final TextEditingController _amountCtrl = TextEditingController();
   final List<double> _quickAmounts = [100, 200, 500, 1000];
-  String _selectedProvider = 'ngenius';
   bool _isLoading = false;
 
   @override
@@ -32,7 +31,7 @@ class _TopUpSheetState extends State<TopUpSheet> {
 
     setState(() => _isLoading = true);
 
-    final paymentUrl = await context.read<WalletProvider>().topUpWallet(amount, _selectedProvider);
+    final paymentUrl = await context.read<WalletProvider>().topUpWallet(amount, 'ngenius');
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -171,54 +170,55 @@ class _TopUpSheetState extends State<TopUpSheet> {
             ),
             const SizedBox(height: 24),
 
-            // Payment Provider Selection
+            // Payment Provider — N-Genius only
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isAr ? 'وسيلة الدفع' : 'Payment Method',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textGray,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FAF9),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.credit_card_rounded,
+                          color: AppColors.primary, size: 22),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    value: _selectedProvider,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isAr ? 'بطاقة ائتمانية / خصم مباشر' : 'Credit / Debit Card',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isAr ? 'بوابة N-Genius الآمنة' : 'Secured via N-Genius Gateway',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textGray,
+                            ),
+                          ),
+                        ],
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'paymob',
-                        child: Text('Credit / Debit Card (Paymob)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'ngenius',
-                        child: Text('Credit / Debit Card (N-Genius)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'tabby',
-                        child: Text('Tabby'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'tamara',
-                        child: Text('Tamara'),
-                      ),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) {
-                        setState(() => _selectedProvider = val);
-                      }
-                    },
-                  ),
-                ],
+                    const Icon(Icons.check_circle_rounded,
+                        color: AppColors.primary, size: 22),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),

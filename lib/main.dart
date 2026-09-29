@@ -35,17 +35,18 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LocaleProvider(prefs)),
-        ChangeNotifierProvider(create: (_) => AuthProvider(prefs)),
-        ChangeNotifierProvider(create: (_) => ProductProvider()..loadProducts()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider(prefs), lazy: false),
+        ChangeNotifierProvider(create: (_) => AuthProvider(prefs), lazy: false),
+        ChangeNotifierProvider(create: (_) => ProductProvider()..loadProducts(), lazy: false),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => AddressProvider()),
-        ChangeNotifierProvider(create: (_) => GroupBuyProvider()..fetchGroups()),
+        ChangeNotifierProvider(create: (_) => GroupBuyProvider()..fetchGroups(), lazy: false),
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => NotificationsProvider()),
         ChangeNotifierProvider(
           create: (_) => AppSettingsProvider()..fetchSettings(),
+          lazy: false,
         ),
       ],
       child: const BuySawaApp(),

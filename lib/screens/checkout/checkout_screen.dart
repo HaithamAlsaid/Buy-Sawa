@@ -5,6 +5,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/cart_provider.dart';
 import '../../core/services/order_service.dart';
+import '../../core/services/cart_service.dart';
 import '../../providers/address_provider.dart';
 import '../../models/address_model.dart';
 import '../../widgets/cached_image.dart';
@@ -14,7 +15,8 @@ import '../../providers/auth_provider.dart';
 import '../../core/services/wallet_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final String? couponCode;
+  const CheckoutScreen({super.key, this.couponCode});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -134,6 +136,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _phoneCtrl.text.trim().isNotEmpty;
   }
 
+  // ── Sync local cart items to backend before checkout ──────────
+  Future<void> _syncCartToBackend() async {
+    final cart = context.read<CartProvider>();
+    for (final item in cart.items) {
+      if (item.cartItemId == null) {
+        debugPrint('🛒 Syncing item to backend: ${item.product.id}');
+        final newId = await CartService.addItem(
+          productId: item.product.id,
+          variantId: item.variantId,
+          quantity: item.quantity,
+        );
+        debugPrint('🛒 Backend returned id: $newId');
+      }
+    }
+  }
+
   void _submitOrder() async {
     final l10n = AppLocalizations.of(context);
     final isAr = l10n.locale.languageCode == 'ar';
@@ -172,6 +190,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     try {
+      // ── Sync cart to backend first ────────────────────────────
+      await _syncCartToBackend();
+
       String? targetAddressId = _selectedAddress?.id;
 
       // ── Save / update address if user typed a new one ──────────
@@ -245,6 +266,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         paymentMethod: apiPaymentMethod,
         provider: apiProvider,
         phone: _phoneCtrl.text.trim().isNotEmpty ? _phoneCtrl.text.trim() : null,
+        couponCode: widget.couponCode,
       );
 
       if (result.error != null) {

@@ -30,9 +30,11 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _loadUserFromApi() async {
     final token = await SecureStorageService.getToken();
     if (token == null) {
-      _isLoggedIn = false;
-      await _prefs.setBool(_key, false);
-      notifyListeners();
+      if (_isLoggedIn) {
+        _isLoggedIn = false;
+        await _prefs.setBool(_key, false);
+        notifyListeners();
+      }
       return;
     }
     try {

@@ -76,16 +76,23 @@ class CartService {
         body['referral_code'] = referralCode;
       }
 
+      debugPrint('🛒 CartService.addItem → POST ${ApiService.cartItemsEndpoint}');
+      debugPrint('🛒 Body: ${jsonEncode(body)}');
+
       final res = await http.post(
         Uri.parse(ApiService.cartItemsEndpoint),
         headers: ApiService.headers(token: token),
         body: jsonEncode(body),
       ).timeout(const Duration(seconds: 15));
 
+      debugPrint('🛒 CartService.addItem ← [${res.statusCode}] ${res.body}');
+
       if (res.statusCode == 200 || res.statusCode == 201) {
         final respBody = jsonDecode(res.body);
         final data = respBody['data'] ?? respBody;
-        return data['id']?.toString();
+        final id = data['id']?.toString();
+        debugPrint('✅ CartService.addItem: saved with id = $id');
+        return id;
       } else {
         debugPrint('❌ CartService.addItem failed: ${res.statusCode} - ${res.body}');
       }

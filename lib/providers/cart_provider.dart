@@ -65,15 +65,18 @@ class CartProvider extends ChangeNotifier {
 
   // ─── جلب الـ Cart من السيرفر ─────────────────────────────────
   Future<void> fetchCart() async {
-    if (_token == null) return;
+    if (_token == null) {
+      debugPrint('⚠️ fetchCart: no token, skipping');
+      return;
+    }
     _isLoading = true;
     notifyListeners();
 
     final serverItems = await CartService.getCart();
+    debugPrint('🛒 fetchCart: got ${serverItems.length} items from server');
     _items.clear();
     _items.addAll(serverItems);
     _isSynced = true;
-    _isLoading = false;
     _isLoading = false;
     notifyListeners();
   }
@@ -114,6 +117,7 @@ class CartProvider extends ChangeNotifier {
 
     // إرسال للسيرفر في الخلفية
     if (_token != null) {
+      debugPrint('🛒 add: sending to server — product ${product.id}, token present: ${_token != null}');
       final newId = await CartService.addItem(
         productId: product.id,
         variantId: variantId,
@@ -121,6 +125,7 @@ class CartProvider extends ChangeNotifier {
         groupId: groupId,
         referralCode: referralCode,
       );
+      debugPrint('🛒 add: server returned cartItemId = $newId');
       // تحديث الـ ID لو جاء من السيرفر
       if (newId != null) {
         final i = _items.indexWhere((e) => e.product.id == product.id && e.variantId == variantId);
@@ -133,7 +138,11 @@ class CartProvider extends ChangeNotifier {
             quantity: _items[i].quantity,
           );
         }
+      } else {
+        debugPrint('⚠️ add: server did NOT return an ID — item may not be saved on backend!');
       }
+    } else {
+      debugPrint('⚠️ add: no token, saving locally only');
     }
   }
 

@@ -21,7 +21,9 @@ class _MfaSetupScreenState extends State<MfaSetupScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchQrCode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchQrCode();
+    });
   }
 
   Future<void> _fetchQrCode() async {

@@ -19,6 +19,94 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  String? _appliedCoupon;
+
+  void _showCouponSheet(bool isAr) {
+    final ctrl = TextEditingController(text: _appliedCoupon ?? '');
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          left: 20,
+          right: 20,
+          top: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              isAr ? 'كوبون الخصم' : 'Discount Coupon',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1A1A2E)),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: ctrl,
+              autofocus: true,
+              textCapitalization: TextCapitalization.characters,
+              decoration: InputDecoration(
+                hintText: isAr ? 'أدخل كوبون الخصم' : 'Enter coupon code',
+                hintStyle: const TextStyle(color: Color(0xFF9E9E9E)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: AppColors.primary, width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                final code = ctrl.text.trim();
+                Navigator.pop(ctx);
+                if (code.isNotEmpty) {
+                  setState(() => _appliedCoupon = code);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isAr
+                            ? 'تم حفظ الكوبون وسيتم الخصم عند الدفع'
+                            : 'Coupon saved and will be applied at checkout',
+                      ),
+                      backgroundColor: AppColors.primary,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+              child: Text(
+                isAr ? 'تطبيق الكوبون' : 'Apply Coupon',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -34,7 +122,11 @@ class _CartScreenState extends State<CartScreen> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+      MaterialPageRoute(
+        builder: (_) => CheckoutScreen(
+          couponCode: _appliedCoupon,
+        ),
+      ),
     );
   }
 
@@ -126,7 +218,67 @@ class _CartScreenState extends State<CartScreen> {
 
                         // Divider line
                         const Divider(color: Color(0xFFEEEFF3)),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
+
+                        // Coupon Row
+                        GestureDetector(
+                          onTap: () {
+                            final l = AppLocalizations.of(context);
+                            _showCouponSheet(l.locale.languageCode == 'ar');
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _appliedCoupon != null
+                                    ? AppColors.primary
+                                    : const Color(0xFFEEEFF3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.local_offer_outlined,
+                                  color: _appliedCoupon != null
+                                      ? AppColors.primary
+                                      : const Color(0xFF9E9E9E),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _appliedCoupon ?? (l10n.locale.languageCode == 'ar'
+                                        ? 'أضف كوبون خصم'
+                                        : 'Add discount coupon'),
+                                    style: TextStyle(
+                                      color: _appliedCoupon != null
+                                          ? AppColors.primary
+                                          : const Color(0xFF9E9E9E),
+                                      fontSize: 14,
+                                      fontWeight: _appliedCoupon != null
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                                if (_appliedCoupon != null)
+                                  GestureDetector(
+                                    onTap: () =>
+                                        setState(() => _appliedCoupon = null),
+                                    child: const Icon(Icons.close_rounded,
+                                        color: Color(0xFFE53935), size: 18),
+                                  )
+                                else
+                                  const Icon(Icons.chevron_right_rounded,
+                                      color: Color(0xFF9E9E9E), size: 20),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
 
                         // Summary Rows
                         _SummaryRow(

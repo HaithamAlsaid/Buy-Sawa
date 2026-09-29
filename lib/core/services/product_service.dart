@@ -72,7 +72,7 @@ class ProductService {
     return []; // No mock — show real empty state
   }
 
-  // ─── Get Product By ID ───────────────────────────────────────
+  // Get Product By ID 
   static Future<ProductModel?> getProductById(dynamic id) async {
     try {
       final token = await SecureStorageService.getToken();
@@ -90,8 +90,8 @@ class ProductService {
     return null;
   }
 
-  // ─── Get Products By Category ─────────────────────────────────
-  /// GET /api/v1/products/categories/{id}/products
+  // Get Products By Category 
+  // GET /api/v1/products/categories/{id}/products
   static Future<List<ProductModel>> getProductsByCategory(String categoryId) async {
     try {
       final token = await SecureStorageService.getToken();
