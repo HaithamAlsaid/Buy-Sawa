@@ -18,6 +18,7 @@ class ProductModel {
   final Map<String, String>? attributes;
   final bool isVariable;
   final List<ProductVariationModel> variations;
+  final double? serverDiscount;
 
   ProductModel({
     required this.id,
@@ -39,6 +40,7 @@ class ProductModel {
     this.attributes,
     this.isVariable = false,
     this.variations = const [],
+    this.serverDiscount,
   });
 
   ProductModel copyWith({
@@ -61,6 +63,7 @@ class ProductModel {
     Map<String, String>? attributes,
     bool? isVariable,
     List<ProductVariationModel>? variations,
+    double? serverDiscount,
   }) {
     return ProductModel(
       id: id ?? this.id,
@@ -82,10 +85,12 @@ class ProductModel {
       attributes: attributes ?? this.attributes,
       isVariable: isVariable ?? this.isVariable,
       variations: variations ?? this.variations,
+      serverDiscount: serverDiscount ?? this.serverDiscount,
     );
   }
 
   double get discount {
+    if (serverDiscount != null && serverDiscount! > 0) return serverDiscount!;
     if (originalPrice == null || originalPrice! <= price) return 0;
     return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
   }
@@ -143,6 +148,7 @@ class ProductModel {
         arabicDescription: json['arabic_description']?.toString() ?? json['description']?.toString() ?? '',
         hasGroupDeal: json['has_group_deal'] as bool? ?? false,
         groupDealDiscount: json['group_deal_discount'] as int?,
+        serverDiscount: double.tryParse(json['discount']?.toString() ?? '') ?? double.tryParse(json['discount_percentage']?.toString() ?? ''),
         shareEarnPercent: (json['share_earn_percent'] as num?)?.toDouble(),
         reviews: (json['reviews'] as List<dynamic>?)
             ?.map((e) => ProductReview.fromJson(e as Map<String, dynamic>))

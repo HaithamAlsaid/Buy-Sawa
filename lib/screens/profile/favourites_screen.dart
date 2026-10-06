@@ -18,9 +18,9 @@ class FavouritesScreen extends StatefulWidget {
 }
 
 class _FavouritesScreenState extends State<FavouritesScreen> {
-  List<Map<String, dynamic>> _favourites = [];
+  List<ProductModel> _favourites = [];
   bool _loading = true;
-  final Set<dynamic> _removingIds = {};
+  final Set<String> _removingIds = {};
 
   @override
   void initState() {
@@ -31,30 +31,68 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
   Future<void> _loadFavourites() async {
     setState(() => _loading = true);
     final data = await FavouriteService.getFavourites();
+    
+    List<ProductModel> resolvedProducts = [];
+    final productProvider = context.read<ProductProvider>();
+
+    for (var item in data) {
+      final idStr = (item['favoritable_id'] ?? item['model_id'] ?? item['product_id'] ?? '').toString();
+      if (idStr.isEmpty) continue;
+
+      // Try to find in provider first
+      try {
+        final existing = productProvider.products.firstWhere((p) => p.id == idStr);
+        resolvedProducts.add(existing);
+        continue;
+      } catch (_) {}
+
+      // If not in provider, fetch from API
+      try {
+        final fetched = await ProductService.getProductById(idStr);
+        if (fetched != null) {
+          resolvedProducts.add(fetched);
+          continue;
+        }
+      } catch (_) {}
+
+      // Ultimate fallback: create a dummy with just the title
+      final favoritable = item['favoritable'] as Map<String, dynamic>? ?? {};
+      resolvedProducts.add(ProductModel(
+        id: idStr,
+        name: favoritable['title'] ?? favoritable['name'] ?? 'Product',
+        arabicName: favoritable['title'] ?? favoritable['name'] ?? 'Product',
+        category: '',
+        price: 0,
+        rating: 0,
+        reviewCount: 0,
+        imageUrl: '',
+        description: '',
+        arabicDescription: '',
+      ));
+    }
+
     if (mounted) {
       setState(() {
-        _favourites = data;
+        _favourites = resolvedProducts;
         _loading = false;
       });
     }
   }
 
-  Future<void> _removeFavourite(Map<String, dynamic> item) async {
-    // Extract the product/favourite id
-    final favId = item['id']?.toString() ?? '';
-    if (favId.isEmpty) return;
+  Future<void> _removeFavourite(ProductModel product) async {
+    setState(() => _removingIds.add(product.id));
 
-    setState(() => _removingIds.add(favId));
-
-    final success = await FavouriteService.removeFavourite(favId);
+    // The backend POST endpoint for favorites acts as a toggle, so calling addFavourite
+    // with the product ID will remove it from favorites.
+    final success = await FavouriteService.addFavourite(product.id);
 
     if (mounted) {
-      setState(() => _removingIds.remove(favId));
+      setState(() => _removingIds.remove(product.id));
       if (success) {
         setState(() {
-          _favourites.removeWhere((e) => e['id']?.toString() == favId);
+          _favourites.removeWhere((e) => e.id == product.id);
         });
-        final name = _productName(item, isAr: AppLocalizations.of(context).locale.languageCode == 'ar');
+        final name = AppLocalizations.of(context).locale.languageCode == 'ar' ? product.arabicName : product.name;
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -66,138 +104,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         }
       }
     }
-  }
-
-  /// Safely extract the product name — returns Arabic name if locale is AR
-  String _productName(Map<String, dynamic> item, {bool isAr = false}) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
-    if (isAr) {
-      return product?['arabic_name'] ??
-          product?['name_ar'] ??
-          product?['name'] ??
-          product?['title'] ??
-          item['arabic_name'] ??
-          item['name'] ??
-          item['title'] ??
-          '';
-    }
-    return product?['name'] ??
-        product?['title'] ??
-        item['name'] ??
-        item['title'] ??
-        '';
-  }
-
-  /// Safely extract image URL
-  String _imageUrl(Map<String, dynamic> item) {
-    final product = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>?;
-    final src = product ?? item;
-    
-    var url = '';
-    if (src['avatar'] is Map && src['avatar']['url'] != null) {
-      url = src['avatar']['url'].toString();
-    } else {
-      url = src['image_url'] ?? src['image'] ?? src['thumbnail'] ?? '';
-    }
-
-    if (url.isNotEmpty && !url.startsWith('http')) {
-      String path = url.toString();
-      if (path.startsWith('/')) path = path.substring(1);
-      if (!path.startsWith('storage/') && !path.startsWith('images/')) {
-         path = 'storage/$path';
-      }
-      url = 'https://buysawa.com/$path';
-    }
-    
-    // Fallback: If API didn't return image (e.g. eager load missing), try finding it in ProductProvider
-    if (url.isEmpty || url == 'https://buysawa.com/') {
-      final id = (src['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString();
-      try {
-        final existingProduct = context.read<ProductProvider>().products.firstWhere((p) => p.id == id);
-        url = existingProduct.imageUrl;
-      } catch (e) {
-        // Not found
-      }
-    }
-
-    debugPrint('FAVOURITES IMAGE URL: $url for product ${src['name']}');
-    return url;
-  }
-
-  double _extractDeep(Map<String, dynamic> map, List<String> keys) {
-    double? foundVal;
-    void search(Map<String, dynamic> current) {
-      if (foundVal != null) return;
-      for (final key in keys) {
-        if (current.containsKey(key) && current[key] != null) {
-          final val = current[key];
-          if (val is num) foundVal = val.toDouble();
-          else if (val is String) {
-            final match = RegExp(r'\d+(\.\d+)?').firstMatch(val);
-            if (match != null) foundVal = double.tryParse(match.group(0)!);
-          }
-        }
-      }
-      if (foundVal != null) return;
-      for (var value in current.values) {
-        if (value is Map<String, dynamic>) search(value);
-      }
-    }
-    search(map);
-    return foundVal ?? 0.0;
-  }
-
-  /// Safely extract price
-  double _price(Map<String, dynamic> item) {
-    return _extractDeep(item, ['price', 'product_price', 'item_price']);
-  }
-
-  /// Safely extract original price
-  double? _originalPrice(Map<String, dynamic> item) {
-    final val = _extractDeep(item, ['original_price', 'compare_price', 'old_price']);
-    return val > 0 ? val : null;
-  }
-
-  /// Safely extract rating
-  double _rating(Map<String, dynamic> item) {
-    return _extractDeep(item, ['rating', 'average_rating', 'product_rating']);
-  }
-
-  /// Build a ProductModel from the favourite map (best-effort)
-  ProductModel _toProductModel(Map<String, dynamic> item) {
-    final productMap = item['favoritable'] as Map<String, dynamic>? ?? item['product'] as Map<String, dynamic>? ?? item['model'] as Map<String, dynamic>? ?? item;
-    
-    // Use the robust parsing from ProductService
-    final parsed = ProductService.productFromApi(productMap);
-    if (parsed != null) {
-      if (parsed.price == 0.0) {
-        return parsed.copyWith(
-          price: _price(item),
-          originalPrice: _originalPrice(item) ?? parsed.originalPrice,
-          rating: _rating(item) > 0 ? _rating(item) : parsed.rating,
-          imageUrl: _imageUrl(item).isNotEmpty ? _imageUrl(item) : parsed.imageUrl,
-        );
-      }
-      return parsed;
-    }
-    
-    // Fallback if parsing fails for some reason
-    return ProductModel(
-      id: (productMap['id'] ?? item['product_id'] ?? item['model_id'] ?? item['favoritable_id'] ?? '').toString(),
-      name: _productName(item),
-      arabicName: productMap['arabic_name'] ?? productMap['name'] ?? _productName(item),
-      category: productMap['category'] ?? '',
-      price: _price(item),
-      originalPrice: _originalPrice(item),
-      rating: _rating(item),
-      reviewCount: productMap['review_count'] is int 
-          ? productMap['review_count'] 
-          : int.tryParse(productMap['review_count']?.toString() ?? '') ?? 0,
-      imageUrl: _imageUrl(item),
-      description: productMap['description'] ?? '',
-      arabicDescription: productMap['arabic_description'] ?? productMap['description'] ?? '',
-      hasGroupDeal: productMap['has_group_deal'] as bool? ?? false,
-    );
   }
 
   @override
@@ -362,14 +268,13 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                               ),
                               itemCount: _favourites.length,
                               itemBuilder: (context, index) {
-                                final item = _favourites[index];
-                                final favId = item['id']?.toString() ?? '';
-                                final isRemoving = _removingIds.contains(favId);
-                                final name = _productName(item, isAr: isAr);
-                                final price = _price(item);
-                                final originalPrice = _originalPrice(item);
-                                final rating = _rating(item);
-                                final imageUrl = _imageUrl(item);
+                                final product = _favourites[index];
+                                final isRemoving = _removingIds.contains(product.id);
+                                final name = isAr ? product.arabicName : product.name;
+                                final price = product.price;
+                                final originalPrice = product.originalPrice;
+                                final rating = product.rating;
+                                final imageUrl = product.imageUrl;
 
                                 final priceFormatted = price
                                     .toStringAsFixed(0)
@@ -390,7 +295,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => ProductDetailScreen(
-                                          product: _toProductModel(item),
+                                          product: product,
                                         ),
                                       ),
                                     );
@@ -446,7 +351,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                 child: GestureDetector(
                                                   onTap: isRemoving
                                                       ? null
-                                                      : () => _removeFavourite(item),
+                                                      : () => _removeFavourite(product),
                                                   child: Container(
                                                     padding: EdgeInsets.all(R.pad(context, 6)),
                                                     decoration: const BoxDecoration(
@@ -486,57 +391,63 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                       name.isEmpty ? item.toString() : name,
+                                                    name.isEmpty ? product.id : name,
                                                     style: TextStyle(
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight: FontWeight.w600,
                                                       fontSize: R.sp(context, 14),
-                                                      color: const Color(0xFF0F172A),
+                                                      color: AppColors.textDark,
                                                     ),
-                                                    maxLines: name.isEmpty ? 10 : 2,
-                                                    overflow: name.isEmpty ? TextOverflow.visible : TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
                                                   ),
-                                                  const Spacer(),
-                                                  if (rating > 0)
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.star_rounded,
-                                                          color: const Color(0xFFF5A623),
-                                                          size: R.icon(context, 16),
+                                                  SizedBox(height: R.pad(context, 4)),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.star_rounded,
+                                                        color: AppColors.accent,
+                                                        size: R.icon(context, 14),
+                                                      ),
+                                                      SizedBox(width: R.pad(context, 2)),
+                                                      Text(
+                                                        rating.toStringAsFixed(1),
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: R.sp(context, 12),
+                                                          color: AppColors.textDark,
                                                         ),
-                                                        SizedBox(width: R.pad(context, 4)),
-                                                        Text(
-                                                          rating.toStringAsFixed(1),
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.w700,
-                                                            fontSize: R.sp(context, 12),
-                                                            color: const Color(0xFF0F172A),
-                                                          ),
+                                                      ),
+                                                      Text(
+                                                        ' (${product.reviewCount})',
+                                                        style: TextStyle(
+                                                          fontSize: R.sp(context, 11),
+                                                          color: AppColors.textGray,
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                   SizedBox(height: R.pad(context, 6)),
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        priceFormatted,
+                                                        '${priceFormatted} AED',
                                                         style: TextStyle(
                                                           color: AppColors.primary,
-                                                          fontSize: R.sp(context, 16),
+                                                          fontSize: R.sp(context, 15),
                                                           fontWeight: FontWeight.w800,
                                                         ),
                                                       ),
-                                                      SizedBox(width: R.pad(context, 6)),
-                                                      if (originalPriceFormatted != null)
+                                                      if (originalPriceFormatted != null && originalPrice != null && originalPrice > price) ...[
+                                                        SizedBox(width: R.pad(context, 6)),
                                                         Text(
                                                           originalPriceFormatted,
                                                           style: TextStyle(
-                                                            color: const Color(0xFF94A3B8),
-                                                            fontSize: R.sp(context, 11),
-                                                            fontWeight: FontWeight.w500,
+                                                            color: AppColors.textLight,
+                                                            fontSize: R.sp(context, 12),
                                                             decoration: TextDecoration.lineThrough,
                                                           ),
                                                         ),
+                                                      ]
                                                     ],
                                                   ),
                                                 ],

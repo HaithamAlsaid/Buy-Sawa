@@ -93,4 +93,27 @@ class GroupBuyProvider extends ChangeNotifier {
     } catch (_) {}
     return false;
   }
+
+  // Share product in group
+  Future<bool> shareProductInGroup(String groupId, String productId) async {
+    try {
+      final token = await SecureStorageService.getToken();
+      if (token == null) return false;
+
+      final res = await http.post(
+        Uri.parse(ApiService.shareProductInGroupEndpoint(groupId)),
+        headers: ApiService.headers(token: token),
+        body: jsonEncode({
+          'product_id': productId,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return true;
+      }
+    } catch (e) {
+      debugPrint('shareProductInGroup error: $e');
+    }
+    return false;
+  }
 }

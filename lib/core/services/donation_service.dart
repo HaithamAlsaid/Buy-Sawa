@@ -84,7 +84,7 @@ class DonationService {
       final body = {
         'campaign_id': campaignId,
         'amount': amount,
-        'payment_gateway': 'paymob',
+        'payment_gateway': 'ngenius',
         'is_anonymous': isAnonymous ? 1 : 0,
         if (!isAnonymous && donorName != null && donorName.isNotEmpty) 'donor_name': donorName,
         if (!isAnonymous && donorPhone != null && donorPhone.isNotEmpty) 'donor_phone': donorPhone,

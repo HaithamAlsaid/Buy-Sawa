@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../core/services/firebase_messaging_service.dart';
+import '../../widgets/language_picker_sheet.dart';
 import '../main/main_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -16,7 +18,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
 
-  void _finishOnboarding() {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 1. Show Language Picker first thing in onboarding
+      await LanguagePickerSheet.show(context);
+      
+      // 2. Request Notification Permission right after they pick language
+      try {
+        await FirebaseMessagingService.requestPermission();
+      } catch (_) {}
+    });
+  }
+
+  void _finishOnboarding() async {
+
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(

@@ -106,18 +106,44 @@ class ShareBottomSheet extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final group = groups[index];
                   return InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isAr 
-                              ? 'تم مشاركة ${product.arabicName} في جروب ${group.arabicOwnerName} بنجاح!' 
-                              : 'Shared ${product.name} to ${group.ownerName}\'s group successfully!',
-                          ),
-                          backgroundColor: AppColors.success,
-                        ),
+                    onTap: () async {
+                      // Show loading dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
                       );
+
+                      final success = await context.read<GroupBuyProvider>().shareProductInGroup(group.id, product.id);
+                      
+                      if (context.mounted) {
+                        Navigator.pop(context); // Close loading dialog
+                        Navigator.pop(context); // Close bottom sheet
+                        
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isAr 
+                                  ? 'تم مشاركة ${product.arabicName} في جروب ${group.arabicOwnerName} بنجاح!' 
+                                  : 'Shared ${product.name} to ${group.ownerName}\'s group successfully!',
+                              ),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isAr 
+                                  ? 'حدث خطأ أثناء المشاركة. يرجى المحاولة مرة أخرى.' 
+                                  : 'Failed to share product. Please try again.',
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(

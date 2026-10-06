@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.buysawa"
+    namespace = "com.buysawa.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.buysawa"
+        applicationId = "com.buysawa.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
@@ -31,11 +31,27 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("key.properties")
+            if (keystorePropertiesFile.exists()) {
+                val props = keystorePropertiesFile.readLines()
+                    .filter { it.contains("=") }
+                    .associate {
+                        val (k, v) = it.split("=", limit = 2)
+                        k.trim() to v.trim()
+                    }
+                keyAlias = props["keyAlias"]
+                keyPassword = props["keyPassword"]
+                storeFile = file("${props["storeFile"]}")
+                storePassword = props["storePassword"]
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

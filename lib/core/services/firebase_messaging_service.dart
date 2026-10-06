@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 class FirebaseMessagingService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
-  static Future<void> initialize() async {
-    // 1. Request permission (especially for iOS)
+  static Future<void> requestPermission() async {
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -17,6 +16,9 @@ class FirebaseMessagingService {
     } else {
       debugPrint('User declined or has not accepted permission');
     }
+  }
+
+  static Future<void> initialize() async {
 
     // 2. Get the FCM Token
     try {

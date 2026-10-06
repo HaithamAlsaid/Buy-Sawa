@@ -10,7 +10,7 @@ class PlanService {
       final response = await http.get(
         Uri.parse('${ApiService.baseUrl}/monthly-plans'),
         headers: ApiService.headers(),
-      );
+      ).timeout(const Duration(seconds: 5));
       final data = jsonDecode(response.body);
       
       if (response.statusCode == 200) {

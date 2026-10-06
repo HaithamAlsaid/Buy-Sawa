@@ -4,6 +4,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../models/donation_campaign_model.dart';
 import '../../../core/services/donation_service.dart';
 import '../../../widgets/cached_image.dart';
+import '../../checkout/payment_webview_screen.dart';
 import '../donation_success_screen.dart';
 
 class DonationBottomSheet extends StatefulWidget {
@@ -77,15 +78,50 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
       donorEmail: _emailController.text.trim(),
       notes: _notesController.text.trim(),
     );
-
     setState(() => _isLoading = false);
 
     if (mounted) {
       if (result['success'] == true) {
-        // Parse donation ID if returned from API
-        final data = result['data'];
-        final donationId = data['donation_id']?.toString() ?? data['id']?.toString() ?? 'DON-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+        final data = result['data'] is Map ? result['data'] : {};
         
+        // Extract payment link
+        String? paymentUrl;
+        final paymentAction = data['payment_action'];
+        if (paymentAction is Map) {
+          paymentUrl = paymentAction['redirection_url']?.toString() ??
+                       paymentAction['checkout_url']?.toString() ??
+                       paymentAction['payment_url']?.toString() ??
+                       paymentAction['url']?.toString();
+        }
+        if (paymentUrl == null || paymentUrl.isEmpty) {
+          paymentUrl = data['redirection_url']?.toString() ??
+                       data['checkout_url']?.toString() ??
+                       data['payment_url']?.toString() ??
+                       data['url']?.toString();
+        }
+
+        // Parse donation ID
+        final donationId = data['donation_id']?.toString() ?? data['id']?.toString() ?? 'DON-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+
+        if (paymentUrl != null && paymentUrl.isNotEmpty) {
+          final success = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PaymentWebViewScreen(url: paymentUrl!),
+            ),
+          );
+          
+          if (success != true) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(l.locale.languageCode == 'ar' ? 'تم إلغاء عملية الدفع' : 'Payment cancelled')
+              ));
+            }
+            return;
+          }
+        }
+        
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => DonationSuccessScreen(
@@ -96,7 +132,7 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
           ),
         );
       } else {
-        final errorMsg = result['error'] ?? l.locale.languageCode == 'ar' ? 'فشلت عملية الدفع' : 'Payment failed';
+        final errorMsg = result['error'] ?? (l.locale.languageCode == 'ar' ? 'فشلت عملية الدفع' : 'Payment failed');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMsg.toString())));
       }
     }
@@ -467,17 +503,6 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
                 const SizedBox(height: 12),
 
                 _buildPaymentOption(
-                  id: 'wallet',
-                  leading: Icon(Icons.account_balance_wallet_rounded,
-                      color: _selectedPaymentMethod == 'wallet'
-                          ? _teal
-                          : Colors.grey),
-                  label: l.myWallet,
-                  subtitle: l.myWalletBalance,
-                ),
-                const SizedBox(height: 8),
-
-                _buildPaymentOption(
                   id: 'credit_card',
                   leading: Icon(Icons.credit_card_rounded,
                       color: _selectedPaymentMethod == 'credit_card'
@@ -485,30 +510,6 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
                           : Colors.grey),
                   label: l.creditDebitCard,
                   subtitle: l.cardsAccepted,
-                ),
-                const SizedBox(height: 8),
-
-                _buildPaymentOption(
-                  id: 'tabby',
-                  leading: _PaymentLogo(
-                    text: 'tabby',
-                    color: const Color(0xFF3DBFA8),
-                    selected: _selectedPaymentMethod == 'tabby',
-                  ),
-                  label: 'Tabby',
-                  subtitle: l.tabbySubtitle,
-                ),
-                const SizedBox(height: 8),
-
-                _buildPaymentOption(
-                  id: 'tamara',
-                  leading: _PaymentLogo(
-                    text: 'tamara',
-                    color: const Color(0xFF231F20),
-                    selected: _selectedPaymentMethod == 'tamara',
-                  ),
-                  label: 'Tamara',
-                  subtitle: l.tamaraSubtitle,
                 ),
 
                 const SizedBox(height: 24),
@@ -551,33 +552,3 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
   }
 }
 
-class _PaymentLogo extends StatelessWidget {
-  final String text;
-  final Color color;
-  final bool selected;
-
-  const _PaymentLogo(
-      {required this.text, required this.color, required this.selected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: selected
-            ? color.withValues(alpha: 0.12)
-            : Colors.grey[100],
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: 13,
-          color: selected ? color : Colors.grey[600],
-          letterSpacing: -0.3,
-        ),
-      ),
-    );
-  }
-}

@@ -37,13 +37,13 @@ class CartProvider extends ChangeNotifier {
     if (token != null && previousToken == null) {
       // User just logged in. Sync local items to server first.
       await _syncLocalItemsToServer();
-      fetchCart();
+      await fetchCart();
     } else if (token != null && !_isSynced) {
-      fetchCart();
+      await fetchCart();
     } else if (token == null) {
       // Guest mode: load local cart if available
       _isSynced = false;
-      _loadLocalCart();
+      await _loadLocalCart();
     }
   }
 
@@ -61,6 +61,10 @@ class CartProvider extends ChangeNotifier {
         quantity: item.quantity,
       );
     }
+    
+    // Clear local storage so we don't keep trying to sync old/invalid items
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_localCartKey);
   }
 
   // ─── جلب الـ Cart من السيرفر ─────────────────────────────────
@@ -103,8 +107,8 @@ class CartProvider extends ChangeNotifier {
     } catch (_) {}
   }
 
-  // ─── إضافة منتج ──────────────────────────────────────────────
-  Future<void> add(ProductModel product, {String? variantId, ProductVariationModel? variation, String? groupId, String? referralCode}) async {
+  // إضافة منتج 
+  Future<bool> add(ProductModel product, {String? variantId, ProductVariationModel? variation, String? groupId, String? referralCode}) async {
     // تحديث فوري في الـ UI
     final idx = _items.indexWhere((i) => i.product.id == product.id && i.variantId == variantId);
     if (idx >= 0) {
@@ -138,15 +142,25 @@ class CartProvider extends ChangeNotifier {
             quantity: _items[i].quantity,
           );
         }
+        return true;
       } else {
-        debugPrint('⚠️ add: server did NOT return an ID — item may not be saved on backend!');
+        debugPrint('⚠️ add: server did NOT return an ID — item may not be saved on backend! Rolling back local UI state.');
+        // Rollback local change since backend rejected it
+        if (idx >= 0) {
+          _items[idx].quantity--;
+        } else {
+          _items.removeWhere((i) => i.product.id == product.id && i.variantId == variantId);
+        }
+        notifyListeners();
+        return false;
       }
     } else {
       debugPrint('⚠️ add: no token, saving locally only');
+      return true;
     }
   }
 
-  // ─── حذف منتج ────────────────────────────────────────────────
+  // ─── حذف منتج 
   Future<void> remove(String productId) async {
     final idx = _items.indexWhere((i) => i.product.id == productId);
     if (idx < 0) return;

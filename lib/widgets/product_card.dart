@@ -63,6 +63,29 @@ class ProductCard extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                   ),
+                  if (product.discount > 0)
+                    Positioned(
+                      top: R.pad(context, 8),
+                      right: R.pad(context, 8),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: R.pad(context, 8),
+                          vertical: R.pad(context, 4),
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444).withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(R.r(context, 6)),
+                        ),
+                        child: Text(
+                          '-${product.discount.toInt()}%',
+                          style: TextStyle(
+                            fontSize: R.sp(context, 10),
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

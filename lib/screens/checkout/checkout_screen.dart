@@ -1,3 +1,4 @@
+import 'package:buysawa/screens/checkout/order_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
@@ -13,7 +14,7 @@ import 'payment_webview_screen.dart';
 import '../../core/services/country_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/services/wallet_service.dart';
-
+import 'order_success_screen.dart';
 class CheckoutScreen extends StatefulWidget {
   final String? couponCode;
   const CheckoutScreen({super.key, this.couponCode});
@@ -273,7 +274,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         throw Exception(result.error);
       }
 
-      // ── Handle payment gateway redirect (card / tamara) ───────
+      // ── Handle payment gateway redirect (card / tamara) 
       if (result.redirectionUrl != null && result.redirectionUrl!.isNotEmpty) {
         if (!mounted) return;
         final success = await Navigator.push<bool>(
@@ -287,16 +288,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         }
       }
 
-      // ── Success ───────────────────────────────────────────────
+      // Success 
       if (mounted) {
         context.read<CartProvider>().clear();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isAr ? 'تم تقديم الطلب بنجاح! 🎉' : 'Order placed successfully! 🎉'),
-            backgroundColor: Colors.green,
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderSuccessScreen(order: result.order),
           ),
         );
-        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
@@ -779,7 +779,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 (_walletBalance ?? 0);
                             final paymentUrl = await WalletService.topUp(
                               amount: needed,
-                              provider: 'paymob',
+                              provider: 'ngenius',
                             );
                             if (paymentUrl != null && mounted) {
                               final success =

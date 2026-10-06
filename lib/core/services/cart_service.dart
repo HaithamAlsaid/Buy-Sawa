@@ -27,13 +27,7 @@ class CartService {
       if (res.statusCode == 200) {
         final body = jsonDecode(res.body);
         
-        try {
-          final f = File(r'C:\Users\Owner\.gemini\antigravity-ide\brain\c768fa9e-6f96-498e-b844-542f0f242689\scratch\cart_dump.json');
-          f.createSync(recursive: true);
-          f.writeAsStringSync(res.body);
-        } catch (e) {
-          debugPrint('Dump error: $e');
-        }
+        // Removed file dump
 
         // يدعم {"data": {"items": [...]}} أو {"items": [...]} أو [...]
         final rawCart = body['data'] ?? body;
@@ -48,7 +42,7 @@ class CartService {
     return [];
   }
 
-  // ─── Add Item to Cart ────────────────────────────────────────
+  // Add Item to Cart
   /// POST /api/v1/cart/items/
   /// Returns the new cart item id or null on failure
   static Future<String?> addItem({

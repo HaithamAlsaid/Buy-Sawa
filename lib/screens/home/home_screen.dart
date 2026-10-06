@@ -23,6 +23,7 @@ import 'widgets/campaign_detail_sheet.dart';
 import '../../core/services/plan_service.dart';
 import '../../models/monthly_plan_model.dart';
 import '../plans/plans_list_sheet.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -150,6 +151,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: TextField(
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (query) {
+                            if (query.trim().isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => SearchScreen(initialQuery: query.trim()),
+                                ),
+                              );
+                            }
+                          },
                           decoration: InputDecoration(
                             hintText:
                                 AppLocalizations.of(

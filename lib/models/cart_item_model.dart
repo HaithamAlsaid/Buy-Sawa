@@ -1,6 +1,5 @@
 import 'package:buysawa/models/product_model.dart';
 
-import 'product_model.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CartItemModel — يدعم الـ API Response والـ Local Cart
@@ -32,6 +31,7 @@ class CartItemModel {
     // السعر من الـ variant أو المنتج أو الكارت
     final price = double.tryParse(json['price']?.toString() ?? '') ??
         double.tryParse(json['unit_price']?.toString() ?? '') ??
+        double.tryParse(json['pricing']?['unit_price']?.toString() ?? '') ??
         double.tryParse(variantData?['price']?.toString() ?? '') ??
         double.tryParse(variantData?['pricing']?['price']?.toString() ?? '') ??
         double.tryParse(productData['price']?.toString() ?? '') ??

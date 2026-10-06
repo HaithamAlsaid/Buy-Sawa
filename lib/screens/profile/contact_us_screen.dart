@@ -265,150 +265,42 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (isGuest)
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(R.pad(context, 20)),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(R.r(context, 24)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                    border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).loginToSend,
-                        style: TextStyle(
-                          color: const Color(0xFF94A3B8),
-                          fontSize: R.sp(context, 14),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: R.pad(context, 20)),
-                      SizedBox(
-                        width: double.infinity,
-                        height: R.pad(context, 48),
-                        child: ElevatedButton.icon(
-                          onPressed: () => AuthBottomSheet.show(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFCBD5E1),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(R.r(context, 16)),
-                            ),
-                          ),
-                          icon: Icon(Icons.login, color: Colors.white, size: R.icon(context, 16)),
-                          label: Text(
-                            AppLocalizations.of(context).login,
-                            style: TextStyle(color: Colors.white, fontSize: R.sp(context, 15), fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else ...[
-                _buildTextField(isAr ? 'الاسم بالكامل' : 'FULL NAME', _nameCtrl),
-                _buildTextField(isAr ? 'البريد الإلكتروني' : 'EMAIL ADDRESS', _emailCtrl, keyboardType: TextInputType.emailAddress),
-                _buildTextField(isAr ? 'رقم الهاتف' : 'PHONE NUMBER', _phoneCtrl, keyboardType: TextInputType.phone),
-                if (_loadingPurposes)
-                  const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
-                else if (_purposes.isNotEmpty)
-                  _buildDropdown(),
-                _buildTextField(AppLocalizations.of(context).yourMessage, _messageCtrl, maxLines: 4),
-                
-                SizedBox(
-                  width: double.infinity,
-                  height: R.pad(context, 48),
-                  child: ElevatedButton.icon(
-                    onPressed: _sending ? null : _sendMessage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(R.r(context, 16)),
-                      ),
-                    ),
-                    icon: _sending
-                        ? SizedBox(
-                            width: R.pad(context, 16),
-                            height: R.pad(context, 16),
-                            child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : Icon(Icons.send_rounded, color: Colors.white, size: R.icon(context, 16)),
-                    label: Text(
-                      AppLocalizations.of(context).sendMessage,
-                      style: TextStyle(color: Colors.white, fontSize: R.sp(context, 15), fontWeight: FontWeight.w700),
+              _buildTextField(isAr ? 'الاسم بالكامل' : 'FULL NAME', _nameCtrl),
+              _buildTextField(isAr ? 'البريد الإلكتروني' : 'EMAIL ADDRESS', _emailCtrl, keyboardType: TextInputType.emailAddress),
+              _buildTextField(isAr ? 'رقم الهاتف' : 'PHONE NUMBER', _phoneCtrl, keyboardType: TextInputType.phone),
+              if (_loadingPurposes)
+                const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+              else if (_purposes.isNotEmpty)
+                _buildDropdown(),
+              _buildTextField(AppLocalizations.of(context).yourMessage, _messageCtrl, maxLines: 4),
+              
+              SizedBox(
+                width: double.infinity,
+                height: R.pad(context, 48),
+                child: ElevatedButton.icon(
+                  onPressed: _sending ? null : _sendMessage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(R.r(context, 16)),
                     ),
                   ),
-                ),
-              ],
-
-              SizedBox(height: R.pad(context, 32)),
-
-              // ── Direct Contact Label ─────────────────────────────────
-              Padding(
-                padding: EdgeInsets.only(
-                  left: R.pad(context, 8),
-                  bottom: R.pad(context, 12),
-                ),
-                child: Text(
-                  AppLocalizations.of(context).orReachDirectly.toUpperCase(),
-                  style: TextStyle(
-                    color: const Color(0xFF94A3B8),
-                    fontSize: R.sp(context, 12),
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+                  icon: _sending
+                      ? SizedBox(
+                          width: R.pad(context, 16),
+                          height: R.pad(context, 16),
+                          child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Icon(Icons.send_rounded, color: Colors.white, size: R.icon(context, 16)),
+                  label: Text(
+                    AppLocalizations.of(context).sendMessage,
+                    style: TextStyle(color: Colors.white, fontSize: R.sp(context, 15), fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
 
-              // ── Contact Methods Card ─────────────────────────────────
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(R.r(context, 24)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                  border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
-                ),
-                child: Column(
-                  children: [
-                    _ContactItem(
-                      icon: Icons.phone_rounded,
-                      iconColor: const Color(0xFFF97316),
-                      iconBgColor: const Color(0xFFFFF7ED),
-                      title: AppLocalizations.of(context).callUs.toUpperCase(),
-                      subtitle: '800-SAWA',
-                      onTap: () {},
-                    ),
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    _ContactItem(
-                      icon: Icons.email_outlined,
-                      iconColor: const Color(0xFF0EA5E9),
-                      iconBgColor: const Color(0xFFF0F9FF),
-                      title: AppLocalizations.of(context).emailUs.toUpperCase(),
-                      subtitle: 'help@buysawa.app',
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
 
-              SizedBox(height: R.pad(context, 40)),
 
               // ── Support Footer ───────────────────────────────────────
               Row(

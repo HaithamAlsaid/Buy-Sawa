@@ -11,7 +11,7 @@ import 'cache_service.dart';
 
 class ProductService {
 
-  // ─── Get All Products ────────────────────────────────────────
+  // ─── Get All Products
   static Future<List<ProductModel>> getProducts({
     String? query,
     String? category,
@@ -22,7 +22,6 @@ class ProductService {
 
       // Add query params if present
       final params = <String, String>{};
-      if (query != null && query.isNotEmpty) params['search'] = query;
       if (category != null && category.isNotEmpty) params['category'] = category;
       if (params.isNotEmpty) {
         url += '?${params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
@@ -37,13 +36,24 @@ class ProductService {
         final body = jsonDecode(res.body);
         // Handle both {"data": [...]} and [...] formats
         final rawList = body['data'] is List ? body['data'] as List : (body is List ? body : []);
-        final products = rawList
+        var products = rawList
             .map((e) => productFromApi(e as Map<String, dynamic>))
             .whereType<ProductModel>()
             .toList();
 
-        // Cache the products
-        try { await CacheService.saveProducts(rawList.cast<Map<String, dynamic>>()); } catch (_) {}
+        // Local Case-Insensitive Search Filter
+        if (query != null && query.trim().isNotEmpty) {
+          final q = query.trim().toLowerCase();
+          products = products.where((p) => 
+            p.name.toLowerCase().contains(q) || 
+            p.arabicName.toLowerCase().contains(q)
+          ).toList();
+        }
+
+        // Cache the products (cache the unfiltered rawList if no query/category, else ignore caching here or cache all)
+        if (query == null && category == null) {
+          try { await CacheService.saveProducts(rawList.cast<Map<String, dynamic>>()); } catch (_) {}
+        }
 
         return products;
       }
@@ -69,7 +79,8 @@ class ProductService {
       }
     } catch (_) {}
 
-    return []; // No mock — show real empty state
+    // Fallback: return mock data (including demo variable product) when offline
+    return mockProducts;
   }
 
   // Get Product By ID 

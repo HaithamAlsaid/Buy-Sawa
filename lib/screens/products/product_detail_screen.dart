@@ -129,7 +129,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   // Actions
 
-  void _addToCart() {
+  void _addToCart() async {
     final l10n = AppLocalizations.of(context);
     if (widget.product.isVariable && _selectedVariation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -146,53 +146,71 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     HapticFeedback.lightImpact();
-    context.read<CartProvider>().add(
+    
+    // Show a quick loading state if we want, or just wait.
+    // For simplicity, we just await the add function.
+    final success = await context.read<CartProvider>().add(
       widget.product,
       variantId: _selectedVariation?.id,
       variation: _selectedVariation,
       groupId: widget.groupId,
       referralCode: widget.referralCode,
     );
-    setState(() => _addedToCart = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle_rounded, color: Colors.white),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                '${l10n.locale.languageCode == 'ar' ? widget.product.arabicName : widget.product.name} ${l10n.addedToCart}',
-                style: const TextStyle(fontWeight: FontWeight.w600),
+
+    if (!mounted) return;
+
+    if (success) {
+      setState(() => _addedToCart = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle_rounded, color: Colors.white),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  '${l10n.locale.languageCode == 'ar' ? widget.product.arabicName : widget.product.name} ${l10n.addedToCart}',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
               ),
+            ],
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          action: SnackBarAction(
+            label: l10n.viewCart,
+            textColor: Colors.white,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CartScreen()),
             ),
-          ],
-        ),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        action: SnackBarAction(
-          label: l10n.viewCart,
-          textColor: Colors.white,
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CartScreen()),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.locale.languageCode == 'ar'
+                ? 'المنتج غير متوفر في المخزون حالياً أو حدث خطأ.'
+                : 'Product is currently out of stock or an error occurred.',
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
   }
 
   Future<void> _toggleWishlist() async {
     final oldState = _isWishlisted;
     setState(() => _isWishlisted = !_isWishlisted);
 
-    bool success;
-    if (_isWishlisted) {
-      success = await FavouriteService.addFavourite(widget.product.id);
-    } else {
-      success = await FavouriteService.removeFavourite(widget.product.id);
-    }
+    // The backend POST endpoint for favorites actually acts as a toggle
+    // so we just call addFavourite for both adding and removing if we only have the product ID.
+    bool success = await FavouriteService.addFavourite(widget.product.id);
 
     if (!success && mounted) {
       setState(() => _isWishlisted = oldState);
@@ -264,11 +282,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final product = _fullProduct ?? widget.product;
     final specs = product.attributes;
     final l10n = AppLocalizations.of(context);
-    final discountPct = (_selectedVariation != null && _selectedVariation!.comparePrice != null && _selectedVariation!.comparePrice! > _selectedVariation!.price)
-        ? (((_selectedVariation!.comparePrice! - _selectedVariation!.price) / _selectedVariation!.comparePrice!) * 100).toInt()
-        : (product.originalPrice != null && product.originalPrice! > product.price
-            ? (((product.originalPrice! - product.price) / product.originalPrice!) * 100).toInt()
-            : 0);
+    final discountPct = product.discount.toInt();
 
     // Sizes only for relevant categories
 

@@ -106,7 +106,22 @@ class _PlansListSheetState extends State<PlansListSheet> {
               future: _plansFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                  return ListView.separated(
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 40),
+                    itemCount: 3,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        height: 130,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ).animate(onPlay: (controller) => controller.repeat())
+                          .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.6));
+                    },
+                  );
                 }
 
                 if (snapshot.hasError) {

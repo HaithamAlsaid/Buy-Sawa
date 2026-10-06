@@ -45,8 +45,6 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (localeProvider.isFirstLaunch) {
       localeProvider.markLaunched();
-      if (!mounted) return;
-      await LanguagePickerSheet.show(context);
     }
     if (!mounted) return;
 
@@ -141,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           child: child,
                         ),
-                        child: AppLogo(size: 180, borderRadius: 44),
+                        child: AppLogo(size: 150, borderRadius: 0, fit: BoxFit.contain),
                       )
                       .animate()
                       // Step 1: Start at the bottom, shoot up to the top
