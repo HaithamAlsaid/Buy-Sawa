@@ -84,11 +84,14 @@ class DonationService {
       final body = {
         'campaign_id': campaignId,
         'amount': amount,
+        // Send fields for both possible backend implementations to ensure N-Genius triggers
         'payment_gateway': 'ngenius',
-        'is_anonymous': isAnonymous ? 1 : 0,
-        if (!isAnonymous && donorName != null && donorName.isNotEmpty) 'donor_name': donorName,
-        if (!isAnonymous && donorPhone != null && donorPhone.isNotEmpty) 'donor_phone': donorPhone,
-        if (!isAnonymous && donorEmail != null && donorEmail.isNotEmpty) 'donor_email': donorEmail,
+        'payment_method': 'card',
+        'provider': 'ngenius',
+        'is_anonymous': isAnonymous,
+        'donor_name': isAnonymous ? 'Anonymous' : (donorName ?? ''),
+        'donor_phone': isAnonymous ? '0000000000' : (donorPhone ?? ''),
+        'donor_email': isAnonymous ? 'anonymous@buysawa.com' : (donorEmail ?? ''),
         if (notes != null && notes.isNotEmpty) 'notes': notes,
       };
 

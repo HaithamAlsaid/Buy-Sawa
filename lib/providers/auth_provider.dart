@@ -216,6 +216,7 @@ class AuthProvider extends ChangeNotifier {
           if (birthdate.isNotEmpty) 'date_of_birth': birthdate,
           if (_user != null) 'email': _user!.email,
           if (_user != null || phone != null) 'phone': phone ?? _user?.phone ?? '',
+          'profile_image': _user?.avatarUrl ?? '',
         }),
       ).timeout(const Duration(seconds: 15));
 
@@ -233,7 +234,21 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = body['message'] ?? 'Failed to update profile';
+        debugPrint('=== Update Profile Failed ===');
+        debugPrint('Status Code: ${res.statusCode}');
+        debugPrint('Response: ${res.body}');
+        try {
+          if (body['errors'] != null) {
+            final errors = body['errors'] as Map<String, dynamic>;
+            _errorMessage = errors.values.first is List
+                ? errors.values.first[0].toString()
+                : errors.values.first.toString();
+          } else {
+            _errorMessage = body['message'] ?? 'Failed to update profile';
+          }
+        } catch (_) {
+          _errorMessage = body['message'] ?? 'Failed to update profile';
+        }
         _isLoading = false;
         notifyListeners();
         return false;
@@ -262,7 +277,7 @@ class AuthProvider extends ChangeNotifier {
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      request.files.add(await http.MultipartFile.fromPath('avatar', imageFile.path));
+      request.files.add(await http.MultipartFile.fromPath('profile_image', imageFile.path));
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);

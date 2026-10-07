@@ -86,22 +86,34 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
         
         // Extract payment link
         String? paymentUrl;
-        final paymentAction = data['payment_action'];
+        final innerData = data['data'] is Map ? data['data'] : data;
+        final paymentAction = innerData['payment_action'] ?? data['payment_action'];
+        final paymentObj = innerData['payment'] is Map ? innerData['payment'] : {};
+        
         if (paymentAction is Map) {
           paymentUrl = paymentAction['redirection_url']?.toString() ??
                        paymentAction['checkout_url']?.toString() ??
                        paymentAction['payment_url']?.toString() ??
                        paymentAction['url']?.toString();
         }
+        
         if (paymentUrl == null || paymentUrl.isEmpty) {
-          paymentUrl = data['redirection_url']?.toString() ??
+          paymentUrl = paymentObj['redirect_url']?.toString() ??
+                       paymentObj['checkout_url']?.toString() ??
+                       paymentObj['redirection_url']?.toString() ??
+                       innerData['redirection_url']?.toString() ??
+                       innerData['checkout_url']?.toString() ??
+                       innerData['payment_url']?.toString() ??
+                       innerData['url']?.toString() ??
+                       data['redirection_url']?.toString() ??
                        data['checkout_url']?.toString() ??
                        data['payment_url']?.toString() ??
                        data['url']?.toString();
         }
 
         // Parse donation ID
-        final donationId = data['donation_id']?.toString() ?? data['id']?.toString() ?? 'DON-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+        final donationData = innerData['donation'] is Map ? innerData['donation'] : innerData;
+        final donationId = donationData['donation_number']?.toString() ?? donationData['id']?.toString() ?? 'DON-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
 
         if (paymentUrl != null && paymentUrl.isNotEmpty) {
           final success = await Navigator.push<bool>(
@@ -113,27 +125,65 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
           
           if (success != true) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(l.locale.languageCode == 'ar' ? 'تم إلغاء عملية الدفع' : 'Payment cancelled')
-              ));
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(l.locale.languageCode == 'ar' ? 'تنبيه' : 'Alert'),
+                  content: Text(l.locale.languageCode == 'ar' ? 'تم إلغاء عملية الدفع' : 'Payment cancelled'),
+                  actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))],
+                ),
+              );
             }
             return;
           }
-        }
-        
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => DonationSuccessScreen(
-              campaign: widget.campaign,
-              amount: _selectedAmount,
-              donationId: donationId,
+          
+          if (!mounted) return;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => DonationSuccessScreen(
+                campaign: widget.campaign,
+                amount: _selectedAmount,
+                donationId: donationId,
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          // No payment URL returned from the server
+          if (!mounted) return;
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(l.locale.languageCode == 'ar' ? 'مشكلة في السيرفر' : 'Server Issue'),
+              content: Text(
+                (l.locale.languageCode == 'ar' 
+                    ? 'السيرفر لم يرسل رابط بوابة الدفع. هذا ما أرسله السيرفر:\n\n' 
+                    : 'Server did not return a payment link. Response:\n\n') +
+                data.toString()
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(l.locale.languageCode == 'ar' ? 'حسناً' : 'OK'),
+                ),
+              ],
+            ),
+          );
+        }
       } else {
         final errorMsg = result['error'] ?? (l.locale.languageCode == 'ar' ? 'فشلت عملية الدفع' : 'Payment failed');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMsg.toString())));
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l.locale.languageCode == 'ar' ? 'تنبيه' : 'Alert'),
+            content: Text(errorMsg.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l.locale.languageCode == 'ar' ? 'حسناً' : 'OK'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }

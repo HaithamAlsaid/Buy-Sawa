@@ -836,7 +836,6 @@ class _BadgeRatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Featured badge
         Container(
@@ -858,34 +857,6 @@ class _BadgeRatingRow extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-        ),
-
-        // Star rating
-        Row(
-          children: [
-            Icon(
-              Icons.star_rounded,
-              color: const Color(0xFFF5A623),
-              size: R.icon(context, 17),
-            ),
-            SizedBox(width: R.pad(context, 4)),
-            Text(
-              '${product.rating}',
-              style: TextStyle(
-                fontSize: R.sp(context, 13),
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0F172A),
-              ),
-            ),
-            SizedBox(width: R.pad(context, 4)),
-            Text(
-              '(${product.reviewCount > 999 ? '${(product.reviewCount / 1000).toStringAsFixed(1)}k' : product.reviewCount})',
-              style: TextStyle(
-                fontSize: R.sp(context, 12),
-                color: const Color(0xFF94A3B8),
-              ),
-            ),
-          ],
         ),
       ],
     );

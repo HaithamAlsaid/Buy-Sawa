@@ -401,31 +401,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                     overflow: TextOverflow.ellipsis,
                                                   ),
                                                   SizedBox(height: R.pad(context, 4)),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.star_rounded,
-                                                        color: AppColors.accent,
-                                                        size: R.icon(context, 14),
-                                                      ),
-                                                      SizedBox(width: R.pad(context, 2)),
-                                                      Text(
-                                                        rating.toStringAsFixed(1),
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: R.sp(context, 12),
-                                                          color: AppColors.textDark,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        ' (${product.reviewCount})',
-                                                        style: TextStyle(
-                                                          fontSize: R.sp(context, 11),
-                                                          color: AppColors.textGray,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+
                                                   SizedBox(height: R.pad(context, 6)),
                                                   Row(
                                                     children: [

@@ -160,6 +160,13 @@ class _TopUpSheetState extends State<TopUpSheet> {
                       onSelected: (_) {
                         _amountCtrl.text = amt.toString();
                       },
+                      labelStyle: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                      ),
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                      side: BorderSide.none,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

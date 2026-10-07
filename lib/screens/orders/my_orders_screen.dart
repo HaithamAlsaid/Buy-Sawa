@@ -4,6 +4,8 @@ import '../../core/utils/responsive.dart';
 import '../../core/services/order_service.dart';
 import '../../models/order_model.dart';
 import '../../core/localization/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../../providers/product_provider.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -251,6 +253,7 @@ class _OrderCard extends StatelessWidget {
     final items = order.items;
     final displayItems = items.take(3).toList(); // Show max 3 images stacked
     final extraCount = items.length - 3;
+    final productProvider = context.read<ProductProvider>();
 
     return Container(
       margin: EdgeInsets.only(bottom: R.pad(context, 12)),
@@ -339,6 +342,16 @@ class _OrderCard extends StatelessWidget {
                         ...displayItems.asMap().entries.map((entry) {
                           final i = entry.key;
                           final item = entry.value;
+                          
+                          // Resolve image
+                          String resolvedImage = item.productImage;
+                          if (resolvedImage.isEmpty || resolvedImage.length < 5) {
+                            try {
+                              final p = productProvider.products.firstWhere((p) => p.id == item.productId);
+                              resolvedImage = p.imageUrl;
+                            } catch (_) {}
+                          }
+
                           return Positioned(
                             left: i * R.pad(context, 20),
                             child: Container(
@@ -358,9 +371,9 @@ class _OrderCard extends StatelessWidget {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(R.r(context, 10)),
-                                child: item.productImage.isNotEmpty
+                                child: resolvedImage.isNotEmpty
                                     ? Image.network(
-                                        item.productImage,
+                                        resolvedImage,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => _ProductPlaceholder(index: i),
                                       )
@@ -401,32 +414,47 @@ class _OrderCard extends StatelessWidget {
 
                 // Product info
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        items.isNotEmpty
-                            ? (items.first.productName.isNotEmpty ? items.first.productName : (isAr ? 'منتج' : 'Product'))
-                            : (isAr ? 'لا توجد منتجات' : 'No items'),
-                        style: TextStyle(
-                          fontSize: R.sp(context, 13),
-                          color: const Color(0xFF334155),
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (items.length > 1) ...[
-                        SizedBox(height: R.pad(context, 2)),
-                        Text(
-                          isAr ? 'و${items.length - 1} منتجات أخرى' : '+ ${items.length - 1} more item${items.length - 1 > 1 ? "s" : ""}',
-                          style: TextStyle(
-                            fontSize: R.sp(context, 11),
-                            color: const Color(0xFF94A3B8),
+                  child: Builder(
+                    builder: (context) {
+                      String resolvedName = isAr ? 'منتج' : 'Product';
+                      if (items.isNotEmpty) {
+                         resolvedName = items.first.productName;
+                         if (resolvedName.isEmpty || resolvedName.startsWith('{id:')) {
+                           try {
+                              final p = productProvider.products.firstWhere((p) => p.id == items.first.productId);
+                              resolvedName = isAr ? p.arabicName : p.name;
+                           } catch (_) {
+                              resolvedName = isAr ? 'منتج' : 'Product';
+                           }
+                         }
+                      }
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            items.isNotEmpty ? resolvedName : (isAr ? 'لا توجد منتجات' : 'No items'),
+                            style: TextStyle(
+                              fontSize: R.sp(context, 13),
+                              color: const Color(0xFF334155),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ],
+                          if (items.length > 1) ...[
+                            SizedBox(height: R.pad(context, 2)),
+                            Text(
+                              isAr ? 'و${items.length - 1} منتجات أخرى' : '+ ${items.length - 1} more item${items.length - 1 > 1 ? "s" : ""}',
+                              style: TextStyle(
+                                fontSize: R.sp(context, 11),
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ],
+                      );
+                    }
                   ),
                 ),
               ],

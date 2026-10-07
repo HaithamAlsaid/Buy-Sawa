@@ -91,6 +91,7 @@ class OrderProvider extends ChangeNotifier {
         _orders[idx] = OrderModel(
           id: _orders[idx].id,
           status: 'cancelled',
+          rawStatus: 'cancelled',
           total: _orders[idx].total,
           currency: _orders[idx].currency,
           createdAt: _orders[idx].createdAt,
