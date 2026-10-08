@@ -323,7 +323,7 @@ class _CampaignCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    campaign.title,
+                    AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

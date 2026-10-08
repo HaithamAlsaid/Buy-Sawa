@@ -200,7 +200,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ─── Update Profile ──────────────────────────────────────────
+  // ─── Update Profile 
   Future<bool> updateProfile(String fullName, String birthdate, {String? phone}) async {
     _isLoading = true;
     _errorMessage = null;

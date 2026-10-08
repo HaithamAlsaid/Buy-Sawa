@@ -154,7 +154,7 @@ class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
 
                   // Title
                   Text(
-                    campaign.title,
+                    l.locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
@@ -165,7 +165,7 @@ class _CampaignDetailSheetState extends State<CampaignDetailSheet> {
 
                   // Description
                   Text(
-                    campaign.description,
+                    l.locale.languageCode == 'ar' ? campaign.arabicDescription : campaign.description,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[700],

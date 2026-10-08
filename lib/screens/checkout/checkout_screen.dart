@@ -14,7 +14,7 @@ import 'payment_webview_screen.dart';
 import '../../core/services/country_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/services/wallet_service.dart';
-import 'order_success_screen.dart';
+import '../main/main_screen.dart';
 class CheckoutScreen extends StatefulWidget {
   final String? couponCode;
   const CheckoutScreen({super.key, this.couponCode});
@@ -284,7 +284,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
         );
         if (success != true) {
-          throw Exception(isAr ? 'تم إلغاء عملية الدفع' : 'Payment was cancelled');
+          if (mounted) {
+            context.read<CartProvider>().clear();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(isAr 
+                    ? 'تم إلغاء الدفع. تم حفظ الطلب ويمكنك الدفع لاحقاً من طلباتي' 
+                    : 'Payment cancelled. Order is saved, you can pay later from My Orders'),
+              ),
+            );
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+          return;
         }
       }
 

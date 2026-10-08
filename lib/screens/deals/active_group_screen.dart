@@ -14,6 +14,7 @@ import '../../models/product_model.dart';
 import '../products/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/product_provider.dart';
 import '../../core/services/cart_service.dart';
 import '../checkout/checkout_screen.dart';
 
@@ -659,11 +660,19 @@ class _ActiveGroupScreenState extends State<ActiveGroupScreen> {
                           separatorBuilder: (_, __) => const SizedBox(height: 10),
                           itemBuilder: (_, i) {
                             final sp = _sharedProducts[i];
-                            final pName = sp['product']?['name']?.toString() ?? sp['name']?.toString() ?? 'Product';
-                            final pPrice = sp['product']?['price']?.toString() ?? sp['price']?.toString() ?? '';
+                            final pivotId = sp['id']?.toString();
+                            final prodId = sp['product_id']?.toString() ?? sp['product']?['id']?.toString() ?? pivotId;
+                            
+                            // Try to get full product details from ProductProvider
+                            final productProvider = context.read<ProductProvider>();
+                            final localProduct = prodId != null ? productProvider.products.where((p) => p.id == prodId).firstOrNull : null;
+                            
+                            final pName = localProduct != null ? (isAr && localProduct.arabicName.isNotEmpty ? localProduct.arabicName : localProduct.name) : (sp['product']?['name']?.toString() ?? sp['name']?.toString() ?? 'Product');
+                            final pPrice = localProduct != null ? localProduct.price.toStringAsFixed(0) : (sp['product']?['price']?.toString() ?? sp['price']?.toString() ?? '');
                             final sharedBy = sp['shared_by']?['name']?.toString() ?? sp['user']?['name']?.toString() ?? '';
                             final note = sp['note']?.toString() ?? '';
-                            String imageUrl = sp['product']?['image_url']?.toString() ?? sp['product']?['image']?.toString() ?? sp['image_url']?.toString() ?? sp['image']?.toString() ?? '';
+                            
+                            String imageUrl = localProduct?.imageUrl ?? sp['product']?['image_url']?.toString() ?? sp['product']?['image']?.toString() ?? sp['image_url']?.toString() ?? sp['image']?.toString() ?? '';
                             if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
                               if (imageUrl.startsWith('/')) {
                                 imageUrl = 'https://buysawa.com$imageUrl';
@@ -671,8 +680,6 @@ class _ActiveGroupScreenState extends State<ActiveGroupScreen> {
                                 imageUrl = 'https://buysawa.com/storage/$imageUrl';
                               }
                             }
-                            final pivotId = sp['id']?.toString();
-                            final prodId = sp['product_id']?.toString() ?? sp['product']?['id']?.toString() ?? pivotId;
                             return GestureDetector(
                               onTap: prodId == null ? null : () {
                                 HapticFeedback.lightImpact();

@@ -451,7 +451,7 @@ class _LoggedInProfileView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ActiveSubscriptionCard(key: activeSubscriptionCardKey),
+                    const _ActiveSubscriptionCard(),
                     
                     Padding(
                       padding: EdgeInsets.only(
@@ -817,10 +817,10 @@ class _LoggedInProfileView extends StatelessWidget {
   }
 }
 
-final GlobalKey<_ActiveSubscriptionCardState> activeSubscriptionCardKey = GlobalKey<_ActiveSubscriptionCardState>();
+final ValueNotifier<int> subscriptionRefreshNotifier = ValueNotifier<int>(0);
 
 class _ActiveSubscriptionCard extends StatefulWidget {
-  const _ActiveSubscriptionCard({Key? key}) : super(key: key);
+  const _ActiveSubscriptionCard({super.key});
 
   @override
   State<_ActiveSubscriptionCard> createState() => _ActiveSubscriptionCardState();
@@ -834,6 +834,13 @@ class _ActiveSubscriptionCardState extends State<_ActiveSubscriptionCard> {
   void initState() {
     super.initState();
     fetchSubscription();
+    subscriptionRefreshNotifier.addListener(fetchSubscription);
+  }
+
+  @override
+  void dispose() {
+    subscriptionRefreshNotifier.removeListener(fetchSubscription);
+    super.dispose();
   }
 
   Future<void> fetchSubscription() async {

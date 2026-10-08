@@ -326,7 +326,7 @@ class _DonationBottomSheetState extends State<DonationBottomSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.campaign.title,
+                          Text(AppLocalizations.of(context).locale.languageCode == 'ar' ? widget.campaign.arabicTitle : widget.campaign.title,
                               style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

@@ -283,7 +283,6 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
               // ── Avatar Area ──────────────────────────────────────────
               Center(
                 child: GestureDetector(
-                  onTap: _pickImage,
                   child: Stack(
                     children: [
                       Container(
@@ -324,38 +323,6 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                                 ),
                               )
                             : null,
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: R.pad(context, 32),
-                          height: R.pad(context, 32),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF5A623), // Orange edit color
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: context.watch<AuthProvider>().isLoading
-                                ? SizedBox(
-                                    width: R.pad(context, 16),
-                                    height: R.pad(context, 16),
-                                    child: const CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.camera_alt_rounded,
-                                    color: Colors.white,
-                                    size: R.icon(context, 16),
-                                  ),
-                          ),
-                        ),
                       ),
                     ],
                   ),

@@ -357,7 +357,7 @@ class _DonationsHubScreenState extends State<DonationsHubScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    campaign.title,
+                    AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

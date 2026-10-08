@@ -90,7 +90,7 @@ class DonationSuccessScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Divider(height: 1),
                     ),
-                    _buildReceiptRow('Campaign', campaign.title),
+                    _buildReceiptRow('Campaign', AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Divider(height: 1),

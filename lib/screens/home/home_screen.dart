@@ -926,7 +926,7 @@ class _DonationBannerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          campaign.title,
+                          AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -937,7 +937,7 @@ class _DonationBannerCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          campaign.description,
+                          AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicDescription : campaign.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

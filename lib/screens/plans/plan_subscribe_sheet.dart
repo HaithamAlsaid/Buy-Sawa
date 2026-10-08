@@ -78,7 +78,7 @@ class _PlanSubscribeSheetState extends State<PlanSubscribeSheet> {
       }
       
       // 2. Refresh active plan card if visible
-      activeSubscriptionCardKey.currentState?.fetchSubscription();
+      subscriptionRefreshNotifier.value++;
 
       Navigator.pop(context, true); // Return true to indicate success
       messenger.showSnackBar(
