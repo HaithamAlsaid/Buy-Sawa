@@ -9,6 +9,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/category_model.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../widgets/product_card.dart';
 import '../../providers/notifications_provider.dart';
@@ -100,6 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final cartCount = context.watch<CartProvider>().count;
     final productProvider = context.watch<ProductProvider>();
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
+    final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -125,67 +129,79 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverAppBar(
               pinned: true,
               floating: false,
-              toolbarHeight: 90,
+              toolbarHeight: 70, // Height for the top row (Title + Actions)
               backgroundColor: AppColors.primary,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(32),
                 ),
               ),
+              centerTitle: false,
+              titleSpacing: 16,
               title: Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 4.0),
-                child: Row(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: Container(
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                    if (user != null)
+                      Text(
+                        isAr ? 'مرحباً بك في' : 'Welcome to',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
-                        child: TextField(
-                          textInputAction: TextInputAction.search,
-                          onSubmitted: (query) {
-                            if (query.trim().isNotEmpty) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => SearchScreen(initialQuery: query.trim()),
-                                ),
-                              );
-                            }
-                          },
-                          decoration: InputDecoration(
-                            hintText:
-                                AppLocalizations.of(
-                                      context,
-                                    ).locale.languageCode ==
-                                    'ar'
-                                ? 'ابحث عن منتج...'
-                                : 'Search products...',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFF9E9E9E),
-                              fontSize: 13,
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: AppColors.primary,
-                              size: 20,
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
+                      ),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Buy ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Inter',
                             ),
                           ),
-                        ),
+                          TextSpan(
+                            text: 'S',
+                            style: TextStyle(
+                              color: Color(0xFFF5A623),
+                              fontSize: 27,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'A',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'W',
+                            style: TextStyle(
+                              color: Color(0xFFF5A623),
+                              fontSize: 25,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'A',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -193,7 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
+                  padding: const EdgeInsets.only(
+                    top: 8.0,
+                    right: 12.0,
+                    left: 12.0,
+                  ),
                   child: Row(
                     children: [
                       // Cart
@@ -274,14 +294,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                                 size: 22,
                               ),
-                              if (context.watch<NotificationsProvider>().unreadCount > 0)
+                              if (context
+                                      .watch<NotificationsProvider>()
+                                      .unreadCount >
+                                  0)
                                 Positioned(
                                   top: -2,
                                   right: -2,
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF5A623), // Orange dot
+                                      color: const Color(
+                                        0xFFF5A623,
+                                      ), // Orange dot
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: AppColors.primary,
@@ -308,6 +333,61 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ],
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(
+                  66,
+                ), // Height of search bar + padding
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  child: Container(
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (query) {
+                        if (query.trim().isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  SearchScreen(initialQuery: query.trim()),
+                            ),
+                          );
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: isAr
+                            ? 'ابحث عن منتجات، علامات تجارية...'
+                            : 'Search products, brands, deals...',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF9E9E9E),
+                          fontSize: 13,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
 
             SliverToBoxAdapter(
@@ -383,19 +463,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 28),
+                                    const Icon(
+                                      Icons.wifi_off_rounded,
+                                      color: Colors.grey,
+                                      size: 28,
+                                    ),
                                     const SizedBox(height: 8),
                                     TextButton(
                                       onPressed: () {
                                         setState(() {
-                                          _campaignsFuture = DonationService.getActiveCampaigns().then((val) {
-                                            if (mounted) setState(() => _campaigns = val);
-                                            return val;
-                                          });
+                                          _campaignsFuture =
+                                              DonationService.getActiveCampaigns()
+                                                  .then((val) {
+                                                    if (mounted)
+                                                      setState(
+                                                        () => _campaigns = val,
+                                                      );
+                                                    return val;
+                                                  });
                                         });
                                       },
                                       child: Text(
-                                        AppLocalizations.of(context).locale.languageCode == 'ar'
+                                        AppLocalizations.of(
+                                                  context,
+                                                ).locale.languageCode ==
+                                                'ar'
                                             ? 'إعادة المحاولة'
                                             : 'Retry',
                                       ),
@@ -523,10 +615,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (snapshot.hasError) {
                           return Center(
                             child: IconButton(
-                              icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
+                              icon: const Icon(
+                                Icons.refresh_rounded,
+                                color: AppColors.primary,
+                              ),
                               onPressed: () {
                                 setState(() {
-                                  _categoriesFuture = ProductService.getCategories();
+                                  _categoriesFuture =
+                                      ProductService.getCategories();
                                 });
                               },
                             ),
@@ -539,7 +635,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (categories.isEmpty) {
                           return Center(
                             child: Text(
-                              AppLocalizations.of(context).locale.languageCode == 'ar'
+                              AppLocalizations.of(
+                                        context,
+                                      ).locale.languageCode ==
+                                      'ar'
                                   ? 'لا توجد أقسام'
                                   : 'No categories',
                               style: const TextStyle(color: Colors.grey),
@@ -562,8 +661,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-
-
                   //Trending Now
                   const SizedBox(height: 24),
                   Padding(
@@ -579,20 +676,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColors.textDark,
                           ),
                         ),
-                        Row(
-                          children: const [
-                            Text('🔥', style: TextStyle(fontSize: 14)),
-                            SizedBox(width: 4),
-                            Text(
-                              'Hot',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFFF5A623),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Removed 'Hot' text per request
                       ],
                     ),
                   ),
@@ -640,7 +724,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    AppLocalizations.of(context).locale.languageCode == 'ar'
+                                    AppLocalizations.of(
+                                              context,
+                                            ).locale.languageCode ==
+                                            'ar'
                                         ? 'فشل في الاتصال'
                                         : 'Connection failed',
                                     style: TextStyle(
@@ -652,11 +739,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const SizedBox(height: 8),
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      context.read<ProductProvider>().refreshProducts();
+                                      context
+                                          .read<ProductProvider>()
+                                          .refreshProducts();
                                     },
                                     icon: const Icon(Icons.refresh, size: 18),
                                     label: Text(
-                                      AppLocalizations.of(context).locale.languageCode == 'ar'
+                                      AppLocalizations.of(
+                                                context,
+                                              ).locale.languageCode ==
+                                              'ar'
                                           ? 'إعادة المحاولة'
                                           : 'Retry',
                                     ),
@@ -784,9 +876,15 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => PlansListSheet.show(context),
         backgroundColor: const Color(0xFF0F2D3A),
-        icon: const Icon(Icons.workspace_premium, color: Colors.amber, size: 24),
+        icon: const Icon(
+          Icons.workspace_premium,
+          color: Colors.amber,
+          size: 24,
+        ),
         label: Text(
-          AppLocalizations.of(context).locale.languageCode == 'ar' ? 'باقات VIP' : 'VIP Plans',
+          AppLocalizations.of(context).locale.languageCode == 'ar'
+              ? 'باقات VIP'
+              : 'VIP Plans',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -926,7 +1024,10 @@ class _DonationBannerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicTitle : campaign.title,
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
+                              ? campaign.arabicTitle
+                              : campaign.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -937,7 +1038,10 @@ class _DonationBannerCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          AppLocalizations.of(context).locale.languageCode == 'ar' ? campaign.arabicDescription : campaign.description,
+                          AppLocalizations.of(context).locale.languageCode ==
+                                  'ar'
+                              ? campaign.arabicDescription
+                              : campaign.description,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

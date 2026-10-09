@@ -840,7 +840,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               _buildPaymentOption(
                 id: 'card',
                 title: isAr ? 'بطاقة ائتمان / خصم مباشر' : 'Credit / Debit Card',
-                subtitle: isAr ? 'بوابة دفع إلكترونية آمنة (N-Genius)' : 'Secure payment gateway (N-Genius)',
+                subtitle: '',
                 icon: Icons.credit_card_rounded,
                 isAr: isAr,
               ),
@@ -848,7 +848,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               _buildPaymentOptionWithLogo(
                 id: 'tamara',
                 title: isAr ? 'تمارا — اشتري الآن وادفع لاحقاً' : 'Tamara — Buy Now, Pay Later',
-                subtitle: isAr ? 'قسّم على 3 أشهر بدون فوائد' : 'Split into 3 months, 0% interest',
+                subtitle: '',
                 logoAsset: 'assets/images/tamara_logo.png',
                 fallbackIcon: Icons.splitscreen_rounded,
                 color: const Color(0xFF2D9B6F),
@@ -899,14 +899,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: isSelected ? AppColors.primary : AppColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: R.sp(context, 12),
-                    color: AppColors.textGray,
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: R.sp(context, 12),
+                      color: AppColors.textGray,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -964,14 +966,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: isSelected ? color : AppColors.textDark,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: R.sp(context, 12),
-                    color: AppColors.textGray,
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: R.sp(context, 12),
+                      color: AppColors.textGray,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
