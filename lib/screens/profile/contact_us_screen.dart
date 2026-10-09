@@ -4,7 +4,6 @@ import '../../core/constants/app_colors.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../core/utils/responsive.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/auth_bottom_sheet.dart';
 import '../../core/services/contact_us_service.dart';
 
 class ContactUsScreen extends StatefulWidget {
@@ -221,7 +220,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    final isGuest = auth.isGuest;
+    final _ = auth.isGuest;
     final isAr = AppLocalizations.of(context).locale.languageCode == 'ar';
 
     return Scaffold(
@@ -322,6 +321,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   }
 }
 
+// ignore: unused_element
 class _ContactItem extends StatelessWidget {
   final IconData icon;
   final Color iconColor;

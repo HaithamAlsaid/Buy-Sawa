@@ -15,9 +15,7 @@ import '../../core/utils/responsive.dart';
 import '../../models/product_model.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/group_buy_provider.dart';
 import '../../widgets/auth_bottom_sheet.dart';
-import '../deals/deals_screen.dart';
 import 'cart_screen.dart';
 import '../../core/services/secure_storage_service.dart' as secure_storage;
 import '../../core/services/favourite_service.dart';
@@ -47,13 +45,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   static const _teal = AppColors.primary;
 
   bool _addedToCart = false;
-  bool _startingGroup = false;
+  final bool _startingGroup = false;
   bool _isWishlisted = false;
-  String? _selectedSize;
   bool _specsExpanded = false;
   ProductVariationModel? _selectedVariation;
   late final PageController _pageCtrl;
-  int _currentImageIndex = 0;
   ProductModel? _fullProduct;
 
   @override

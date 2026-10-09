@@ -140,7 +140,7 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
         final auth = context.read<AuthProvider>();
         if (auth.user != null) {
           // Send the updated phone to the backend for the user profile
-          await auth.updateProfile(auth.user!.fullName, auth.user!.birthdate ?? '', phone: fullPhone);
+          await auth.updateProfile(auth.user!.fullName, auth.user!.birthdate, phone: fullPhone);
         }
 
         if (mounted) {

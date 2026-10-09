@@ -47,6 +47,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     super.dispose();
   }
 
+  // ignore: unused_element
   Future<void> _selectBirthdate() async {
     DateTime initialDate = DateTime(1992, 4, 15);
     if (_birthdate.isNotEmpty) {
@@ -89,6 +90,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -496,8 +498,8 @@ class _InfoEditRow extends StatelessWidget {
     required this.value,
     this.onTap,
     required this.trailingIcon,
-    required this.trailingColor,
-    this.extraTrailingIcon,
+    // ignore: unused_element_parameter
+    required this.trailingColor, this.extraTrailingIcon,
   });
 
   @override

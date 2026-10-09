@@ -269,22 +269,34 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                                   SizedBox(width: R.pad(context, 8)),
                                   Expanded(
                                     flex: 2,
-                                    child: products.isNotEmpty
+                                    child: (widget.category.imagePath != null && widget.category.imagePath!.isNotEmpty)
                                         ? Container(
                                             height: R.pad(context, 100),
                                             decoration: const BoxDecoration(
                                               color: Colors.white,
                                             ),
                                             padding: EdgeInsets.all(R.pad(context, 8)),
-                                            child: Image.network(
-                                              products.first.imageUrl,
-                                              fit: BoxFit.contain,
-                                              errorBuilder: (_, __, ___) => Icon(
-                                                widget.category.icon,
-                                                size: R.icon(context, 60),
-                                                color: widget.category.iconColor,
-                                              ),
-                                            ),
+                                            child: widget.category.imagePath!.startsWith('assets/')
+                                                ? Image.asset(
+                                                    widget.category.imagePath!,
+                                                    fit: BoxFit.contain,
+                                                    errorBuilder: (_, __, ___) => Icon(
+                                                      widget.category.icon,
+                                                      size: R.icon(context, 60),
+                                                      color: widget.category.iconColor,
+                                                    ),
+                                                  )
+                                                : Image.network(
+                                                    widget.category.imagePath!.startsWith('http')
+                                                        ? widget.category.imagePath!
+                                                        : 'https://buysawa.com${widget.category.imagePath!.startsWith('/') ? '' : '/'}${widget.category.imagePath}',
+                                                    fit: BoxFit.contain,
+                                                    errorBuilder: (_, __, ___) => Icon(
+                                                      widget.category.icon,
+                                                      size: R.icon(context, 60),
+                                                      color: widget.category.iconColor,
+                                                    ),
+                                                  ),
                                           )
                                         : Icon(
                                             widget.category.icon,

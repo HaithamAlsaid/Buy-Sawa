@@ -137,7 +137,7 @@ class _TopUpSheetState extends State<TopUpSheet> {
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: isAr ? 'المبلغ' : 'Amount',
-                  prefixText: l10n.aed + ' ',
+                  prefixText: '${l10n.aed} ',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),

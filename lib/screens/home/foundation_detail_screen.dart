@@ -282,8 +282,8 @@ class _CampaignCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final _teal = const Color(0xFF008982);
-    final _dark = const Color(0xFF0F2D3A);
+    final teal = const Color(0xFF008982);
+    final dark = const Color(0xFF0F2D3A);
     final progress = campaign.progressPercentage;
 
     return GestureDetector(
@@ -327,7 +327,7 @@ class _CampaignCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: _dark,
+                      color: dark,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -349,7 +349,7 @@ class _CampaignCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(_teal),
+                      valueColor: AlwaysStoppedAnimation<Color>(teal),
                       minHeight: 8,
                     ),
                   ),
@@ -372,7 +372,7 @@ class _CampaignCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: _teal,
+                              color: teal,
                             ),
                           ),
                         ],
@@ -390,7 +390,7 @@ class _CampaignCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: _dark,
+                              color: dark,
                             ),
                           ),
                         ],

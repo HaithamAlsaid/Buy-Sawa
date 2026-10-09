@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/localization/app_localizations.dart';
 
 class CreditCardSheet extends StatefulWidget {
   final double totalAmount;
@@ -16,7 +14,7 @@ class _CreditCardSheetState extends State<CreditCardSheet> {
   String _cardNumber = '';
   String _cardHolder = '';
   String _expiryDate = '';
-  String _cvv = '';
+
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +246,6 @@ class _CreditCardSheetState extends State<CreditCardSheet> {
                                 hint: '•••',
                                 keyboardType: TextInputType.number,
                                 obscureText: true,
-                                onChanged: (val) => setState(() => _cvv = val),
                               ),
                             ],
                           ),
@@ -370,7 +367,7 @@ class _CreditCardSheetState extends State<CreditCardSheet> {
     IconData? icon,
     TextInputType? keyboardType,
     bool obscureText = false,
-    required Function(String) onChanged,
+    Function(String)? onChanged,
   }) {
     return TextFormField(
       onChanged: onChanged,

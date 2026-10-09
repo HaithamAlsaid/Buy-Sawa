@@ -14,7 +14,7 @@ import 'payment_webview_screen.dart';
 import '../../core/services/country_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../core/services/wallet_service.dart';
-import '../main/main_screen.dart';
+import 'package:shimmer/shimmer.dart';
 class CheckoutScreen extends StatefulWidget {
   final String? couponCode;
   const CheckoutScreen({super.key, this.couponCode});
@@ -206,6 +206,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
         AddressModel? saved;
         if (_selectedAddress != null) {
+          // ignore: use_build_context_synchronously
           saved = await context.read<AddressProvider>().updateAddress(
             id: _selectedAddress!.id,
             countryKey: _selectedCountry!['key'],
@@ -390,7 +391,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   // ─── Address Section ────────────────────────────────────────────────────────
   Widget _buildAddressSection(bool isAr) {
-    final provider = context.watch<AddressProvider>();
+    context.watch<AddressProvider>();
 
     return Container(
       decoration: BoxDecoration(
@@ -422,10 +423,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           const SizedBox(height: 16),
           
-          if (provider.isLoading && provider.addresses.isEmpty && !_isAddingNewAddress)
-            const Center(child: CircularProgressIndicator())
-          else
-            _buildInlineAddressForm(isAr),
+          _buildInlineAddressForm(isAr),
         ],
       ),
     );
@@ -433,10 +431,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _buildInlineAddressForm(bool isAr) {
     if (_isLoadingCountries) {
-      return const Center(child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: CircularProgressIndicator(),
-      ));
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(child: Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)))),
+                const SizedBox(width: 12),
+                Expanded(child: Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)))),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)))),
+                const SizedBox(width: 12),
+                Expanded(child: Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)))),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12))),
+            const SizedBox(height: 16),
+            Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12))),
+            const SizedBox(height: 16),
+            Container(height: 100, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12))),
+          ],
+        ),
+      );
     }
 
     return Column(

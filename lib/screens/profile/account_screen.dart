@@ -820,7 +820,7 @@ class _LoggedInProfileView extends StatelessWidget {
 final ValueNotifier<int> subscriptionRefreshNotifier = ValueNotifier<int>(0);
 
 class _ActiveSubscriptionCard extends StatefulWidget {
-  const _ActiveSubscriptionCard({super.key});
+  const _ActiveSubscriptionCard();
 
   @override
   State<_ActiveSubscriptionCard> createState() => _ActiveSubscriptionCardState();

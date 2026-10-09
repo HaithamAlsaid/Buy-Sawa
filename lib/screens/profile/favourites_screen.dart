@@ -273,7 +273,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                 final name = isAr ? product.arabicName : product.name;
                                 final price = product.price;
                                 final originalPrice = product.originalPrice;
-                                final rating = product.rating;
                                 final imageUrl = product.imageUrl;
 
                                 final priceFormatted = price
@@ -406,7 +405,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        '${priceFormatted} AED',
+                                                        '$priceFormatted AED',
                                                         style: TextStyle(
                                                           color: AppColors.primary,
                                                           fontSize: R.sp(context, 15),

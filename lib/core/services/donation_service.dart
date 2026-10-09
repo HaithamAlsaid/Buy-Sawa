@@ -32,8 +32,8 @@ class DonationService {
         final data = jsonDecode(res.body);
         return DonationCampaignModel.fromJson(data['data'] ?? data);
       }
+    // ignore: empty_catches
     } catch (e) {
-      print('Error getCampaignDetails: $e');
     }
     return null;
   }
@@ -47,7 +47,6 @@ class DonationService {
         return items.map((e) => DonorModel.fromJson(e)).toList();
       }
     } catch (e) {
-      print('Error getCampaignDonors: $e');
     }
     return [];
   }
@@ -64,7 +63,6 @@ class DonationService {
         return items.map((e) => FoundationModel.fromJson(e)).toList();
       }
     } catch (e) {
-      print('Error getFoundations: $e');
     }
     return [];
   }
@@ -107,7 +105,6 @@ class DonationService {
         return {'success': false, 'error': jsonDecode(res.body)['message'] ?? 'Checkout failed'};
       }
     } catch (e) {
-      print('Error checkoutDonation: $e');
       return {'success': false, 'error': e.toString()};
     }
   }
@@ -120,7 +117,6 @@ class DonationService {
         return jsonDecode(res.body);
       }
     } catch (e) {
-      print('Error getDonationStatus: $e');
     }
     return null;
   }
@@ -138,7 +134,6 @@ class DonationService {
         return items.map((e) => DonationRecordModel.fromJson(e)).toList();
       }
     } catch (e) {
-      print('Error getMyDonations: $e');
     }
     return [];
   }

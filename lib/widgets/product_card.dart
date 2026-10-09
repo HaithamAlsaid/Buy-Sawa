@@ -54,13 +54,19 @@ class ProductCard extends StatelessWidget {
                               ),
                             ),
                           )
-                        : CachedImage(
-                            imageUrl: product.imageUrl.startsWith('http') 
-                                ? product.imageUrl 
-                                : 'https://buysawa.com${product.imageUrl.startsWith('/') ? '' : '/'}${product.imageUrl}',
+                        : Container(
                             width: double.infinity,
                             height: double.infinity,
-                            fit: BoxFit.cover,
+                            color: const Color(0xFFF8F9FA), // Very light grey background for the image area
+                            padding: EdgeInsets.all(R.pad(context, 12)),
+                            child: CachedImage(
+                              imageUrl: product.imageUrl.startsWith('http') 
+                                  ? product.imageUrl 
+                                  : 'https://buysawa.com${product.imageUrl.startsWith('/') ? '' : '/'}${product.imageUrl}',
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                   ),
                   if (product.discount > 0)

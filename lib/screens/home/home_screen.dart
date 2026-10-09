@@ -21,8 +21,6 @@ import 'donations_hub_screen.dart';
 import '../../models/donation_campaign_model.dart';
 import '../../widgets/cached_image.dart';
 import 'widgets/campaign_detail_sheet.dart';
-import '../../core/services/plan_service.dart';
-import '../../models/monthly_plan_model.dart';
 import '../plans/plans_list_sheet.dart';
 import 'search_screen.dart';
 
@@ -368,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: InputDecoration(
                         hintText: isAr
                             ? 'ابحث عن منتجات، علامات تجارية...'
-                            : 'Search products, brands, deals...',
+                            : 'Search products, brands...',
                         hintStyle: const TextStyle(
                           color: Color(0xFF9E9E9E),
                           fontSize: 13,
@@ -475,10 +473,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           _campaignsFuture =
                                               DonationService.getActiveCampaigns()
                                                   .then((val) {
-                                                    if (mounted)
+                                                    if (mounted) {
                                                       setState(
                                                         () => _campaigns = val,
                                                       );
+                                                    }
                                                     return val;
                                                   });
                                         });

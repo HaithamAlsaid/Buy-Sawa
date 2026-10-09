@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../../providers/locale_provider.dart';
-import '../../widgets/language_picker_sheet.dart';
 import '../../widgets/buysawa_logo.dart';
 import '../main/main_screen.dart';
 import '../onboarding/onboarding_screen.dart';
