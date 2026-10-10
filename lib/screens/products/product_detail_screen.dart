@@ -383,9 +383,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Text(
-                                    '✨',
-                                    style: TextStyle(fontSize: 14),
+                                  Icon(
+                                    Icons.share_outlined,
+                                    size: R.icon(context, 14),
+                                    color: const Color(0xFF166534),
                                   ),
                                   SizedBox(width: R.pad(context, 6)),
                                   Expanded(
@@ -462,73 +463,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         SizedBox(height: R.pad(context, 24)),
 
                         // Specifications + Product Type
-                        if (specs != null && specs.isNotEmpty || true) ...[ // always show type
+                        if (specs != null && specs.isNotEmpty) ...[
                           _SectionTitle(title: l10n.specifications),
                           SizedBox(height: R.pad(context, 10)),
-
-                          //Product Type Badge
-                          Container(
-                            padding: EdgeInsets.all(R.pad(context, 14)),
-                            margin: EdgeInsets.only(bottom: R.pad(context, 8)),
-                            decoration: BoxDecoration(
-                              color: product.isVariable
-                                  ? const Color(0xFFF0F4FF)
-                                  : const Color(0xFFF0FDF4),
-                              borderRadius: BorderRadius.circular(R.r(context, 10)),
-                              border: Border.all(
-                                color: product.isVariable
-                                    ? const Color(0xFFBFD0FF)
-                                    : const Color(0xFFBBF7D0),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  product.isVariable
-                                      ? Icons.tune_rounded
-                                      : Icons.inventory_2_outlined,
-                                  size: R.icon(context, 18),
-                                  color: product.isVariable
-                                      ? const Color(0xFF3B5FDD)
-                                      : const Color(0xFF16A34A),
-                                ),
-                                SizedBox(width: R.pad(context, 10)),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context).locale.languageCode == 'ar'
-                                          ? 'نوع المنتج'
-                                          : 'Product Type',
-                                      style: TextStyle(
-                                        fontSize: R.sp(context, 11),
-                                        color: const Color(0xFF94A3B8),
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      product.isVariable
-                                          ? (AppLocalizations.of(context).locale.languageCode == 'ar'
-                                              ? 'متعدد الخيارات'
-                                              : 'Variable Product')
-                                          : (AppLocalizations.of(context).locale.languageCode == 'ar'
-                                              ? 'منتج بسيط'
-                                              : 'Simple Product'),
-                                      style: TextStyle(
-                                        fontSize: R.sp(context, 13),
-                                        fontWeight: FontWeight.w800,
-                                        color: product.isVariable
-                                            ? const Color(0xFF3B5FDD)
-                                            : const Color(0xFF16A34A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ).animate().fadeIn(delay: 290.ms).slideY(begin: 0.15),
-
-                          if (specs != null && specs.isNotEmpty) ...[ 
                             _SpecsTable(
                               specs: specs,
                             ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.15),
@@ -548,12 +485,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                               ),
                             ],
-                          ],
                           SizedBox(height: R.pad(context, 24)),
                         ],
-
-
-
                         SizedBox(height: R.pad(context, 24)),
                       ],
                     ),
@@ -562,10 +495,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ],
           ),
-
-          // ────────────────────────────────────────────────────
-          // Fixed bottom action bar
-          // ────────────────────────────────────────────────────
+          // Fixed bottom action bar        
           Align(
             alignment: Alignment.bottomCenter,
             child: _BottomBar(
